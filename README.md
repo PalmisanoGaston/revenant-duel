@@ -14,7 +14,7 @@ LibGDX, proyecto enfocado para escritorio.
 Paso 1) Abrir la pestaña verde que dice code y luego descargar el zip.
 Paso 2) Una vez descargado el zip descomprimirlo en una carpeta.
 Paso 3) Con la carpeta descomprimida importar la carpeta como proyecto desde la  java IDE que tengamos (esto va a variar por IDE).
-Paso 4) Ejectuar el programa dentro del proyecto que creamos en la IDE.
+Paso 4) Dentro del proyecto buscar el archivo Lwjgl3Launcher dentro de la carpeta lwgjgl3 y correr la aplicacion al estar ubicados en el archivo launcher.
 
 **Estado Actual:**
  Configuracion inicial de la estructura del proyecto. 
