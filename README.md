@@ -1,4 +1,4 @@
-**Proyecto: Revenant Duel**
+# **Proyecto: Revenant Duel**
 
 **Integrantes:**
 Ulises Delio, Luataro Tevez, Gastón Palmisano.
