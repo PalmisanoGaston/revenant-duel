@@ -1,22 +1,69 @@
 # **Proyecto: Revenant Duel**
 
-**Integrantes:**
-Ulises Delio, Luataro Tevez, Gastón Palmisano.
+## **Integrantes**
 
-**Descripcion:**
- Un videojuego en red 2D de combate asimétrico 1 vs 1, donde un jugador sea el jefe y otro el héroe. uno asume el rol de un héroe débil que progresa con cada muerte (mejorando sus estadísticas, comprando objetos, habilidades, etc., y el otro controla a un poderoso jefe desde el inicio.
+* Ulises Delio
+* Lautaro Tevez
+* Gastón Palmisano
 
-**Tecnologias Utilizadas:**
-LibGDX, proyecto enfocado para escritorio.
+## **Descripción**
 
-**Como compilar y ejectuar:**
+Videojuego en red 2D de combate asimétrico 1 vs 1. Un jugador asume el rol de un jefe poderoso desde el inicio, mientras el otro juega como un héroe débil que progresa con cada muerte, mejorando sus estadísticas, habilidades y objetos.
 
-1. Abrir la pestaña verde que dice code y luego descargar el zip.
-2. Una vez descargado el zip descomprimirlo en una carpeta.
-3. Con la carpeta descomprimida importar la carpeta como proyecto desde la  java IDE que tengamos (esto va a variar por IDE).
-4. Dentro del proyecto buscar el archivo Lwjgl3Launcher dentro de la carpeta lwgjgl3 y correr la aplicacion al estar ubicados en el archivo launcher.
+## **Tecnologías Utilizadas**
 
-**Estado Actual:**
- Configuracion inicial de la estructura del proyecto. 
-**Enlace a la Wiki del Proyecto (Propuesta Detallada):**
+* [LibGDX](https://libgdx.com/) (proyecto enfocado para escritorio)
+* Gradle
+* Java
+
+---
+
+## **Prerrequisitos**
+
+* Tener **Java JDK 17+** instalado. Puedes descargarlo desde [Oracle](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) o [Adoptium](https://adoptium.net/).
+* Tener **Git** instalado. [Descargar Git](https://git-scm.com/downloads)
+* Un **IDE compatible con Gradle**, como **IntelliJ IDEA** o **Eclipse**.
+
+---
+
+## **Clonar el repositorio**
+
+```bash
+git clone https://github.com/PalmisanoGaston/revenant-duel.git
+```
+
+---
+
+## **Importar y ejecutar el proyecto**
+
+### **Usando IntelliJ IDEA**
+
+1. Abre IntelliJ y selecciona `File > Open...`.
+2. Selecciona la carpeta raíz del proyecto clonado (donde está el archivo `build.gradle`).
+3. Espera a que Gradle sincronice las dependencias.
+4. Busca el módulo `lwjgl3` (o el nombre correspondiente).
+5. Dentro de este módulo, navega hasta la clase `NombreCompletoDeSuClaseLauncher.java` (ejemplo: `com.paquete.juego.lwjgl3.Lwjgl3Launcher`).
+6. Haz clic derecho y selecciona `Run` o `Debug`.
+
+### **Usando Eclipse**
+
+1. Abre Eclipse y selecciona `File > Import... > Gradle > Existing Gradle Project`.
+2. Selecciona la carpeta raíz del proyecto clonado.
+3. Espera a que Gradle sincronice las dependencias.
+4. Busca el módulo `lwjgl3` y dentro de este la clase launcher (`Lwjgl3Launcher.java`).
+5. Haz clic derecho sobre la clase y selecciona `Run As > Java Application`.
+
+---
+
+
+## **Estado Actual**
+
+Configuración inicial de la estructura del proyecto.
+
+## **Wiki del Proyecto**
+
 [Ver la Propuesta Completa del Proyecto](https://github.com/PalmisanoGaston/revenant-duel/wiki/Propuesta)
+
+---
+
+
