@@ -2,7 +2,7 @@
 
 ## **Integrantes**
 
-* Ulises Delio
+* Ulises De Lio
 * Lautaro Tevez
 * Gastón Palmisano
 
