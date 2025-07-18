@@ -162,9 +162,6 @@ public class Arena implements Screen {
 	@Override
 	public void show() {
 	    Gdx.input.setInputProcessor(escena); // Para permitir input si es necesario
-
-	    Personaje heroe = new Personaje(world);
-	    escena.addActor(heroe);
 	}
 
 	@Override
