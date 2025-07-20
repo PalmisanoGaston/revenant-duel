@@ -19,38 +19,17 @@ import movimientos.MovimientoBase;
 import movimientos.Salto;
 
 public class Personaje extends Actor {
-    private Texture spriteSheet;
-    private Animation<TextureRegion> idleAnimation;
+
     private float stateTime;
     private Body body;
     private boolean lado = true;
-    private boolean canDash = true;
-    private float dashCooldown = 0f;
-    private final float DASH_COOLDOWN_TIME = 0.2f;
-    private final float DASH_VELOCITY = 10f; // Velocidad del dash
-    
+
     private MovimientoBase movimientoActual;
     private Map<String, MovimientoBase> movimientos = new HashMap<>();
+    private AnimacionesPersonaje animacionPersonaje = new AnimacionesPersonaje();
     
     
     public Personaje(World world) {
-        // Cargar el sprite sheet que contiene todos los frames de animación
-        this.spriteSheet = new Texture("personajes/idle.png");
-        
- 
-        
-        // Dividir el sprite sheet en frames individuales
-        int frameWidth = spriteSheet.getWidth() / 4; // Suponiendo 4 frames horizontales
-        int frameHeight = spriteSheet.getHeight();
-        
-        Array<TextureRegion> frames = new Array<TextureRegion>();
-        for (int i = 0; i < 4; i++) {
-            frames.add(new TextureRegion(spriteSheet, i * frameWidth, 0, frameWidth, frameHeight));
-        }
-        
-        // Crear la animación con los frames (0.1f es el tiempo entre frames)
-        idleAnimation = new Animation<>(0.1f, frames);
-        stateTime = 0f;
         
         // Crear definición del cuerpo
         BodyDef bodyDef = new BodyDef();
@@ -64,8 +43,8 @@ public class Personaje extends Actor {
         // Definir la forma (hitbox) - ahora usamos frameWidth en lugar de skin.getWidth()
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(
-            frameWidth/2 * Arena.PIXELS_TO_METERS,
-            frameHeight/2 * Arena.PIXELS_TO_METERS
+            this.animacionPersonaje.getFRAME_WIDTH()/2 * Arena.PIXELS_TO_METERS,
+            this.animacionPersonaje.getFRAME_HEIGTH()/2 * Arena.PIXELS_TO_METERS
         );
         
         // Definir propiedades físicas
@@ -82,7 +61,10 @@ public class Personaje extends Actor {
         shape.dispose();
         
         // Configurar tamaño del Actor
-        setSize(frameWidth, frameHeight);
+        int frameHeigth = this.animacionPersonaje.getFRAME_HEIGTH();
+        int frameWidth = this.animacionPersonaje.getFRAME_WIDTH();
+        
+        setSize(frameWidth, frameHeigth);
         
         
         movimientos.put("Dash",new Dash(body,lado));
@@ -93,7 +75,7 @@ public class Personaje extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        TextureRegion currentFrame = idleAnimation.getKeyFrame(stateTime, true);
+        TextureRegion currentFrame = this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime, true);
         
         // Invertir la imagen si mira a la izquierda
         if (!lado) {
@@ -113,6 +95,7 @@ public class Personaje extends Actor {
             currentFrame.flip(true, false);
         }
     }
+    
     @Override
     public void act(float delta) {
         super.act(delta);
@@ -177,7 +160,6 @@ public class Personaje extends Actor {
 
     @Override
     public boolean remove() {
-        spriteSheet.dispose();
         return super.remove();
     }
 }
