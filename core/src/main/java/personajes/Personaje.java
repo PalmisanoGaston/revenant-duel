@@ -28,7 +28,8 @@ public class Personaje extends Actor {
     private Map<String, MovimientoBase> movimientos = new HashMap<>();
     private AnimacionesPersonaje animacionPersonaje = new AnimacionesPersonaje();
     
-    
+    private Animation<TextureRegion> animacionActual;
+
     public Personaje(World world) {
         
         // Crear definición del cuerpo
@@ -75,7 +76,7 @@ public class Personaje extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        TextureRegion currentFrame = this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime, true);
+        TextureRegion currentFrame = this.animacionActual.getKeyFrame(stateTime, true);
         
         // Invertir la imagen si mira a la izquierda
         if (!lado) {
@@ -109,19 +110,35 @@ public class Personaje extends Actor {
             if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 velocidadX = -5f;
                 this.lado = false;
+            	if(this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
+            		this.animacionActual = this.animacionPersonaje.getRunAnimation();	
+            	}
             } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
                 velocidadX = 5f;
                 this.lado = true;
+            	if(this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
+            		this.animacionActual = this.animacionPersonaje.getRunAnimation();	
+            	}
+            }
+            else {
+            	if(this.animacionActual != this.animacionPersonaje.getIdleAnimation()) {
+            		this.animacionActual = this.animacionPersonaje.getIdleAnimation();	
+            	}
             }
             
             body.setLinearVelocity(velocidadX, body.getLinearVelocity().y);
-        
-        // Salto
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && (Math.abs(body.getLinearVelocity().y) < 0.1f))  {
-        	Salto salto = (Salto)movimientos.get("Salto");
-        	salto.reiniciar();
-        	this.movimientoActual = salto;
+            
+            // Salto
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && (Math.abs(body.getLinearVelocity().y) < 0.1f))  {
+	        	Salto salto = (Salto)movimientos.get("Salto");
+	        	salto.reiniciar();
+	        	this.movimientoActual = salto;
+	        	
+	        	if(this.animacionActual != this.animacionPersonaje.getJumpAnimation()) {
+	        		this.animacionActual = this.animacionPersonaje.getJumpAnimation();	
+	        	}
             }
+
         }
         
         // Iniciar dash

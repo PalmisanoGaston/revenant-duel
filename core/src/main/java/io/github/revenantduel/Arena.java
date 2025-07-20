@@ -27,9 +27,7 @@ public class Arena implements Screen {
     public static final float PIXELS_TO_METERS = 1/100f; // 100 píxeles = 1 metro
     
     private static final int ANCHO = 800;
-    private static final int ALTO = 800;
-
-    
+    private static final int ALTO = 800;    
     
     public Arena(Principal juego) {
         this.juego = juego;
@@ -49,6 +47,32 @@ public class Arena implements Screen {
         
         // Crear personaje
         crearPersonaje();
+        
+        crearLimitesMapa(); 
+    }
+    
+    private void crearLimitesMapa() {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        Body body = world.createBody(bodyDef);
+
+        // Definir vértices del marco (en metros)
+        float margin = 10f; // Margen para evitar fugas
+        Vector2[] vertices = new Vector2[4];
+        vertices[0] = new Vector2((-margin * PIXELS_TO_METERS)+0.08f , -margin * PIXELS_TO_METERS); // Esquina inferior izquierda
+        vertices[1] = new Vector2((-margin * PIXELS_TO_METERS)+0.08f, (ALTO + margin) * PIXELS_TO_METERS); // Esquina superior izquierda
+        vertices[2] = new Vector2((ANCHO + margin)*1.88f * PIXELS_TO_METERS, (ALTO + margin) * PIXELS_TO_METERS); // Esquina superior derecha
+        vertices[3] = new Vector2((ANCHO + margin)*1.88f * PIXELS_TO_METERS, -margin * PIXELS_TO_METERS); // Esquina inferior derecha
+
+        ChainShape shape = new ChainShape();
+        shape.createLoop(vertices);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.friction = 0.0f;
+        body.createFixture(fixtureDef);
+
+        shape.dispose();
     }
     
     private void crearPiso() {
