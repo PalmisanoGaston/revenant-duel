@@ -18,7 +18,7 @@ public class Salto extends MovimientoBase {
            cuerpo.applyLinearImpulse( new Vector2(0, FUERZA_SALTO), cuerpo.getWorldCenter(), true );
         } else if (estaEnFramesRecuperacion()) {
             // Frenar gradualmente
-            cuerpo.setLinearVelocity(cuerpo.getLinearVelocity().x,cuerpo.getLinearVelocity().y * 0.9f);
+            cuerpo.setLinearVelocity(cuerpo.getLinearVelocity().x,cuerpo.getLinearVelocity().y * 0.85f);
         }
       }
   }
