@@ -1,6 +1,8 @@
 package io.github.revenantduel;
 
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -8,17 +10,30 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import Interfaces.CambioVidaEventListener;
+import Interfaces.MuerteEventListener;
 import personajes.Personaje;
 import utiles.Colision;
+import utiles.HitBox;
 
-public class Arena implements Screen {
+public class Arena implements Screen, MuerteEventListener , CambioVidaEventListener {
     private Principal juego;
     private Stage escena;
     private SpriteBatch batch;
     private Texture texturaBloque;
+    private Skin skinUi;
+    private Label labelVidaJugador;
+    
     
     // Variables Box2D
     private World world;
@@ -30,10 +45,16 @@ public class Arena implements Screen {
     private static final int ANCHO = 800;
     private static final int ALTO = 800;    
     
-    public Arena(Principal juego) {
+    
+    private ArrayList<Body> cuerposAEliminar = new ArrayList<>();
+
+    
+    public Arena(Principal juego, Skin skin) {
         this.juego = juego;
         this.batch = new SpriteBatch();
         this.texturaBloque = new Texture("tileset.png");
+        this.skinUi = skin;
+        
         
         // Crear mundo Box2D con gravedad (en este caso, -10 en el eje Y)
         world = new World(new Vector2(0, -10), true);
@@ -48,12 +69,30 @@ public class Arena implements Screen {
         
         // Crear personaje
         crearPersonaje();
+        crearPersonaje();
         crearCajaSensor();
-        world.setContactListener(new Colision());
+        //world.setContactListener(new Colision());
+        world.setContactListener(new HitBox(10));
 
 
         
         crearLimitesMapa(); 
+        
+        Table table = new Table();
+        table.setFillParent(true);
+        escena.addActor(table);
+       Array<Actor> actores =  escena.getActors();
+        
+        for( Actor actor: actores) {
+        	
+        	if(actor  instanceof Personaje) {
+        	int vida = ((Personaje) actor).getVida();
+        	
+        this.labelVidaJugador = new Label(Integer.toString(vida), skinUi);
+        	}
+       table.add(labelVidaJugador);
+        }
+        
     }
     
     private void crearLimitesMapa() {
@@ -140,7 +179,7 @@ public class Arena implements Screen {
     }
     
     private void crearPersonaje() {
-        Personaje heroe = new Personaje(world);
+        Personaje heroe = new Personaje(world, this, this);
         escena.addActor(heroe);
     }
     
@@ -171,6 +210,16 @@ public class Arena implements Screen {
 
     @Override
     public void render(float delta) {
+    	
+    	//Hay que hacerlo de esta manera o si no explota
+    	  if(!world.isLocked() && !cuerposAEliminar.isEmpty()) {
+              for(Body body : cuerposAEliminar) {
+                  if(body != null) {
+                      world.destroyBody(body);
+                  }
+              }
+              cuerposAEliminar.clear();
+          }
         // Actualizar el mundo físico
         world.step(1/60f, 6, 2);
         
@@ -233,6 +282,19 @@ public class Arena implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onPersonajeMuerto(Personaje personaje) {
+		if(personaje.getBody()!= null) {
+		this.cuerposAEliminar.add(personaje.getBody());
+		}
+	}
+
+	@Override
+	public void onCambioVida(Personaje personaje) {
+		this.labelVidaJugador.setText(personaje.getVida());
 		
 	}
 }

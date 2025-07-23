@@ -38,7 +38,7 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Aquí podrías cambiar de pantalla o iniciar el juego
-                juego.setScreen(new Arena(juego));
+                juego.setScreen(new Arena(juego,fuenteTextos));
             }
         });
 

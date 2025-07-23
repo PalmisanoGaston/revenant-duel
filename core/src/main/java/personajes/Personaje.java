@@ -10,9 +10,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
+
+import Interfaces.CambioVidaEventListener;
+import Interfaces.MuerteEventListener;
+
 import java.util.HashMap;
 import java.util.Map;
 import io.github.revenantduel.Arena;
+import movimientos.AtaqueBasico;
 import movimientos.Backdash;
 import movimientos.Dash;
 import movimientos.MovimientoBase;
@@ -23,14 +28,17 @@ public class Personaje extends Actor {
     private float stateTime;
     private Body body;
     private boolean lado = true;
-
+    private String nombre = "Jugador";
+    private int vida = 100;
     private MovimientoBase movimientoActual;
     private Map<String, MovimientoBase> movimientos = new HashMap<>();
     private AnimacionesPersonaje animacionPersonaje = new AnimacionesPersonaje();
-    
+    private MuerteEventListener muerteEventListener;
+    private CambioVidaEventListener cambioVidaEventListener;
+
     private Animation<TextureRegion> animacionActual;
 
-    public Personaje(World world) {
+    public Personaje(World world, MuerteEventListener muerteListener, CambioVidaEventListener vidaListener) {
         
         // Crear definición del cuerpo
         BodyDef bodyDef = new BodyDef();
@@ -71,12 +79,19 @@ public class Personaje extends Actor {
         movimientos.put("Dash",new Dash(body,lado));
         movimientos.put("Salto", new Salto(body));
         movimientos.put("Backdash", new Backdash(body,lado));
-        
+        movimientos.put("Ataque", new AtaqueBasico(body, lado));
+
+        this.muerteEventListener = muerteListener;
+        this.cambioVidaEventListener = vidaListener;
         body.setUserData(this);
 
     }
 
-    @Override
+    public Body getBody() {
+		return body;
+	}
+
+	@Override
     public void draw(Batch batch, float parentAlpha) {
         TextureRegion currentFrame = this.animacionActual.getKeyFrame(stateTime, true);
         
@@ -160,6 +175,13 @@ public class Personaje extends Actor {
             movimientoActual = backdash;
         }
         
+        if (Gdx.input.isKeyJustPressed(Input.Keys.J) && movimientoActual == null && Math.abs(body.getLinearVelocity().y) < 0.1f ) { // Tecla J para atacar
+            AtaqueBasico ataque = (AtaqueBasico)movimientos.get("Ataque");
+            ataque.setLadoDerecho(lado);
+            ataque.reiniciar();
+            movimientoActual = ataque;
+        }
+        
     
     // Actualizar movimiento especial si existe
     if (movimientoActual != null && !movimientoActual.estaCompletado()) {
@@ -180,5 +202,26 @@ public class Personaje extends Actor {
     @Override
     public boolean remove() {
         return super.remove();
+    }
+    
+    public void recibirDaño(final int DAÑO) {
+    	this.vida -= DAÑO;
+    	this.cambioVidaEventListener.onCambioVida(this);
+    	if(this.vida<= 0) {
+    		System.out.println("Moriste crack");
+    		if(this.muerteEventListener != null) {
+    			this.muerteEventListener.onPersonajeMuerto(this);
+            }
+            this.remove();
+    	}
+    }
+    
+    
+    public int getVida() {
+    	return this.vida;
+    }
+    
+    public String getNombre() {
+    	return this.nombre;
     }
 }
