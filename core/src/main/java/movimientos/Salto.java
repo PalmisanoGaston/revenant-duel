@@ -8,7 +8,7 @@ public class Salto extends MovimientoBase {
     private final float FUERZA_SALTO = 0.09f;
     
     public Salto(Body cuerpo) {
-        super("Salto",3, 12, 4); // Frames de inicio: 3, activos: 5, recuperación: 10
+        super("Salto",1, 12, 4); // Frames de inicio: 3, activos: 5, recuperación: 10
         this.cuerpo = cuerpo;
     }
     
