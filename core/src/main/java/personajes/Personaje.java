@@ -88,6 +88,8 @@ public class Personaje extends Actor {
         movimientos.put("Dash",new Dash(body,lado));
         movimientos.put("Salto", new Salto(body));
         movimientos.put("Backdash", new Backdash(body,lado));
+        
+        body.setUserData(this);
 
     }
 

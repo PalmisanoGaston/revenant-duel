@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import personajes.Personaje;
+import utiles.Colision;
 
 public class Arena implements Screen {
     private Principal juego;
@@ -41,7 +42,7 @@ public class Arena implements Screen {
         debugRenderer = new Box2DDebugRenderer();
         
         // Crear escena
-        this.escena = new Stage(new ExtendViewport(this.ANCHO, this.ALTO));
+        this.escena = new Stage(new ExtendViewport(ANCHO, ALTO));
         
         // Crear piso y plataformas
         crearPiso();
@@ -49,6 +50,10 @@ public class Arena implements Screen {
         
         // Crear personaje
         crearPersonaje();
+        crearCajaSensor();
+        world.setContactListener(new Colision());
+
+
     }
     
     private void crearPiso() {
@@ -114,6 +119,31 @@ public class Arena implements Screen {
         Personaje heroe = new Personaje(world);
         escena.addActor(heroe);
     }
+    
+
+    private void crearCajaSensor() {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(ANCHO/2 * PIXELS_TO_METERS, ALTO/2 * PIXELS_TO_METERS);
+        
+        Body body = world.createBody(bodyDef);
+        
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(50 * PIXELS_TO_METERS, 50 * PIXELS_TO_METERS); // Tamaño de la caja
+        
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.isSensor = true; // Esto hace que sea un sensor (no colisión física)
+        
+        body.createFixture(fixtureDef);
+        shape.dispose();
+        
+        // Guardamos el cuerpo en userData para identificarlo
+        body.setUserData("CAJA_SENSOR");
+    }
+
+    
+    
 
     @Override
     public void render(float delta) {
