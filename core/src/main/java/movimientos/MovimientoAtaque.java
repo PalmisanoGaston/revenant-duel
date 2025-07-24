@@ -27,7 +27,7 @@ public abstract class MovimientoAtaque extends MovimientoBase {
         this.daño = daño;
         this.ancho = ancho;
         this.largo = largo;
-        this.hitBoxHandler = new HitBox(daño);
+        this.hitBoxHandler = new HitBox();
     }
     
     @Override

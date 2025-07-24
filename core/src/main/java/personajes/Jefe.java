@@ -1,4 +1,4 @@
-// Personaje.java
+// Jefe.java
 package personajes;
 
 import com.badlogic.gdx.Gdx;
@@ -13,12 +13,12 @@ import movimientos.Backdash;
 import movimientos.Dash;
 import movimientos.Salto;
 
-public class Personaje extends PersonajeBase {
+public class Jefe extends PersonajeBase {
 
-    public Personaje(World world, MuerteEventListener muerteListener,  CambioVidaEventListener vidaListener) {
-        super(world, "Jugador", 100, muerteListener, vidaListener);
+    public Jefe(World world, MuerteEventListener muerteListener, 
+               CambioVidaEventListener vidaListener) {
+        super(world, "Jefe", 150, muerteListener, vidaListener);
         
-  
         movimientos.put("Dash", new Dash(body, lado));
         movimientos.put("Salto", new Salto(body));
         movimientos.put("Backdash", new Backdash(body, lado));
@@ -33,14 +33,14 @@ public class Personaje extends PersonajeBase {
         
         if (movimientoActual == null || movimientoActual.estaCompletado()) {
             float velocidadX = 0;
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                velocidadX = -5f;
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                velocidadX = -2f;
                 this.lado = false;
                 if(this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
                     this.animacionActual = this.animacionPersonaje.getRunAnimation();    
                 }
-            } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                velocidadX = 5f;
+            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                velocidadX = 2f;
                 this.lado = true;
                 if(this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
                     this.animacionActual = this.animacionPersonaje.getRunAnimation();    
@@ -53,30 +53,29 @@ public class Personaje extends PersonajeBase {
             
             body.setLinearVelocity(velocidadX, body.getLinearVelocity().y);
             
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && (Math.abs(body.getLinearVelocity().y) < 0.1f)) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.UP) && (Math.abs(body.getLinearVelocity().y) < 0.1f)) {
                 Salto salto = (Salto)movimientos.get("Salto");
                 salto.reiniciar();
                 this.movimientoActual = salto;
                 this.animacionActual = this.animacionPersonaje.getJumpAnimation();
             }
         }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT) && Math.abs(body.getLinearVelocity().y) < 0.1f) {
+        
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT) && Math.abs(body.getLinearVelocity().y) < 0.1f) {
             Dash dash = (Dash)movimientos.get("Dash");
             dash.setLadoDerecho(lado);
             dash.reiniciar();
             movimientoActual = dash;
         }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT) && Math.abs(body.getLinearVelocity().y) < 0.1f) {
+        
+        if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_RIGHT) && Math.abs(body.getLinearVelocity().y) < 0.1f) {
             Backdash backdash = (Backdash)movimientos.get("Backdash");
             backdash.setLadoDerecho(lado);
             backdash.reiniciar();
             movimientoActual = backdash;
         }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.J) && movimientoActual == null && Math.abs(body.getLinearVelocity().y) < 0.1f) {
+        
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M) && movimientoActual == null && Math.abs(body.getLinearVelocity().y) < 0.1f) {
             AtaqueBasico ataque = (AtaqueBasico)movimientos.get("Ataque");
             ataque.setLadoDerecho(lado);
             ataque.reiniciar();

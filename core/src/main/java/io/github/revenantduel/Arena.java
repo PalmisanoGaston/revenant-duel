@@ -7,23 +7,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
+import lugares.Fondo;
+import lugares.FondoPrueba;
+import personajes.Jefe;
 import personajes.Personaje;
-import utiles.Colision;
+import personajes.PersonajeBase;
 import utiles.HitBox;
 
 public class Arena implements Screen, MuerteEventListener , CambioVidaEventListener {
@@ -33,7 +36,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     private Texture texturaBloque;
     private Skin skinUi;
     private Label labelVidaJugador;
-    
+    private Fondo fondo;
     
     // Variables Box2D
     private World world;
@@ -67,12 +70,10 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         crearPiso();
         crearPlataformas();
         
-        // Crear personaje
-        crearPersonaje();
-        crearPersonaje();
+        crearPersonajes();
         crearCajaSensor();
         //world.setContactListener(new Colision());
-        world.setContactListener(new HitBox(10));
+        world.setContactListener(new HitBox());
 
 
         
@@ -92,6 +93,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         	}
        table.add(labelVidaJugador);
         }
+        
+        this.fondo = new FondoPrueba();
+        
         
     }
     
@@ -130,7 +134,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
         // Definir forma (una caja de 10 bloques de ancho y 1 de alto)
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(this.ANCHO , 64 * PIXELS_TO_METERS);
+        shape.setAsBox(this.ANCHO , 128 * PIXELS_TO_METERS);
         
         // Definir propiedades físicas
         FixtureDef fixtureDef = new FixtureDef();
@@ -178,9 +182,11 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         shape.dispose();
     }
     
-    private void crearPersonaje() {
+    private void crearPersonajes() {
         Personaje heroe = new Personaje(world, this, this);
+        Jefe jefe = new Jefe(world,this,this);
         escena.addActor(heroe);
+        escena.addActor(jefe);
     }
     
 
@@ -229,15 +235,13 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
         // Actualizar escena
         escena.act(delta);
-        
-        // Dibujar
+
         batch.begin();
-        // Aquí dibujarías tus bloques usando sus posiciones físicas
+        //this.fondo.render(batch, delta, ALTO, 224*2);
         batch.end();
         
         escena.draw();
         
-        // Dibujar debug de Box2D (opcional, para desarrollo)
         debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
     }
 
@@ -286,14 +290,14 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	}
 
 	@Override
-	public void onPersonajeMuerto(Personaje personaje) {
+	public void onPersonajeMuerto(PersonajeBase personaje) {
 		if(personaje.getBody()!= null) {
 		this.cuerposAEliminar.add(personaje.getBody());
 		}
 	}
 
 	@Override
-	public void onCambioVida(Personaje personaje) {
+	public void onCambioVida(PersonajeBase personaje) {
 		this.labelVidaJugador.setText(personaje.getVida());
 		
 	}

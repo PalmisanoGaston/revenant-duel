@@ -1,9 +1,10 @@
 package Interfaces;
 
 import personajes.Personaje;
+import personajes.PersonajeBase;
 
 public interface CambioVidaEventListener {
 
-	void onCambioVida(Personaje personaje);
+	void onCambioVida(PersonajeBase personajeBase);
 	
 }

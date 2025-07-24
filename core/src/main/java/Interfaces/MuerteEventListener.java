@@ -1,8 +1,9 @@
 package Interfaces;
 
 import personajes.Personaje;
+import personajes.PersonajeBase;
 
 public interface MuerteEventListener {
-    void onPersonajeMuerto(Personaje personaje);
+    void onPersonajeMuerto(PersonajeBase personajeBase);
 
 }
