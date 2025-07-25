@@ -1,6 +1,7 @@
 // PersonajeBase.java
 package personajes;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -26,21 +27,21 @@ public abstract class PersonajeBase extends Actor {
     protected boolean lado = true; // true = derecha, false = izquierda
     protected String nombre;
     protected int vida;
+    private int vidaMaxima;
     protected MovimientoBase movimientoActual;
     protected Map<String, MovimientoBase> movimientos = new HashMap<>();
-    protected AnimacionesPersonaje animacionPersonaje;
+    protected AnimacionBase animacionPersonaje;
     protected MuerteEventListener muerteEventListener;
     protected CambioVidaEventListener cambioVidaEventListener;
     protected Animation<TextureRegion> animacionActual;
 
-    public PersonajeBase(World world, String nombre, int vida, 
-                        MuerteEventListener muerteListener, 
-                        CambioVidaEventListener vidaListener) {
+    public PersonajeBase(World world, String nombre, int vida,  MuerteEventListener muerteListener,   CambioVidaEventListener vidaListener, AnimacionBase animacion) {
         this.nombre = nombre;
         this.vida = vida;
+        this.vidaMaxima = vida;
         this.muerteEventListener = muerteListener;
         this.cambioVidaEventListener = vidaListener;
-        this.animacionPersonaje = new AnimacionesPersonaje();
+        this.animacionPersonaje = animacion;
         
         // Configuración física común
         BodyDef bodyDef = new BodyDef();
@@ -52,8 +53,8 @@ public abstract class PersonajeBase extends Actor {
         
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(
-            this.animacionPersonaje.getFRAME_WIDTH()/2 * Arena.PIXELS_TO_METERS,
-            this.animacionPersonaje.getFRAME_HEIGTH()/2 * Arena.PIXELS_TO_METERS
+            this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime).getRegionWidth()/2 * Arena.PIXELS_TO_METERS,
+            this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime).getRegionHeight()/2 * Arena.PIXELS_TO_METERS
         );
         
         FixtureDef fixtureDef = new FixtureDef();
@@ -65,16 +66,34 @@ public abstract class PersonajeBase extends Actor {
         body.createFixture(fixtureDef);
         shape.dispose();
         
-        setSize(animacionPersonaje.getFRAME_WIDTH(), animacionPersonaje.getFRAME_HEIGTH());
+        setSize(this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime).getRegionWidth(),this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime).getRegionHeight());
         body.setUserData(this);
+        this.body.setSleepingAllowed(false);
+
     }
 
-    @Override
+
+	public int getVidaMaxima() {
+		return vidaMaxima;
+	}
+
+
+	@Override
     public abstract void act(float delta);
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         TextureRegion currentFrame = animacionActual.getKeyFrame(stateTime, true);
+        Color color = getColor();
+        batch.setColor(color);
+        // Obtener dimensiones actuales del frame
+        float frameWidth = currentFrame.getRegionWidth();
+        float frameHeight = currentFrame.getRegionHeight();
+        
+        // Actualizar tamaño del actor si es diferente
+        if (getWidth() != frameWidth || getHeight() != frameHeight) {
+            setSize(frameWidth, frameHeight);
+        }
         
         if (!lado) {
             currentFrame.flip(true, false);
@@ -82,15 +101,16 @@ public abstract class PersonajeBase extends Actor {
         
         batch.draw(
             currentFrame,
-            body.getPosition().x / Arena.PIXELS_TO_METERS - getWidth()/2,
-            body.getPosition().y / Arena.PIXELS_TO_METERS - getHeight()/2,
-            getWidth(),
-            getHeight()
+            body.getPosition().x / Arena.PIXELS_TO_METERS - frameWidth/2,
+            body.getPosition().y / Arena.PIXELS_TO_METERS - frameHeight/2,
+            frameWidth,
+            frameHeight
         );
         
         if (!lado) {
             currentFrame.flip(true, false);
         }
+        batch.setColor(Color.WHITE);
     }
 
     public void recibirDaño(final int DAÑO) {
@@ -105,9 +125,23 @@ public abstract class PersonajeBase extends Actor {
         }
     }
 
-    // Getters comunes
-    public Body getBody() { return body; }
-    public int getVida() { return this.vida; }
-    public String getNombre() { return this.nombre; }
-    public boolean getLado() { return this.lado; }
+    public Body getBody() {
+    	return body; 
+    	}
+    
+    public int getVida() { 
+    	return this.vida; 
+    	}
+
+    public void setVida(int vida) {
+		this.vida = vida;
+	}
+    
+    public String getNombre() {
+    	return this.nombre; 
+    }
+    
+    public boolean getLado() {
+    	return this.lado;
+    	}
 }

@@ -3,13 +3,16 @@ package utiles;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import personajes.Personaje;
+import personajes.PersonajeBase;
 
 public class HitBox extends Colision {
     
     @Override
     public void beginContact(Contact contact) {
+    	
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
+
 
 
         if (esHitboxAtaque(fixtureA) && esPersonaje(fixtureB)) {
@@ -28,7 +31,7 @@ public class HitBox extends Colision {
     }
 
     private boolean esPersonaje(Fixture fixture) {
-        return fixture.getBody().getUserData() instanceof Personaje;
+        return fixture.getBody().getUserData() instanceof PersonajeBase;
     }
 
     private void aplicarDaño(Fixture hitbox, Fixture personaje) {
@@ -38,7 +41,7 @@ public class HitBox extends Colision {
         }
         
         HitboxInfo hitboxData = (HitboxInfo)hitbox.getUserData();
-        Personaje pj = (Personaje)personaje.getBody().getUserData();
+        PersonajeBase pj = (PersonajeBase)personaje.getBody().getUserData();
         
         pj.recibirDaño(hitboxData.getDaño());
         System.out.println("Golpe conectado,  Daño: " + hitboxData.getDaño());

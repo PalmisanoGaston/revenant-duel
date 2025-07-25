@@ -8,26 +8,35 @@ import com.badlogic.gdx.physics.box2d.World;
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
 import io.github.revenantduel.Arena;
+import mejoras.MejoraVida;
 import movimientos.AtaqueBasico;
 import movimientos.Backdash;
 import movimientos.Dash;
 import movimientos.Salto;
 
 public class Personaje extends PersonajeBase {
+	
+	private MejoraVida nivelVida;
+	
+	
+	
 
-    public Personaje(World world, MuerteEventListener muerteListener,  CambioVidaEventListener vidaListener) {
-        super(world, "Jugador", 100, muerteListener, vidaListener);
+    public Personaje(World world, MuerteEventListener muerteListener,  CambioVidaEventListener vidaListener, MejoraVida nivelVida) {
+        super(world, "Jugador", 100 * nivelVida.getMultiplicador()   , muerteListener, vidaListener, new AnimacionesPersonaje());
         
-  
+        
         movimientos.put("Dash", new Dash(body, lado));
-        movimientos.put("Salto", new Salto(body));
+        movimientos.put("Salto", new Salto(body,1));
         movimientos.put("Backdash", new Backdash(body, lado));
         movimientos.put("Ataque", new AtaqueBasico(body, lado));
         
         this.animacionActual = animacionPersonaje.getIdleAnimation();
+        this.nivelVida = nivelVida;
     }
 
-    @Override
+
+
+	@Override
     public void act(float delta) {
         super.stateTime += delta;
         
@@ -95,4 +104,17 @@ public class Personaje extends PersonajeBase {
             (body.getPosition().y / Arena.PIXELS_TO_METERS) - getHeight()/2
         );
     }
+	
+    public MejoraVida getNivelVida() {
+		return nivelVida;
+	}
+    
+    public void mejorarVida() {
+        int nivelActual = MejoraVida.buscarNivel(this.nivelVida);
+        if (nivelActual < MejoraVida.values().length - 1) {
+            this.nivelVida = MejoraVida.values()[nivelActual + 1];
+        }
+    }
+    
+    
 }

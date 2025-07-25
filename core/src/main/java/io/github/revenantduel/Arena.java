@@ -22,8 +22,12 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
+import gui.InfoPersonaje;
+import gui.MenuHeroe;
+import gui.ScreenPerder;
 import lugares.Fondo;
 import lugares.FondoPrueba;
+import mejoras.MejoraVida;
 import personajes.Jefe;
 import personajes.Personaje;
 import personajes.PersonajeBase;
@@ -34,15 +38,11 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     private Stage escena;
     private SpriteBatch batch;
     private Texture texturaBloque;
-    private Skin skinUi;
-    private Label labelVidaJugador;
     private Fondo fondo;
     
-    // Variables Box2D
     private World world;
     private Box2DDebugRenderer debugRenderer;
     
-    // Constantes de conversión
     public static final float PIXELS_TO_METERS = 1/100f; // 100 píxeles = 1 metro
     
     private static final int ANCHO = 800;
@@ -51,28 +51,65 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     
     private ArrayList<Body> cuerposAEliminar = new ArrayList<>();
 
+    private Personaje heroe;
+    
+    private int intentosHeroe;
+    private Jefe jefe;
+    
+    
+    private InfoPersonaje uiHeroe;
+    private InfoPersonaje uiJefe;
+    
     
     public Arena(Principal juego, Skin skin) {
         this.juego = juego;
         this.batch = new SpriteBatch();
         this.texturaBloque = new Texture("tileset.png");
-        this.skinUi = skin;
+        this.intentosHeroe = 5;
         
-        
-        // Crear mundo Box2D con gravedad (en este caso, -10 en el eje Y)
         world = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
         
-        // Crear escena
         this.escena = new Stage(new ExtendViewport(ANCHO, ALTO));
         
-        // Crear piso y plataformas
         crearPiso();
-        crearPlataformas();
+        //crearPlataformas();
         
-        crearPersonajes();
-        crearCajaSensor();
-        //world.setContactListener(new Colision());
+       this.heroe = crearHeroe();
+       this.jefe = crearJefe();
+        construirArena(skin);
+        
+        
+    }
+
+    
+    public Arena(Principal juego, Skin skin, MejoraVida mejoraVida, int vidaJefe, int intentosRestantes) {
+        this.juego = juego;
+        this.batch = new SpriteBatch();
+        this.texturaBloque = new Texture("tileset.png");
+        this.intentosHeroe = intentosRestantes;
+        
+        
+        world = new World(new Vector2(0, -10), true);
+        debugRenderer = new Box2DDebugRenderer();
+        
+        this.escena = new Stage(new ExtendViewport(ANCHO, ALTO));
+        
+        crearPiso();
+        //crearPlataformas();
+        
+       this.heroe = crearHeroe(mejoraVida);
+       this.jefe = crearJefe(vidaJefe);
+        construirArena(skin);
+        
+        
+    }
+
+    
+
+
+	private void construirArena(Skin skin) {
+		crearCajaSensor();
         world.setContactListener(new HitBox());
 
 
@@ -80,24 +117,22 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         crearLimitesMapa(); 
         
         Table table = new Table();
+        table.top();
         table.setFillParent(true);
         escena.addActor(table);
-       Array<Actor> actores =  escena.getActors();
         
-        for( Actor actor: actores) {
-        	
-        	if(actor  instanceof Personaje) {
-        	int vida = ((Personaje) actor).getVida();
-        	
-        this.labelVidaJugador = new Label(Integer.toString(vida), skinUi);
-        	}
-       table.add(labelVidaJugador);
-        }
+        this.uiHeroe = new InfoPersonaje(this.heroe.getNombre(), this.heroe.getVidaMaxima(), new Texture("placeholder.png"), skin, true);
+        this.uiJefe =   new InfoPersonaje(this.jefe.getNombre(), this.jefe.getVidaMaxima(), new Texture("placeholder.png"), skin, false);
+
+        table.add(uiHeroe).pad(100).top().left();
+     table.add().expandX(); // Espacio flexible en el centro
+     table.add(uiJefe).pad(100).top().right();
+        
         
         this.fondo = new FondoPrueba();
+	}
         
-        
-    }
+    
     
     private void crearLimitesMapa() {
         BodyDef bodyDef = new BodyDef();
@@ -182,11 +217,30 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         shape.dispose();
     }
     
-    private void crearPersonajes() {
-        Personaje heroe = new Personaje(world, this, this);
-        Jefe jefe = new Jefe(world,this,this);
+    private Personaje crearHeroe(MejoraVida mejora) {
+        Personaje heroe = new Personaje(world, this, this, mejora);
         escena.addActor(heroe);
+        return heroe;
+    }
+    
+    private Personaje crearHeroe() {
+        Personaje heroe = new Personaje(world, this, this, MejoraVida.NIVEL_1);
+        escena.addActor(heroe);
+        return heroe;
+    }
+    
+    private Jefe crearJefe() {
+        Jefe jefe = new Jefe(world,this,this);
         escena.addActor(jefe);
+        return jefe;
+    }
+    
+    
+    private Jefe crearJefe(int vidaRestante) {
+        Jefe jefe = new Jefe(world,this,this);
+        escena.addActor(jefe);
+        jefe.setVida(vidaRestante);
+        return jefe;
     }
     
 
@@ -237,12 +291,12 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         escena.act(delta);
 
         batch.begin();
-        //this.fondo.render(batch, delta, ALTO, 224*2);
+        this.fondo.render(batch, delta, ALTO, 224*2);
         batch.end();
         
         escena.draw();
         
-        debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
+        //debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
     }
 
     @Override
@@ -260,6 +314,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	@Override
 	public void resize(int width, int height) {
 		escena.getViewport().update(width, height, true);
+	    batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+
 		
 	}
 	
@@ -294,11 +350,31 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 		if(personaje.getBody()!= null) {
 		this.cuerposAEliminar.add(personaje.getBody());
 		}
+		
+		if(personaje == this.jefe) {
+			this.juego.setScreen(new ScreenPerder(this.juego,false));
+
+		}
+		
+		if(personaje == this.heroe && this.intentosHeroe>0) {
+			this.intentosHeroe--;
+			this.juego.setScreen(new MenuHeroe(juego,this.heroe,this.jefe,this.intentosHeroe));
+		}
+		else {
+			this.juego.setScreen(new ScreenPerder(this.juego,true));
+		}
 	}
 
 	@Override
 	public void onCambioVida(PersonajeBase personaje) {
-		this.labelVidaJugador.setText(personaje.getVida());
-		
+	    if (personaje == this.heroe) {
+	        uiHeroe.modificarInfo(heroe.getVida());
+	    } else if (personaje == this.jefe) {
+	    	if(this.jefe.getVida()<(this.jefe.getVidaMaxima()/2)) {
+	    		this.jefe.modoBestia();
+	    	}
+	    	
+	        uiJefe.modificarInfo(jefe.getVida());
+	    }
 	}
 }

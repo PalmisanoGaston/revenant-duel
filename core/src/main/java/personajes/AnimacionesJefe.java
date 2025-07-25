@@ -1,0 +1,20 @@
+package personajes;
+
+import com.badlogic.gdx.graphics.Texture;
+
+public class AnimacionesJefe extends AnimacionBase {
+    
+    public AnimacionesJefe() {
+
+
+        Texture idleSheet = new Texture("personajes/bladeIdle.png");
+        Texture runSheet = new Texture("personajes/bladeWalk.png");
+        Texture jumpSheet = new Texture("personajes/bladeIdle.png");
+        Texture sheetAtaque = new Texture("personajes/bladeAttack.png");
+        
+        idleAnimation = createAnimationFromSheet(idleSheet, 0.1f,179,186);
+        jumpAnimation = createAnimationFromSheet(jumpSheet, 0.2f,179,186);
+        runAnimation = createAnimationFromSheet(runSheet, 0.1f,185,172);
+        animacionAtaque = createAnimationFromSheet(sheetAtaque,0.0183f, 397, 198);
+    }
+}
