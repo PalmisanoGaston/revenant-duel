@@ -39,7 +39,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     private SpriteBatch batch;
     private Texture texturaBloque;
     private Fondo fondo;
-    
+    private ExtendViewport viewport;
     private World world;
     private Box2DDebugRenderer debugRenderer;
     
@@ -69,8 +69,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
         world = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
-        
-        this.escena = new Stage(new ExtendViewport(ANCHO, ALTO));
+        this.viewport = new ExtendViewport(ANCHO, ALTO);
+        this.escena = new Stage(viewport);
+
         
         crearPiso();
         //crearPlataformas();
@@ -290,8 +291,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         // Actualizar escena
         escena.act(delta);
 
+        batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
-        this.fondo.render(batch, delta, ALTO, 224*2);
+        this.fondo.render(batch, delta, viewport.getWorldWidth(), viewport.getWorldHeight());
         batch.end();
         
         escena.draw();
@@ -314,7 +316,6 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	@Override
 	public void resize(int width, int height) {
 		escena.getViewport().update(width, height, true);
-	    batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
 
 		
 	}

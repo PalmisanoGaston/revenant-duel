@@ -57,7 +57,7 @@ public class MenuHeroe implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
-                juego.setScreen(new Arena(juego, fuenteTextos,heroe.getNivelVida(),jefe.getVida(),intentos));
+                juego.setScreen(new Arena(juego, fuenteTextos));
             }
         });
         
@@ -84,7 +84,6 @@ public class MenuHeroe implements Screen {
 	
 	@Override
 	public void resize(int width, int height) {
-		escena.getViewport().update(width, height, true);
 		
 	}
 	

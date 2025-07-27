@@ -39,12 +39,13 @@ public abstract class Fondo {
         return new Animation<TextureRegion>(frameDuration, frames, Animation.PlayMode.LOOP);
     }
 	
-    public void render(SpriteBatch batch, float deltaTime, int width, int height) {
-        stateTime += deltaTime; 
+	  public void render(SpriteBatch batch, float delta, float width, float height) { 
+        stateTime += delta; 
         TextureRegion currentFrame = animacion.getKeyFrame(stateTime);
         batch.draw(currentFrame, 0, 0, width, height); 
     }
-	
+    
+
 	
 	public Animation<TextureRegion> getAnimacion() {
 		return this.animacion;
