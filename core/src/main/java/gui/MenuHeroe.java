@@ -60,7 +60,7 @@ public class MenuHeroe implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
-                juego.setScreen(new Arena(juego, fuenteTextos));
+                juego.setScreen(new Arena(juego, fuenteTextos,heroe.getNivelVida(),jefe.getVida(),intentos));
             }
         });
         
