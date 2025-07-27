@@ -24,7 +24,7 @@ public class MenuHeroe implements Screen {
 	private Stage escena;
 	private Skin fuenteTextos;
 	private Personaje heroe;
-	
+	private int mejoras_permitidas = 1; 
 	
 	
     public MenuHeroe(Principal juego, Personaje heroe, Jefe jefe, int intentos) {
@@ -47,8 +47,11 @@ public class MenuHeroe implements Screen {
         botonMejoraVida.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                heroe.mejorarVida();
-                botonMejoraVida.setText("Mejorar Vida (" + descripcionMejoraVida() + ")");
+            	if(mejoras_permitidas > 0) {
+            		heroe.mejorarVida();
+                    botonMejoraVida.setText("Mejorar Vida (" + descripcionMejoraVida() + ")");
+                    mejoras_permitidas--;
+            	}
             }
         });
         
