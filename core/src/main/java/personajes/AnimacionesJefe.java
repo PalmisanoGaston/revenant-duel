@@ -7,10 +7,10 @@ public class AnimacionesJefe extends AnimacionBase {
     public AnimacionesJefe() {
 
 
-        Texture idleSheet = new Texture("personajes/bladeIdle.png");
-        Texture runSheet = new Texture("personajes/bladeWalk.png");
-        Texture jumpSheet = new Texture("personajes/bladeIdle.png");
-        Texture sheetAtaque = new Texture("personajes/bladeAttack.png");
+        Texture idleSheet = new Texture("jefe/bladeIdle.png");
+        Texture runSheet = new Texture("jefe/bladeWalk.png");
+        Texture jumpSheet = new Texture("jefe/bladeIdle.png");
+        Texture sheetAtaque = new Texture("jefe/bladeAttack.png");
         
         idleAnimation = createAnimationFromSheet(idleSheet, 0.1f,179,186);
         jumpAnimation = createAnimationFromSheet(jumpSheet, 0.2f,179,186);

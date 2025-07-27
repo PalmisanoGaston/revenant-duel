@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
 import io.github.revenantduel.Arena;
+import movimientos.Morir;
 import movimientos.MovimientoBase;
 
 import java.util.HashMap;
@@ -118,10 +119,11 @@ public abstract class PersonajeBase extends Actor {
         this.cambioVidaEventListener.onCambioVida(this);
         if(this.vida <= 0) {
             this.vida = 0;
-            if(this.muerteEventListener != null) {
-                this.muerteEventListener.onPersonajeMuerto(this);
+            
+        	this.movimientoActual = new Morir(this);
+            if(this.animacionPersonaje.getAnimacionMuerte() != null) {
+            	this.animacionActual = this.animacionPersonaje.getAnimacionMuerte();
             }
-            this.remove();
         }
     }
 
@@ -144,4 +146,12 @@ public abstract class PersonajeBase extends Actor {
     public boolean getLado() {
     	return this.lado;
     	}
+    
+    public AnimacionBase getAnimacionPersonaje() {
+    	return this.animacionPersonaje;
+    }
+    
+    public MuerteEventListener getMuerteEventListener() {
+    	return this.muerteEventListener;
+    }
 }

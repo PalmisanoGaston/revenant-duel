@@ -93,9 +93,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
         world = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
-        
-        this.escena = new Stage(new ExtendViewport(ANCHO, ALTO));
-        
+        this.viewport = new ExtendViewport(ANCHO, ALTO);
+        this.escena = new Stage(viewport);
+
         crearPiso();
         //crearPlataformas();
         
@@ -351,7 +351,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 		if(personaje.getBody()!= null) {
 		this.cuerposAEliminar.add(personaje.getBody());
 		}
-		
+
 		if(personaje == this.jefe) {
 			this.juego.setScreen(new ScreenPerder(this.juego,false));
 

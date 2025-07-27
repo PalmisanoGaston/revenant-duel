@@ -55,7 +55,7 @@ public class Personaje extends PersonajeBase {
                     this.animacionActual = this.animacionPersonaje.getRunAnimation();    
                 }
             } else {
-                if(this.animacionActual != this.animacionPersonaje.getIdleAnimation()) {
+                if(this.animacionActual != this.animacionPersonaje.getIdleAnimation() && this.vida > 0) {
                     this.animacionActual = this.animacionPersonaje.getIdleAnimation();    
                 }
             }
@@ -90,6 +90,7 @@ public class Personaje extends PersonajeBase {
             ataque.setLadoDerecho(lado);
             ataque.reiniciar();
             movimientoActual = ataque;
+            this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
         }
         
         if (movimientoActual != null && !movimientoActual.estaCompletado()) {

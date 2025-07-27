@@ -12,6 +12,7 @@ public abstract class AnimacionBase {
     protected Animation<TextureRegion> runAnimation;
     protected Animation<TextureRegion> jumpAnimation;
     protected Animation<TextureRegion> animacionAtaque;
+    protected Animation<TextureRegion> animacionMuerte;
 
 
     protected Animation<TextureRegion> createAnimationFromSheet(Texture sheet, float frameDuration, int ancho, int alto) {
@@ -46,7 +47,11 @@ public abstract class AnimacionBase {
         return this.idleAnimation;
     }
 
-    public void setIdleAnimation(Animation<TextureRegion> idleAnimation) {
+    public Animation<TextureRegion> getAnimacionMuerte() {
+		return animacionMuerte;
+	}
+
+	public void setIdleAnimation(Animation<TextureRegion> idleAnimation) {
         this.idleAnimation = idleAnimation;
     }
 

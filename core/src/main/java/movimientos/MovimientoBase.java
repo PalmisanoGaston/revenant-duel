@@ -21,6 +21,7 @@ public abstract class MovimientoBase {
         frameActual++;
         if (frameActual >= framesInicio + framesActivos + framesRecuperacion) {
             movimientoCompletado = true;
+            finDeMovimiento();
         }
     }
     
@@ -38,6 +39,10 @@ public abstract class MovimientoBase {
     
     public boolean estaCompletado() {
         return movimientoCompletado;
+    }
+    
+    public void finDeMovimiento() {
+    	
     }
     
     public void reiniciar() {
