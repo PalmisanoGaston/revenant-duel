@@ -43,6 +43,11 @@ public class HitBox extends Colision {
         HitboxInfo hitboxData = (HitboxInfo)hitbox.getUserData();
         PersonajeBase pj = (PersonajeBase)personaje.getBody().getUserData();
         
+        if (pj.esInvulnerable()) {
+            System.out.println("Invulnerable");
+            return;
+        }
+        
         pj.recibirDaño(hitboxData.getDaño());
         System.out.println("Golpe conectado,  Daño: " + hitboxData.getDaño());
     }

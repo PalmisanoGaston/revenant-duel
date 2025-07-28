@@ -114,6 +114,12 @@ public abstract class PersonajeBase extends Actor {
         batch.setColor(Color.WHITE);
     }
 
+    
+    public boolean esInvulnerable() {
+        return movimientoActual != null &&  (movimientoActual.getNombre().equals("Dash") || movimientoActual.getNombre().equals("Backdash")) && movimientoActual.estaEnFramesActivos();
+    }
+    
+    
     public void recibirDaño(final int DAÑO) {
         this.vida -= DAÑO;
         this.cambioVidaEventListener.onCambioVida(this);

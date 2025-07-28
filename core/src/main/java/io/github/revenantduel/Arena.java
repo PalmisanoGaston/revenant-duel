@@ -4,6 +4,7 @@ package io.github.revenantduel;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,6 +24,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
 import gui.InfoPersonaje;
+import gui.MenuArena;
 import gui.MenuHeroe;
 import gui.ScreenPerder;
 import lugares.Fondo;
@@ -45,6 +47,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     
     public static final float PIXELS_TO_METERS = 1/100f; // 100 píxeles = 1 metro
     
+    private Skin skin;
     private static final int ANCHO = 800;
     private static final int ALTO = 800;    
     
@@ -59,6 +62,10 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     
     private InfoPersonaje uiHeroe;
     private InfoPersonaje uiJefe;
+    
+    private MenuArena menuArena;
+    private boolean menuVisible = false;
+
     
     
     public Arena(Principal juego, Skin skin) {
@@ -78,6 +85,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
        this.heroe = crearHeroe();
        this.jefe = crearJefe();
+       this.skin = skin;
         construirArena(skin);
         
         
@@ -99,7 +107,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
         crearPiso();
         //crearPlataformas();
-        
+        this.skin = skin;
+
        this.heroe = crearHeroe(mejoraVida);
        this.jefe = crearJefe(vidaJefe);
         construirArena(skin);
@@ -272,7 +281,25 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
     @Override
     public void render(float delta) {
-    	
+    	 if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+    	        menuVisible = !menuVisible;
+    	        
+    	        if(menuVisible) {
+    	            if(menuArena == null) {
+    	                menuArena = new MenuArena(juego,this.skin );
+    	            }
+    	            this.escena.addActor(menuArena);
+    	            float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2+50;
+    	            float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
+    	            menuArena.setPosition(centerX, centerY);
+
+    	            Gdx.input.setInputProcessor(escena); // Asegurar que el menú reciba input
+    	        } else {
+    	            if(menuArena != null) {
+    	                menuArena.remove();
+    	            }
+    	        }
+    	    }
     	//Hay que hacerlo de esta manera o si no explota
     	  if(!world.isLocked() && !cuerposAEliminar.isEmpty()) {
               for(Body body : cuerposAEliminar) {
@@ -283,7 +310,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
               cuerposAEliminar.clear();
           }
         // Actualizar el mundo físico
-        world.step(1/60f, 6, 2);
+    	        world.step(1/60f, 6, 2);
+
         
         // Limpiar pantalla
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -304,6 +332,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
     @Override
     public void dispose() {
+        if(menuArena != null) {
+            menuArena.remove();
+        }
         world.dispose();
         debugRenderer.dispose();
         batch.dispose();
@@ -317,7 +348,11 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	@Override
 	public void resize(int width, int height) {
 		escena.getViewport().update(width, height, true);
-
+		 if (menuVisible && menuArena != null) {
+		        float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2+50;
+		        float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
+		        menuArena.setPosition(centerX, centerY);
+		    }
 		
 	}
 	
