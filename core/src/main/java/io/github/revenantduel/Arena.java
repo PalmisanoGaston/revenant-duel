@@ -352,7 +352,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 		if(personaje.getBody()!= null) {
 		this.cuerposAEliminar.add(personaje.getBody());
 		}
-		
+
 		if(personaje == this.jefe) {
 			this.juego.setScreen(new ScreenPerder(this.juego,false));
 
