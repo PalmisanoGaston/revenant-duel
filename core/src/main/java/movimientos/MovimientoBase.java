@@ -1,5 +1,7 @@
 package movimientos;
 
+import com.badlogic.gdx.audio.Sound;
+
 public abstract class MovimientoBase {
 	private String nombre;
     protected int framesInicio;

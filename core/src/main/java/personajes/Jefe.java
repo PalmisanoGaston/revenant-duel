@@ -23,6 +23,7 @@ public class Jefe extends PersonajeBase {
 	private int fuerzaSaltoBestia = 20;
 
 	private Color colorBestia = new Color(1f, 0.5f, 0.5f, 1f);
+	private SonidosJefe sonidos = new SonidosJefe();
 	
 
     public Jefe(World world, MuerteEventListener muerteListener,  CambioVidaEventListener vidaListener) {
@@ -74,6 +75,7 @@ public class Jefe extends PersonajeBase {
                 salto.reiniciar();
                 this.movimientoActual = salto;
                 this.animacionActual = this.animacionPersonaje.getJumpAnimation();
+                this.sonidos.playSalto();
             }
         }
         
@@ -82,6 +84,7 @@ public class Jefe extends PersonajeBase {
             dash.setLadoDerecho(lado);
             dash.reiniciar();
             movimientoActual = dash;
+            this.sonidos.playDash();
         }
         
         if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_RIGHT) && Math.abs(body.getLinearVelocity().y) < 0.1f) {
@@ -89,6 +92,7 @@ public class Jefe extends PersonajeBase {
             backdash.setLadoDerecho(lado);
             backdash.reiniciar();
             movimientoActual = backdash;
+            this.sonidos.playDash();
         }
         
         if (Gdx.input.isKeyJustPressed(Input.Keys.M) && movimientoActual == null && Math.abs(body.getLinearVelocity().y) < 0.1f) {
@@ -98,7 +102,7 @@ public class Jefe extends PersonajeBase {
             movimientoActual = ataque;
             this.stateTime = 0;
             this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
-
+            this.sonidos.playGolpe();
         }
         
         if (movimientoActual != null && !movimientoActual.estaCompletado()) {

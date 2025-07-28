@@ -17,7 +17,7 @@ import movimientos.Salto;
 public class Personaje extends PersonajeBase {
 	
 	private MejoraVida nivelVida;
-	
+	private SonidosPersonaje sonidos = new SonidosPersonaje();
 	
 	
 
@@ -68,6 +68,7 @@ public class Personaje extends PersonajeBase {
                 salto.reiniciar();
                 this.movimientoActual = salto;
                 this.animacionActual = this.animacionPersonaje.getJumpAnimation();
+                this.sonidos.playSalto();
             }
         }
 
@@ -76,6 +77,7 @@ public class Personaje extends PersonajeBase {
             dash.setLadoDerecho(lado);
             dash.reiniciar();
             movimientoActual = dash;
+            this.sonidos.playDash();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT) && Math.abs(body.getLinearVelocity().y) < 0.1f) {
@@ -83,6 +85,7 @@ public class Personaje extends PersonajeBase {
             backdash.setLadoDerecho(lado);
             backdash.reiniciar();
             movimientoActual = backdash;
+            this.sonidos.playDash();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.J) && movimientoActual == null && Math.abs(body.getLinearVelocity().y) < 0.1f) {
@@ -91,6 +94,7 @@ public class Personaje extends PersonajeBase {
             ataque.reiniciar();
             movimientoActual = ataque;
             this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
+            this.sonidos.playGolpe();
         }
         
         if (movimientoActual != null && !movimientoActual.estaCompletado()) {
