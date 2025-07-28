@@ -13,6 +13,7 @@ import movimientos.AtaqueJefe;
 import movimientos.Backdash;
 import movimientos.Dash;
 import movimientos.Salto;
+import sonido.SonidosJefe;
 
 public class Jefe extends PersonajeBase {
 	
