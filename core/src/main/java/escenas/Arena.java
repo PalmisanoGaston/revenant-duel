@@ -219,7 +219,6 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     	         float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2+50;
     	         float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
     	         menuArena.setPosition(centerX, centerY);
-
     	         Gdx.input.setInputProcessor(escena); 
     	     } else {
     	    	 if(menuArena != null) {
@@ -236,6 +235,22 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
                  }
              }
              cuerposAEliminar.clear();
+
+    	            Gdx.input.setInputProcessor(escena); // Asegurar que el menú reciba input
+    	        } else {
+    	            if(menuArena != null) {
+    	                menuArena.remove();
+    	            }
+    	        }
+    	 
+    	//Hay que hacerlo de esta manera o si explota
+    	  if(!world.isLocked() && !cuerposAEliminar.isEmpty()) {
+              for(Body body : cuerposAEliminar) {
+                  if(body != null) {
+                      world.destroyBody(body);
+                  }
+              }
+              cuerposAEliminar.clear();
           }
     	 
     	 // Actualizar el mundo físico
@@ -258,7 +273,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
     	 // Mostrar hitboxes
         //debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
-    }
+}
 
     @Override
     public void dispose() {
