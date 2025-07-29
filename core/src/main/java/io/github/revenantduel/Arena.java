@@ -300,7 +300,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     	            }
     	        }
     	    }
-    	//Hay que hacerlo de esta manera o si no explota
+    	//Hay que hacerlo de esta manera o si explota
     	  if(!world.isLocked() && !cuerposAEliminar.isEmpty()) {
               for(Body body : cuerposAEliminar) {
                   if(body != null) {
