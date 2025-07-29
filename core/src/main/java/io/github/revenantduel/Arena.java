@@ -289,9 +289,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     	                menuArena = new MenuArena(juego,this.skin );
     	            }
     	            this.escena.addActor(menuArena);
-    	            float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2+50;
-    	            float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
-    	            menuArena.setPosition(centerX, centerY);
+    	            float centroX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2+50;
+    	            float centroY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
+    	            menuArena.setPosition(centroX, centroY);
 
     	            Gdx.input.setInputProcessor(escena); // Asegurar que el menú reciba input
     	        } else {
