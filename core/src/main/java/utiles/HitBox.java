@@ -1,19 +1,20 @@
 package utiles;
 
 import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import personajes.Personaje;
+import com.badlogic.gdx.physics.box2d.Manifold;
+
 import personajes.PersonajeBase;
 
-public class HitBox extends Colision {
+public class HitBox implements ContactListener {
     
     @Override
     public void beginContact(Contact contact) {
     	
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
-
-
 
         if (esHitboxAtaque(fixtureA) && esPersonaje(fixtureB)) {
             aplicarDaño(fixtureA, fixtureB);
@@ -51,4 +52,13 @@ public class HitBox extends Colision {
         pj.recibirDaño(hitboxData.getDaño());
         System.out.println("Golpe conectado,  Daño: " + hitboxData.getDaño());
     }
+
+	@Override
+	public void endContact(Contact contact) {}
+
+	@Override
+	public void preSolve(Contact contact, Manifold oldManifold) {}
+
+	@Override
+	public void postSolve(Contact contact, ContactImpulse impulse) {}
 }

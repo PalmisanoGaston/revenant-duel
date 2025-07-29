@@ -1,4 +1,4 @@
-package sonido;
+package sonidos;
 
 import com.badlogic.gdx.audio.Sound;
 

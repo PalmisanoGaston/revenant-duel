@@ -16,7 +16,4 @@ public class HitboxInfo {
 		public int getDaño() {
 			return daño;
 		}
-	
-	
-	
 }

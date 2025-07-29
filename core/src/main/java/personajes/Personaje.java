@@ -7,25 +7,22 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
-import io.github.revenantduel.Arena;
+import escenas.Arena;
 import mejoras.MejoraVida;
 import movimientos.AtaqueBasico;
 import movimientos.Backdash;
 import movimientos.Dash;
 import movimientos.Salto;
-import sonido.SonidosPersonaje;
+import sonidos.SonidosPersonaje;
 
 public class Personaje extends PersonajeBase {
 	
 	private MejoraVida nivelVida;
 	private SonidosPersonaje sonidos = new SonidosPersonaje();
 	
-	
-
     public Personaje(World world, MuerteEventListener muerteListener,  CambioVidaEventListener vidaListener, MejoraVida nivelVida) {
         super(world, "Jugador", 100 * nivelVida.getMultiplicador()   , muerteListener, vidaListener, new AnimacionesPersonaje());
-        
-        
+
         movimientos.put("Dash", new Dash(body, lado));
         movimientos.put("Salto", new Salto(body,1));
         movimientos.put("Backdash", new Backdash(body, lado));
@@ -34,8 +31,6 @@ public class Personaje extends PersonajeBase {
         this.animacionActual = animacionPersonaje.getIdleAnimation();
         this.nivelVida = nivelVida;
     }
-
-
 
 	@Override
     public void act(float delta) {
@@ -62,7 +57,6 @@ public class Personaje extends PersonajeBase {
             }
             
             body.setLinearVelocity(velocidadX, body.getLinearVelocity().y);
-            
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && (Math.abs(body.getLinearVelocity().y) < 0.1f)) {
                 Salto salto = (Salto)movimientos.get("Salto");
@@ -121,6 +115,5 @@ public class Personaje extends PersonajeBase {
             this.nivelVida = MejoraVida.values()[nivelActual + 1];
         }
     }
-    
-    
+
 }

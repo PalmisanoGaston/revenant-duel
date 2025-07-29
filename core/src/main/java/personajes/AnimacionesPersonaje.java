@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 public class AnimacionesPersonaje extends AnimacionBase {
     
     public AnimacionesPersonaje() {
-        
 
         Texture idleSheet = new Texture("heroe/idle.png");
         Texture runSheet = new Texture("heroe/run.png");

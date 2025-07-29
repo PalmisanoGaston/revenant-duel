@@ -11,9 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-import io.github.revenantduel.Menu;
-import io.github.revenantduel.Principal;
-import sonido.SonidoPersonajeBase;
+import escenas.Menu;
+import escenas.Principal;
+import sonidos.SonidoPersonajeBase;
 
 public class MenuArena extends WidgetGroup {
     

@@ -8,12 +8,12 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
-import io.github.revenantduel.Arena;
+import escenas.Arena;
 import movimientos.AtaqueJefe;
 import movimientos.Backdash;
 import movimientos.Dash;
 import movimientos.Salto;
-import sonido.SonidosJefe;
+import sonidos.SonidosJefe;
 
 public class Jefe extends PersonajeBase {
 	
@@ -24,8 +24,7 @@ public class Jefe extends PersonajeBase {
 	private int fuerzaSaltoBestia = 20;
 
 	private Color colorBestia = new Color(1f, 0.5f, 0.5f, 1f);
-	private SonidosJefe sonidos = new SonidosJefe();
-	
+	private SonidosJefe sonidos = new SonidosJefe();	
 
     public Jefe(World world, MuerteEventListener muerteListener,  CambioVidaEventListener vidaListener) {
         super(world, "Jefe", 150, muerteListener, vidaListener, new AnimacionesJefe());
@@ -45,11 +44,12 @@ public class Jefe extends PersonajeBase {
         
         float velocidadActual = modoBestia ? velocidadBestia : velocidadNormal;
         int fuerzaSaltoActual = modoBestia ? fuerzaSaltoBestia : fuerzaSaltoNormal;
-
-        
+  
         if (movimientoActual == null || movimientoActual.estaCompletado()) {
+        	
             float velocidadX = 0;
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            	
                 velocidadX = -velocidadActual;
                 this.lado = false;
                 if(this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
