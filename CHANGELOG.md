@@ -12,6 +12,8 @@
 ### Fixed
 - Corregimos un boton que estaba llamando al constructor de la clase Arena equivocado
 - No se habian guardado unas modificaciones en uno de los constructores de Arena y lo solucionamos
+- Solucionamos un problema en los condicionales para detectar quien era el ganador correctamente
+- Solucionamos una invulnerabilidad que se obtenia luego de morir si el otro te seguia pegando
 
 ## [0.0.5] - 2025-07-27
 ### Added
