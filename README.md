@@ -15,6 +15,9 @@ Videojuego en red 2D de combate asimétrico 1 vs 1. Un jugador asume el rol de u
 * [LibGDX](https://libgdx.com/) (proyecto enfocado para escritorio)
 * Gradle
 * Java
+* Box2d
+* Screen
+* Widgets (Ui)
 
 ---
 
@@ -57,8 +60,7 @@ git clone https://github.com/PalmisanoGaston/revenant-duel.git
 
 
 ## **Estado Actual**
-
-Configuración inicial de la estructura del proyecto.
+Prototipo basico del proyecto, implementacion para una sola computadora con jugadores locales, no en linea,mecanicas basicas, sonidos, animaciones implementadas y utilizando placeholders. 
 
 ## **Wiki del Proyecto**
 
