@@ -1,4 +1,4 @@
-package lugares;
+package fondos;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -6,22 +6,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
-public abstract class Fondo {
+public abstract class FondoBase {
 	
-
 	private Animation<TextureRegion> animacion;
 	private float stateTime = 0f; 
 	
-	
-	public Fondo(Texture textura,float duracionFrame, int ancho, int alto) {
+	public FondoBase(Texture textura,float duracionFrame, int ancho, int alto) {
 		
 		this.animacion = createAnimationFromSheet(textura, duracionFrame, ancho, alto);
-		
-		
-		
 	}
-	
-	
 	
 	private Animation<TextureRegion> createAnimationFromSheet(Texture sheet, float frameDuration, int ancho, int alto) {
         TextureRegion[][] tmp = TextureRegion.split(sheet,ancho , alto);
@@ -45,10 +38,7 @@ public abstract class Fondo {
         batch.draw(currentFrame, 0, 0, width, height); 
     }
     
-
-	
 	public Animation<TextureRegion> getAnimacion() {
 		return this.animacion;
 	}
-
 }

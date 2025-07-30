@@ -14,13 +14,10 @@ public class Morir extends MovimientoBase {
 	}
 
 	@Override
-	public void aplicarEfecto() {
-		
-	}
+	public void aplicarEfecto() {}
 	
 	@Override 
 	public void finDeMovimiento() {
 		this.personaje.getMuerteEventListener().onPersonajeMuerto(this.personaje);
 	}
-
 }

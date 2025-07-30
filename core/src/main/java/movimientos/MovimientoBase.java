@@ -1,7 +1,5 @@
 package movimientos;
 
-import com.badlogic.gdx.audio.Sound;
-
 public abstract class MovimientoBase {
 	private String nombre;
     protected int framesInicio;
@@ -43,9 +41,7 @@ public abstract class MovimientoBase {
         return movimientoCompletado;
     }
     
-    public void finDeMovimiento() {
-    	
-    }
+    public void finDeMovimiento() {}
     
     public void reiniciar() {
         frameActual = 0;
@@ -53,7 +49,6 @@ public abstract class MovimientoBase {
     }
     
     public abstract void aplicarEfecto();
-    
     
     public String getNombre() {
     	return this.nombre;

@@ -18,7 +18,7 @@ public class InfoPersonaje extends WidgetGroup {
     private int vidaActual;
     private int vidaMax;
     private Skin skin;
-    private boolean esHeroe; // Para determinar la alineación
+    private boolean esHeroe; 
     
     public InfoPersonaje(String nombre, int vidaMax, Texture textura, Skin skin, boolean esHeroe) {
         this.nombre = nombre;
@@ -27,17 +27,10 @@ public class InfoPersonaje extends WidgetGroup {
         this.skin = skin;
         this.esHeroe = esHeroe;
         
-        // Configurar imagen del personaje con escalado
         this.imagenPersonaje = new Image(textura);
-        imagenPersonaje.setSize(48, 48); // Tamaño más pequeño
-        
-
-        
-        
-        // Configurar label de información
+        imagenPersonaje.setSize(48, 48); 
         this.labelInfo = new Label(nombre + ": " + vidaActual + "/" + vidaMax, skin);
         
-        // Organizar elementos en una tabla para mejor control
         Table table = new Table();
         table.defaults().pad(5);
         

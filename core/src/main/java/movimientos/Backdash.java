@@ -20,6 +20,7 @@ public class Backdash extends MovimientoBase {
             float direccion = ladoDerecho ? -1 : 1;
             cuerpo.setLinearVelocity(VELOCIDAD_DASH * direccion, cuerpo.getLinearVelocity().y);
         } else if (estaEnFramesRecuperacion()) {
+        	
             // Frenar gradualmente
             cuerpo.setLinearVelocity(cuerpo.getLinearVelocity().x * 0.9f, cuerpo.getLinearVelocity().y);
         }

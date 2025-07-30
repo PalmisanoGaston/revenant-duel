@@ -12,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import io.github.revenantduel.Arena;
-import io.github.revenantduel.Principal;
+import escenas.Arena;
+import escenas.Principal;
 import mejoras.MejoraVida;
 import personajes.Jefe;
 import personajes.Personaje;
@@ -111,13 +111,11 @@ public class MenuHeroe implements Screen {
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
 		
 	}
 }

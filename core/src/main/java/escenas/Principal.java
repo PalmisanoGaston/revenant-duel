@@ -1,4 +1,4 @@
-package io.github.revenantduel;
+package escenas;
 
 import com.badlogic.gdx.Game;
 

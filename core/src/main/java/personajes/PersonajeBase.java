@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
-import io.github.revenantduel.Arena;
+import escenas.Arena;
 import movimientos.Morir;
 import movimientos.MovimientoBase;
 
@@ -72,7 +72,6 @@ public abstract class PersonajeBase extends Actor {
         this.body.setSleepingAllowed(false);
 
     }
-
 
 	public int getVidaMaxima() {
 		return vidaMaxima;

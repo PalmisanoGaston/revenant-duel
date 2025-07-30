@@ -16,15 +16,13 @@ public class Salto extends MovimientoBase {
     
     @Override
     public void aplicarEfecto() {
-        if (estaEnFramesActivos()) {
-           cuerpo.applyLinearImpulse( new Vector2(0, this.FUERZA_SALTO * fuerza), cuerpo.getWorldCenter(), true );
+    	if (estaEnFramesActivos()) {
+    		cuerpo.applyLinearImpulse( new Vector2(0, this.FUERZA_SALTO * fuerza), cuerpo.getWorldCenter(), true );
         } else if (estaEnFramesRecuperacion()) {
-            // Frenar gradualmente
-            cuerpo.setLinearVelocity(cuerpo.getLinearVelocity().x,cuerpo.getLinearVelocity().y * 0.85f);
+        	// Frenar gradualmente
+        	cuerpo.setLinearVelocity(cuerpo.getLinearVelocity().x,cuerpo.getLinearVelocity().y * 0.85f);
         }
       }
-    
-    
     
     public void setFuerza(int fuerza) {
     	this.fuerza = fuerza;
