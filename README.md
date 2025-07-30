@@ -65,6 +65,7 @@ Prototipo basico del proyecto, implementacion para una sola computadora con juga
 ## **Wiki del Proyecto**
 
 [Ver la Propuesta Completa del Proyecto](https://github.com/PalmisanoGaston/revenant-duel/wiki/Propuesta)
+[Ver mecanicas basicas añadidas ]([https://github.com/PalmisanoGaston/revenant-duel/wiki/Propuesta](https://github.com/PalmisanoGaston/revenant-duel/wiki/Mecanicas-Basicas))
 
 ---
 
