@@ -35,6 +35,23 @@ public abstract class PersonajeBase extends Actor {
     protected MuerteEventListener muerteEventListener;
     protected CambioVidaEventListener cambioVidaEventListener;
     protected Animation<TextureRegion> animacionActual;
+    
+    protected boolean inLeft;
+    protected boolean inRight;
+    protected boolean inJump;
+    protected boolean inAttack;
+    protected boolean inDash;
+    protected boolean inBackdash;
+    protected boolean inToggleBestia; // opcional
+
+    public void setInputLeft(boolean v)    { this.inLeft = v; }
+    public void setInputRight(boolean v)   { this.inRight = v; }
+    public void requestJump()              { this.inJump = true; }
+    public void requestAttack()            { this.inAttack = true; }
+    public void requestDash()              { this.inDash = true; }
+    public void requestBackdash()          { this.inBackdash = true; }
+    public void requestToggleBestia()      { this.inToggleBestia = true; }
+    
 
     public PersonajeBase(World world, String nombre, int vida,  MuerteEventListener muerteListener,   CambioVidaEventListener vidaListener, AnimacionBase animacion) {
         this.nombre = nombre;
@@ -52,6 +69,7 @@ public abstract class PersonajeBase extends Actor {
         
         this.body = world.createBody(bodyDef);
         
+ 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(
             this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime).getRegionWidth()/2 * Arena.PIXELS_TO_METERS,

@@ -41,81 +41,78 @@ public class Jefe extends PersonajeBase {
     @Override
     public void act(float delta) {
         super.stateTime += delta;
-        
-        float velocidadActual = modoBestia ? velocidadBestia : velocidadNormal;
-        int fuerzaSaltoActual = modoBestia ? fuerzaSaltoBestia : fuerzaSaltoNormal;
-  
-        if (movimientoActual == null || movimientoActual.estaCompletado()) {
-        	
-            float velocidadX = 0;
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            	
-                velocidadX = -velocidadActual;
-                this.lado = false;
-                if(this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
-                    this.animacionActual = this.animacionPersonaje.getRunAnimation();    
+
+        float velocidadActual   = modoBestia ? velocidadBestia : velocidadNormal;
+        int   fuerzaSaltoActual = modoBestia ? fuerzaSaltoBestia : fuerzaSaltoNormal;
+
+        if (this.vida > 0) {
+            if (movimientoActual == null || movimientoActual.estaCompletado()) {
+
+                float velocidadX = 0f;
+
+                // === Movimiento horizontal continuo (LEFT/RIGHT) ===
+                if (inLeft && !inRight) {
+                    velocidadX = -velocidadActual;
+                    this.lado = false;
+                    if (this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
+                        this.animacionActual = this.animacionPersonaje.getRunAnimation();
+                    }
+                } else if (inRight && !inLeft) {
+                    velocidadX = velocidadActual;
+                    this.lado = true;
+                    if (this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
+                        this.animacionActual = this.animacionPersonaje.getRunAnimation();
+                    }
+                } else {
+                    if (this.animacionActual != this.animacionPersonaje.getIdleAnimation()) {
+                        this.animacionActual = this.animacionPersonaje.getIdleAnimation();
+                    }
                 }
-            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                velocidadX = velocidadActual;
-                this.lado = true;
-                if(this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
-                    this.animacionActual = this.animacionPersonaje.getRunAnimation();    
+
+                // Aplicar velocidad horizontal (conservando Y)
+                body.setLinearVelocity(velocidadX, body.getLinearVelocity().y);
+
+                // === Acciones edge-trigger (UP / SHIFT_RIGHT / CONTROL_RIGHT / M / H) ===
+                if (inJump) {
+                    movimientoActual = new Salto(body, fuerzaSaltoActual);
+                    this.animacionActual = this.animacionPersonaje.getJumpAnimation();
+                    inJump = false;
                 }
-            } else {
-                if(this.animacionActual != this.animacionPersonaje.getIdleAnimation()) {
-                    this.animacionActual = this.animacionPersonaje.getIdleAnimation();    
+
+                if (inDash) {
+                    movimientoActual = new Dash(body, lado);
+                    inDash = false;
+                }
+
+                if (inBackdash) {
+                    movimientoActual = new Backdash(body, lado);
+                    inBackdash = false;
+                }
+
+                if (inAttack) {
+                    movimientoActual = new AtaqueJefe(body, lado);
+                    this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
+                    inAttack = false;
+                }
+
+                if (inToggleBestia) {
+                    // Usamos tu método para activar el modo bestia (y color)
+                    this.modoBestia();
+                    inToggleBestia = false;
                 }
             }
-            
-            body.setLinearVelocity(velocidadX, body.getLinearVelocity().y);
-            
-            if (Gdx.input.isKeyJustPressed(Input.Keys.UP) && (Math.abs(body.getLinearVelocity().y) < 0.1f)) {
-            	
-                Salto salto = (Salto)movimientos.get("Salto");
-                salto.setFuerza(fuerzaSaltoActual);
-                salto.reiniciar();
-                this.movimientoActual = salto;
-                this.animacionActual = this.animacionPersonaje.getJumpAnimation();
-                this.sonidos.playSalto();
-            }
         }
-        
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT) && Math.abs(body.getLinearVelocity().y) < 0.1f) {
-            Dash dash = (Dash)movimientos.get("Dash");
-            dash.setLadoDerecho(lado);
-            dash.reiniciar();
-            movimientoActual = dash;
-            this.sonidos.playDash();
-        }
-        
-        if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_RIGHT) && Math.abs(body.getLinearVelocity().y) < 0.1f) {
-            Backdash backdash = (Backdash)movimientos.get("Backdash");
-            backdash.setLadoDerecho(lado);
-            backdash.reiniciar();
-            movimientoActual = backdash;
-            this.sonidos.playDash();
-        }
-        
-        if (Gdx.input.isKeyJustPressed(Input.Keys.M) && movimientoActual == null && Math.abs(body.getLinearVelocity().y) < 0.1f) {
-            AtaqueJefe ataque = (AtaqueJefe)movimientos.get("Ataque");
-            ataque.setLadoDerecho(lado);
-            ataque.reiniciar();
-            movimientoActual = ataque;
-            this.stateTime = 0;
-            this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
-            this.sonidos.playGolpe();
-        }
-        
+
         if (movimientoActual != null && !movimientoActual.estaCompletado()) {
             movimientoActual.actualizar();
             movimientoActual.aplicarEfecto();
         } else {
             movimientoActual = null;
         }
-        
+
         setPosition(
-            (body.getPosition().x / Arena.PIXELS_TO_METERS) - getWidth()/2,
-            (body.getPosition().y / Arena.PIXELS_TO_METERS) - getHeight()/2
+            (body.getPosition().x / Arena.PIXELS_TO_METERS) - getWidth() / 2,
+            (body.getPosition().y / Arena.PIXELS_TO_METERS) - getHeight() / 2
         );
     }
     

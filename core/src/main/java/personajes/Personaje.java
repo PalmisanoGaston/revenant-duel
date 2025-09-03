@@ -20,6 +20,26 @@ public class Personaje extends PersonajeBase {
 	private MejoraVida nivelVida;
 	private SonidosPersonaje sonidos = new SonidosPersonaje();
 	
+	// --- INPUT FLAGS (externos, seteados por LectorInputs) ---
+	private boolean inLeft;
+	private boolean inRight;
+
+	// Acciones edge-triggered: el Lector las dispara con requestX()
+	// y el Personaje las consume en act() una sola vez.
+	private boolean inJump;
+	private boolean inAttack;
+	private boolean inDash;
+	private boolean inBackdash;
+
+	// Setters llamados por LectorInputs
+	public void setInputLeft(boolean v)    { this.inLeft = v; }
+	public void setInputRight(boolean v)   { this.inRight = v; }
+	public void requestJump()              { this.inJump = true; }
+	public void requestAttack()            { this.inAttack = true; }
+	public void requestDash()              { this.inDash = true; }
+	public void requestBackdash()          { this.inBackdash = true; }
+
+	
     public Personaje(World world, MuerteEventListener muerteListener,  CambioVidaEventListener vidaListener, MejoraVida nivelVida) {
         super(world, "Jugador", 100 * nivelVida.getMultiplicador()   , muerteListener, vidaListener, new AnimacionesPersonaje());
 
@@ -33,77 +53,76 @@ public class Personaje extends PersonajeBase {
     }
 
 	@Override
-    public void act(float delta) {
-        super.stateTime += delta;
-        
-        if (movimientoActual == null || movimientoActual.estaCompletado()) {
-            float velocidadX = 0;
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                velocidadX = -5f;
-                this.lado = false;
-                if(this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
-                    this.animacionActual = this.animacionPersonaje.getRunAnimation();    
-                }
-            } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                velocidadX = 5f;
-                this.lado = true;
-                if(this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
-                    this.animacionActual = this.animacionPersonaje.getRunAnimation();    
-                }
-            } else {
-                if(this.animacionActual != this.animacionPersonaje.getIdleAnimation() && this.vida > 0) {
-                    this.animacionActual = this.animacionPersonaje.getIdleAnimation();    
-                }
-            }
-            
-            body.setLinearVelocity(velocidadX, body.getLinearVelocity().y);
+	public void act(float delta) {
+	    super.stateTime += delta;
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && (Math.abs(body.getLinearVelocity().y) < 0.1f)) {
-                Salto salto = (Salto)movimientos.get("Salto");
-                salto.reiniciar();
-                this.movimientoActual = salto;
-                this.animacionActual = this.animacionPersonaje.getJumpAnimation();
-                this.sonidos.playSalto();
-            }
-        }
+	    if (this.vida > 0) {
+	        if (movimientoActual == null || movimientoActual.estaCompletado()) {
+	            float velocidadX = 0f;
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT) && Math.abs(body.getLinearVelocity().y) < 0.1f) {
-            Dash dash = (Dash)movimientos.get("Dash");
-            dash.setLadoDerecho(lado);
-            dash.reiniciar();
-            movimientoActual = dash;
-            this.sonidos.playDash();
-        }
+	            // === Movimiento horizontal continuo (A/D) ===
+	            if (inLeft && !inRight) {
+	                velocidadX = -5f;        // igual que en tu código original
+	                this.lado = false;
+	                if (this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
+	                    this.animacionActual = this.animacionPersonaje.getRunAnimation();
+	                }
+	            } else if (inRight && !inLeft) {
+	                velocidadX = 5f;         // igual que en tu código original
+	                this.lado = true;
+	                if (this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
+	                    this.animacionActual = this.animacionPersonaje.getRunAnimation();
+	                }
+	            } else {
+	                // Quieto -> Idle
+	                if (this.animacionActual != this.animacionPersonaje.getIdleAnimation()) {
+	                    this.animacionActual = this.animacionPersonaje.getIdleAnimation();
+	                }
+	            }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT) && Math.abs(body.getLinearVelocity().y) < 0.1f) {
-            Backdash backdash = (Backdash)movimientos.get("Backdash");
-            backdash.setLadoDerecho(lado);
-            backdash.reiniciar();
-            movimientoActual = backdash;
-            this.sonidos.playDash();
-        }
+	            // Aplicar velocidad horizontal (conservando Y)
+	            body.setLinearVelocity(velocidadX, body.getLinearVelocity().y);
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.J) && movimientoActual == null && Math.abs(body.getLinearVelocity().y) < 0.1f) {
-            AtaqueBasico ataque = (AtaqueBasico)movimientos.get("Ataque");
-            ataque.setLadoDerecho(lado);
-            ataque.reiniciar();
-            movimientoActual = ataque;
-            this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
-            this.sonidos.playGolpe();
-        }
-        
-        if (movimientoActual != null && !movimientoActual.estaCompletado()) {
-            movimientoActual.actualizar();
-            movimientoActual.aplicarEfecto();
-        } else {
-            movimientoActual = null;
-        }
-        
-        setPosition(
-            (body.getPosition().x / Arena.PIXELS_TO_METERS) - getWidth()/2,
-            (body.getPosition().y / Arena.PIXELS_TO_METERS) - getHeight()/2
-        );
-    }
+	            // === Acciones edge-trigger (SPACE / SHIFT_LEFT / CONTROL_LEFT / J) ===
+	            if (inJump) {
+	                // Tu salto original: new Salto(body, 1)
+	                movimientoActual = new Salto(body, 1);
+	                this.animacionActual = this.animacionPersonaje.getJumpAnimation();
+	                inJump = false;
+	            }
+
+	            if (inDash) {
+	                movimientoActual = new Dash(body, lado);
+	                inDash = false;
+	            }
+
+	            if (inBackdash) {
+	                movimientoActual = new Backdash(body, lado);
+	                inBackdash = false;
+	            }
+
+	            if (inAttack) {
+	                movimientoActual = new AtaqueBasico(body, lado);
+	                inAttack = false;
+	            }
+
+	        }
+	    }
+
+	    // Actualización del movimiento en curso (igual que lo tenías)
+	    if (movimientoActual != null && !movimientoActual.estaCompletado()) {
+	        movimientoActual.actualizar();
+	        movimientoActual.aplicarEfecto();
+	    } else {
+	        movimientoActual = null;
+	    }
+
+	    // Mantener posición según el body (igual que lo tenías)
+	    setPosition(
+	        (body.getPosition().x / Arena.PIXELS_TO_METERS) - getWidth() / 2,
+	        (body.getPosition().y / Arena.PIXELS_TO_METERS) - getHeight() / 2
+	    );
+	}
 	
     public MejoraVida getNivelVida() {
 		return nivelVida;
