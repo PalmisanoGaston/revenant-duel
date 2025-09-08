@@ -24,7 +24,28 @@ public class Jefe extends PersonajeBase {
 	private int fuerzaSaltoBestia = 20;
 
 	private Color colorBestia = new Color(1f, 0.5f, 0.5f, 1f);
-	private SonidosJefe sonidos = new SonidosJefe();	
+	private SonidosJefe sonidos = new SonidosJefe();
+    // ====== INPUT FLAGS (seteados por LectorInputs) ======
+    private boolean inLeft;
+    private boolean inRight;
+    private boolean inJump;
+    private boolean inDash;
+    private boolean inBackdash;
+    private boolean inAttack;
+    private boolean inToggleBestia;
+
+    public void setInputLeft(boolean v)  { this.inLeft = v; }
+    public void setInputRight(boolean v) { this.inRight = v; }
+    public void requestJump()            { this.inJump = true; }
+    public void requestDash()            { this.inDash = true; }
+    public void requestBackdash()        { this.inBackdash = true; }
+    public void requestAttack()          { this.inAttack = true; }
+    public void requestToggleBestia()    { this.inToggleBestia = true; }
+
+
+
+
+
 
     public Jefe(World world, MuerteEventListener muerteListener,  CambioVidaEventListener vidaListener) {
         super(world, "Jefe", 150, muerteListener, vidaListener, new AnimacionesJefe());
@@ -50,7 +71,7 @@ public class Jefe extends PersonajeBase {
 
                 float velocidadX = 0f;
 
-                // === Movimiento horizontal continuo (LEFT/RIGHT) ===
+                // === Movimiento horizontal continuo (LEFT / RIGHT) ===
                 if (inLeft && !inRight) {
                     velocidadX = -velocidadActual;
                     this.lado = false;
@@ -58,7 +79,7 @@ public class Jefe extends PersonajeBase {
                         this.animacionActual = this.animacionPersonaje.getRunAnimation();
                     }
                 } else if (inRight && !inLeft) {
-                    velocidadX = velocidadActual;
+                    velocidadX =  velocidadActual;
                     this.lado = true;
                     if (this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
                         this.animacionActual = this.animacionPersonaje.getRunAnimation();
@@ -72,37 +93,68 @@ public class Jefe extends PersonajeBase {
                 // Aplicar velocidad horizontal (conservando Y)
                 body.setLinearVelocity(velocidadX, body.getLinearVelocity().y);
 
-                // === Acciones edge-trigger (UP / SHIFT_RIGHT / CONTROL_RIGHT / M / H) ===
+                // === Acciones edge-trigger disparadas por LectorInputs ===
+
+                // Saltar (solo si "apoyado": velY casi cero)
                 if (inJump) {
-                    movimientoActual = new Salto(body, fuerzaSaltoActual);
-                    this.animacionActual = this.animacionPersonaje.getJumpAnimation();
-                    inJump = false;
+                    if (Math.abs(body.getLinearVelocity().y) < 0.1f) {
+                        Salto salto = (Salto) movimientos.get("Salto");
+                        salto.setFuerza(fuerzaSaltoActual);
+                        salto.reiniciar();
+                        this.movimientoActual = salto;
+                        this.animacionActual = this.animacionPersonaje.getJumpAnimation();
+                        this.sonidos.playSalto();
+                    }
+                    inJump = false; // consumir
                 }
 
+                // Dash (solo si velY ~ 0)
                 if (inDash) {
-                    movimientoActual = new Dash(body, lado);
+                    if (Math.abs(body.getLinearVelocity().y) < 0.1f) {
+                        Dash dash = (Dash) movimientos.get("Dash");
+                        dash.setLadoDerecho(lado);
+                        dash.reiniciar();
+                        movimientoActual = dash;
+                        this.sonidos.playDash();
+                    }
                     inDash = false;
                 }
 
+                // Backdash (solo si velY ~ 0)
                 if (inBackdash) {
-                    movimientoActual = new Backdash(body, lado);
+                    if (Math.abs(body.getLinearVelocity().y) < 0.1f) {
+                        Backdash backdash = (Backdash) movimientos.get("Backdash");
+                        backdash.setLadoDerecho(lado);
+                        backdash.reiniciar();
+                        movimientoActual = backdash;
+                        this.sonidos.playDash();
+                    }
                     inBackdash = false;
                 }
 
+                // Ataque (solo si libre y velY ~ 0)
                 if (inAttack) {
-                    movimientoActual = new AtaqueJefe(body, lado);
-                    this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
+                    if (movimientoActual == null && Math.abs(body.getLinearVelocity().y) < 0.1f) {
+                        AtaqueJefe ataque = (AtaqueJefe) movimientos.get("Ataque");
+                        ataque.setLadoDerecho(lado);
+                        ataque.reiniciar();
+                        movimientoActual = ataque;
+                        this.stateTime = 0;
+                        this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
+                        this.sonidos.playGolpe();
+                    }
                     inAttack = false;
                 }
 
+                // Toggle modo bestia (si lo mapeaste en el Lector)
                 if (inToggleBestia) {
-                    // Usamos tu método para activar el modo bestia (y color)
                     this.modoBestia();
                     inToggleBestia = false;
                 }
             }
         }
 
+        // Actualizar movimiento en curso
         if (movimientoActual != null && !movimientoActual.estaCompletado()) {
             movimientoActual.actualizar();
             movimientoActual.aplicarEfecto();
@@ -110,13 +162,15 @@ public class Jefe extends PersonajeBase {
             movimientoActual = null;
         }
 
+        // Mantener posición con respecto al body
         setPosition(
-            (body.getPosition().x / Arena.PIXELS_TO_METERS) - getWidth() / 2,
-            (body.getPosition().y / Arena.PIXELS_TO_METERS) - getHeight() / 2
+                (body.getPosition().x / Arena.PIXELS_TO_METERS) - getWidth() / 2f,
+                (body.getPosition().y / Arena.PIXELS_TO_METERS) - getHeight() / 2f
         );
     }
-    
-    
+
+
+
     public void modoBestia() {
     	this.modoBestia = true;
     	this.setColor(colorBestia);

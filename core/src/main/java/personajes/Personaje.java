@@ -84,14 +84,17 @@ public class Personaje extends PersonajeBase {
 	            body.setLinearVelocity(velocidadX, body.getLinearVelocity().y);
 
 	            // === Acciones edge-trigger (SPACE / SHIFT_LEFT / CONTROL_LEFT / J) ===
-	            if (inJump) {
-	                // Tu salto original: new Salto(body, 1)
-	                movimientoActual = new Salto(body, 1);
-	                this.animacionActual = this.animacionPersonaje.getJumpAnimation();
-	                inJump = false;
-	            }
+				if (inJump) {
+					// Permitir salto solo si no se está moviendo en Y (es decir, apoyado en suelo)
+					if (Math.abs(body.getLinearVelocity().y) < 0.01f) {
+						movimientoActual = new Salto(body, 1);
+						this.animacionActual = this.animacionPersonaje.getJumpAnimation();
+					}
+					inJump = false; // siempre consumir la tecla
+				}
 
-	            if (inDash) {
+
+				if (inDash) {
 	                movimientoActual = new Dash(body, lado);
 	                inDash = false;
 	            }
