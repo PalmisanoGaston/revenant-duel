@@ -17,6 +17,7 @@ public class HitBox implements ContactListener {
         Fixture fixtureB = contact.getFixtureB();
 
         if (esHitboxAtaque(fixtureA) && esPersonaje(fixtureB)) {
+
             aplicarDaño(fixtureA, fixtureB);
             }
 
@@ -43,7 +44,11 @@ public class HitBox implements ContactListener {
         
         HitboxInfo hitboxData = (HitboxInfo)hitbox.getUserData();
         PersonajeBase pj = (PersonajeBase)personaje.getBody().getUserData();
-        
+
+        if(pj.getVida() == 0){
+            return;
+        }
+
         if (pj.esInvulnerable()) {
             System.out.println("Invulnerable");
             return;
