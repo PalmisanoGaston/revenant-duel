@@ -31,6 +31,7 @@ import gui.MenuHeroe;
 import gui.ScreenPerder;
 import mejoras.MejoraVida;
 import personajes.Jefe;
+import personajes.LectorInputs;
 import personajes.Personaje;
 import personajes.PersonajeBase;
 import utiles.HitBox;
@@ -65,6 +66,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     
     private MenuArena menuArena;
     private boolean menuVisible = false;
+    private LectorInputs lectorInputs;
     
     public Arena(Principal juego, Skin skin) {
         this.juego = juego;
@@ -81,6 +83,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
 	    this.heroe = crearHeroe();
 	    this.jefe = crearJefe();
+        this.lectorInputs = new LectorInputs(this.heroe, this.jefe);
+
 	    this.skin = skin;
         construirArena(skin);
     }
@@ -104,8 +108,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
        this.heroe = crearHeroe(mejoraVida);
        this.jefe = crearJefe(vidaJefe);
         construirArena(skin);
-        
-        
+        this.lectorInputs = new LectorInputs(this.heroe, this.jefe);
+
+
     }
 
 	private void construirArena(Skin skin) {
@@ -272,7 +277,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     	 escena.draw();
         
     	 // Mostrar hitboxes
-        //debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
+        debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
 }
 
     @Override
@@ -299,7 +304,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
 	@Override
 	public void show() {
-	    Gdx.input.setInputProcessor(escena); 
+	    Gdx.input.setInputProcessor(this.lectorInputs);
 	}
 
 	@Override
