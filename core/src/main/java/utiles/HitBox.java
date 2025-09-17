@@ -6,7 +6,9 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
+import personajes.Jefe;
 import personajes.PersonajeBase;
+import mejoras.MejorasHeroe;
 
 public class HitBox implements ContactListener {
     
@@ -54,7 +56,12 @@ public class HitBox implements ContactListener {
             return;
         }
         
-        pj.recibirDaño(hitboxData.getDaño());
+        if(pj instanceof Jefe) {
+        	pj.recibirDaño(hitboxData.getDaño() * MejorasHeroe.DANIO.getMultiplicador());
+        }else {
+        	pj.recibirDaño(hitboxData.getDaño());
+        }
+        
         System.out.println("Golpe conectado,  Daño: " + hitboxData.getDaño());
     }
 

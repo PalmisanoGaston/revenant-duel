@@ -15,7 +15,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import escenas.Arena;
 import escenas.Principal;
 import mejoras.MejoraVida;
-import mejoras.MejorasPrueba;
+import mejoras.MejorasHeroe;
 import personajes.Jefe;
 import personajes.Heroe;
 
@@ -44,6 +44,7 @@ public class MenuHeroe implements Screen {
         Label aviso = new Label("Intentos restantes: " + intentos, fuenteTextos);
         table.add(aviso).colspan(2).padBottom(30);
         table.row();
+        
         TextButton botonMejoraVida = new TextButton("Mejorar Vida (" + descripcionMejoraVida() + ")", fuenteTextos);
         botonMejoraVida.addListener(new ClickListener() {
             @Override
@@ -56,23 +57,65 @@ public class MenuHeroe implements Screen {
             }
         });
         
+        TextButton botonMejoraDanio = new TextButton("Mejorar Daño (Nivel " + MejorasHeroe.DANIO.getMultiplicador() + ")", fuenteTextos);
+        botonMejoraDanio.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(mejoras_permitidas > 0) {
+                    MejorasHeroe.DANIO.aumentarNigger(); // aumenta el nivel
+                    botonMejoraDanio.setText("Mejorar Daño (Nivel " + MejorasHeroe.DANIO.getMultiplicador() + ")");
+                    mejoras_permitidas--;
+                }
+            }
+        });
+
+        TextButton botonMejoraVelocidad = new TextButton("Mejorar Velocidad (Nivel " + MejorasHeroe.VELOCIDAD.getMultiplicador() + ")", fuenteTextos);
+        botonMejoraVelocidad.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(mejoras_permitidas > 0) {
+                    MejorasHeroe.VELOCIDAD.aumentarNigger();
+                    botonMejoraVelocidad.setText("Mejorar Velocidad (Nivel " + MejorasHeroe.VELOCIDAD.getMultiplicador() + ")");
+                    mejoras_permitidas--;
+                }
+            }
+        });
+
+        TextButton botonMejoraSalto = new TextButton("Mejorar Salto (Nivel " + MejorasHeroe.SALTO.getMultiplicador() + ")", fuenteTextos);
+        botonMejoraSalto.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(mejoras_permitidas > 0) {
+                    MejorasHeroe.SALTO.aumentarNigger();
+                    botonMejoraSalto.setText("Mejorar Salto (Nivel " + MejorasHeroe.SALTO.getMultiplicador() + ")");
+                    mejoras_permitidas--;
+                }
+            }
+        });
+        
         TextButton botonVolver = new TextButton("Volver a la pelea", fuenteTextos);
         botonVolver.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
-                juego.setScreen(new Arena(juego, fuenteTextos, MejorasPrueba.VIDA.getMultiplicador(),jefe.getVida(),intentos));
+                juego.setScreen(new Arena(juego, fuenteTextos, MejorasHeroe.VIDA.getMultiplicador(),jefe.getVida(),intentos));
             }
         });
         
         table.add(botonMejoraVida).width(300).height(60).padBottom(20);
         table.row();
+        table.add(botonMejoraDanio).width(300).height(60).padBottom(20);
+        table.row();
+        table.add(botonMejoraVelocidad).width(300).height(60).padBottom(20);
+        table.row();
+        table.add(botonMejoraSalto).width(300).height(60).padBottom(20);
+        table.row();
         table.add(botonVolver).width(200).height(50);
     }
     
     private String descripcionMejoraVida() {
-        int nivelActual = MejorasPrueba.VIDA.getMultiplicador();
-        if (nivelActual < MejorasPrueba.VIDA.getNivelMax()) {
+        int nivelActual = MejorasHeroe.VIDA.getMultiplicador();
+        if (nivelActual < MejorasHeroe.VIDA.getNivelMax()) {
             return "Nivel " + (nivelActual);
         }
         return "Máximo nivel alcanzado";

@@ -25,7 +25,7 @@ import gui.MenuArena;
 import gui.MenuHeroe;
 import gui.ScreenPerder;
 import mejoras.MejoraVida;
-import mejoras.MejorasPrueba;
+import mejoras.MejorasHeroe;
 import personajes.Jefe;
 import personajes.LectorInputs;
 import personajes.Heroe;
@@ -308,22 +308,26 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
 	@Override
 	public void onPersonajeMuerto(PersonajeBase personaje) {
-		
-		if(personaje.getBody()!= null) {
-		this.cuerposAEliminar.add(personaje.getBody());
-		}
+	    if (personaje.getBody() != null) {
+	        this.cuerposAEliminar.add(personaje.getBody());
+	    }
 
-		if(personaje == this.jefe) {
-			this.juego.setScreen(new ScreenPerder(this.juego,false));
-		}
-		
-		if(personaje == this.heroe && this.intentosHeroe>0) {
-			this.intentosHeroe--;
-			this.juego.setScreen(new MenuHeroe(juego,this.heroe,this.jefe,this.intentosHeroe));
-		}
-		else {
-			this.juego.setScreen(new ScreenPerder(this.juego,true));
-		}
+	    // 1) Murió el Jefe => gana el héroe
+	    if (personaje == this.jefe) {
+	        this.juego.setScreen(new ScreenPerder(this.juego, false)); // false = el héroe NO perdió
+	        return;
+	    }
+
+	    // 2) Murió el Héroe
+	    if (personaje == this.heroe) {
+	        if (this.intentosHeroe > 0) {
+	            this.intentosHeroe--;
+	            this.juego.setScreen(new MenuHeroe(this.juego, this.heroe, this.jefe, this.intentosHeroe));
+	        } else {
+	            this.juego.setScreen(new ScreenPerder(this.juego, true)); // true = el héroe perdió
+	        }
+	        return;
+	    }
 	}
 
 	@Override
