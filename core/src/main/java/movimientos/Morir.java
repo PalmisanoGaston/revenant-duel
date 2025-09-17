@@ -1,6 +1,5 @@
 package movimientos;
 
-import personajes.Personaje;
 import personajes.PersonajeBase;
 
 public class Morir extends MovimientoBase {

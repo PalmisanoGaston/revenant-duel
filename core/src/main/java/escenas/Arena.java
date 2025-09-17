@@ -8,17 +8,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import Interfaces.CambioVidaEventListener;
@@ -30,9 +25,10 @@ import gui.MenuArena;
 import gui.MenuHeroe;
 import gui.ScreenPerder;
 import mejoras.MejoraVida;
+import mejoras.MejorasPrueba;
 import personajes.Jefe;
 import personajes.LectorInputs;
-import personajes.Personaje;
+import personajes.Heroe;
 import personajes.PersonajeBase;
 import utiles.HitBox;
 
@@ -55,7 +51,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     
     private ArrayList<Body> cuerposAEliminar = new ArrayList<>();
 
-    private Personaje heroe;
+    private Heroe heroe;
     
     private int intentosHeroe;
     private Jefe jefe;
@@ -89,7 +85,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         construirArena(skin);
     }
 
-    public Arena(Principal juego, Skin skin, MejoraVida mejoraVida, int vidaJefe, int intentosRestantes) {
+    public Arena(Principal juego, Skin skin, int mejoraVida, int vidaJefe, int intentosRestantes) {
         this.juego = juego;
         this.batch = new SpriteBatch();
         this.texturaBloque = new Texture("tileset.png");
@@ -105,7 +101,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         crearPiso();
         this.skin = skin;
 
-       this.heroe = crearHeroe(mejoraVida);
+       this.heroe = crearHeroe();
        this.jefe = crearJefe(vidaJefe);
         construirArena(skin);
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe);
@@ -184,14 +180,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         shape.dispose();
     }
     
-    private Personaje crearHeroe(MejoraVida mejora) {
-        Personaje heroe = new Personaje(world, this, this, mejora);
-        escena.addActor(heroe);
-        return heroe;
-    }
-    
-    private Personaje crearHeroe() {
-        Personaje heroe = new Personaje(world, this, this, MejoraVida.NIVEL_1);
+    private Heroe crearHeroe() {
+        Heroe heroe = new Heroe(world, this, this);
         escena.addActor(heroe);
         return heroe;
     }

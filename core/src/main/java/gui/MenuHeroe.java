@@ -15,19 +15,20 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import escenas.Arena;
 import escenas.Principal;
 import mejoras.MejoraVida;
+import mejoras.MejorasPrueba;
 import personajes.Jefe;
-import personajes.Personaje;
+import personajes.Heroe;
 
 public class MenuHeroe implements Screen {
 	
 	private Principal juego;
 	private Stage escena;
 	private Skin fuenteTextos;
-	private Personaje heroe;
+	private Heroe heroe;
 	private int mejoras_permitidas = 1; 
 	
 	
-    public MenuHeroe(Principal juego, Personaje heroe, Jefe jefe, int intentos) {
+    public MenuHeroe(Principal juego, Heroe heroe, Jefe jefe, int intentos) {
         this.juego = juego;
         this.escena = new Stage(new ScreenViewport());
         this.heroe = heroe;
@@ -60,7 +61,7 @@ public class MenuHeroe implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
-                juego.setScreen(new Arena(juego, fuenteTextos,heroe.getNivelVida(),jefe.getVida(),intentos));
+                juego.setScreen(new Arena(juego, fuenteTextos, MejorasPrueba.VIDA.getMultiplicador(),jefe.getVida(),intentos));
             }
         });
         
@@ -70,9 +71,9 @@ public class MenuHeroe implements Screen {
     }
     
     private String descripcionMejoraVida() {
-        int nivelActual = MejoraVida.buscarNivel(heroe.getNivelVida());
-        if (nivelActual < MejoraVida.values().length - 1) {
-            return "Nivel " + (nivelActual + 2);
+        int nivelActual = MejorasPrueba.VIDA.getMultiplicador();
+        if (nivelActual < MejorasPrueba.VIDA.getNivelMax()) {
+            return "Nivel " + (nivelActual);
         }
         return "Máximo nivel alcanzado";
     }

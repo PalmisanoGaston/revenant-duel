@@ -15,12 +15,12 @@ import com.badlogic.gdx.InputProcessor;
  */
 public class LectorInputs implements InputProcessor {
 
-    private final Personaje personaje; // puede ser null
+    private final Heroe personaje; // puede ser null
     private final Jefe jefe;           // puede ser null
 
     private final Set<Integer> pressed = new HashSet<>();
 
-    public LectorInputs(Personaje personaje, Jefe jefe) {
+    public LectorInputs(Heroe personaje, Jefe jefe) {
         this.personaje = personaje;
         this.jefe = jefe;
     }

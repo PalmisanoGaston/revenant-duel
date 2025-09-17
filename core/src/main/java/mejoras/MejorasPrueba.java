@@ -1,18 +1,29 @@
 package mejoras;
 
 public enum MejorasPrueba {
-	VIDA(),
-	DANIO(),
-	VELOCIDAD(),
-	SALTO();
-	
-	private float multiplicador = 1.0f;
+	VIDA(1),
+	DANIO(1),
+	VELOCIDAD(1),
+	SALTO(1);
+
+    private int nivelMax = 3;
+	private int multiplicador = 1;
+
+    MejorasPrueba(int multiplicador) {
+        this.multiplicador = multiplicador;
+    }
 	
 	public void aumentarNigger() {
-		this.multiplicador += 1;
+		if(this.multiplicador < this.nivelMax) {
+            this.multiplicador += 1;
+        }
 	}
+
+    public int getNivelMax() {
+        return this.nivelMax;
+    }
 	
-	public float getMultiplicador() {
+	public int getMultiplicador() {
 		return this.multiplicador;
 	}
 
