@@ -17,6 +17,7 @@ import movimientos.Morir;
 import movimientos.MovimientoBase;
 import movimientos.Salto;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,6 +122,17 @@ public abstract class PersonajeBase extends Actor {
     @Override
     public void act(float delta) {
         this.stateTime += delta;
+        
+      Collection< MovimientoBase> collecionMovimiento =  this.movimientos.values();
+      MovimientoBase[] movimientosDisponibles = collecionMovimiento.toArray( new MovimientoBase[0]);
+      
+      for(MovimientoBase movimiento : movimientosDisponibles) {
+    	  if(!movimiento.estaListo()) {
+    		  movimiento.actualizarCooldown(delta);
+    	  }
+      }
+      
+      
 
         // Actualizar estado “en suelo” con filtro de estabilidad
         float vy = body.getLinearVelocity().y;
@@ -180,8 +192,11 @@ public abstract class PersonajeBase extends Actor {
                         Dash dash = (Dash) movimientos.get("Dash");
                         dash.setLadoDerecho(lado);
                         dash.reiniciar();
+                        if(dash.estaListo()) {
                         movimientoActual = dash;
-                        onPlayDash();                        // hook de sonido
+                        onPlayDash();
+                        dash.activarCooldown();
+                        }// hook de sonido
                     }
                     inDash = false;
                 }

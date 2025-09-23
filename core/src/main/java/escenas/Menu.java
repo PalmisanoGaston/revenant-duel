@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import gui.InfoJuego;
+
 public class Menu implements Screen {
 	
 	private Principal juego;
@@ -37,10 +39,19 @@ public class Menu implements Screen {
                 juego.setScreen(new Arena(juego,fuenteTextos));
             }
         });
+        
+        TextButton botonManual = new TextButton("Manual", fuenteTextos);
+        botonManual.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                juego.setScreen(new InfoJuego(juego));
+            }
+        });
 
         table.add(titulo).padBottom(30);
         table.row();
         table.add(botonJugar).width(200).height(50);
+        table.add(botonManual).width(200).height(50);
 	}
 
 	@Override

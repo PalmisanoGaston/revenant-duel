@@ -7,6 +7,8 @@ public abstract class MovimientoBase {
     protected int framesRecuperacion;
     protected int frameActual;
     protected boolean movimientoCompletado;
+    protected float cooldown = 3f;
+    protected float cooldownRestante;
     
     public MovimientoBase(String nombre,int inicio, int activos, int recuperacion) {
     	this.nombre = nombre;
@@ -24,6 +26,22 @@ public abstract class MovimientoBase {
             finDeMovimiento();
         }
     }
+    
+    public boolean estaListo() {
+        return cooldownRestante <= 0;
+    }
+    
+    public void activarCooldown() {
+        this.cooldownRestante = cooldown;
+    }
+    
+    
+    public void actualizarCooldown(float delta) {
+        if (cooldownRestante > 0) {
+            cooldownRestante -= delta;
+        }
+    }
+
     
     public boolean estaEnFramesInicio() {
         return frameActual < framesInicio;
