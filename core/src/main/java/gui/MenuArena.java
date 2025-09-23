@@ -59,28 +59,20 @@ public class MenuArena extends WidgetGroup {
             }
         });
         
-        TextButton botonVolver = new TextButton("Volver al juego", skin);
-        botonVolver.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                remove();
-            }
-        });
         
         tablaMenu.add(titulo).colspan(1).padBottom(30).row();
         tablaMenu.add(botonInicio).width(250).height(60).row();
         tablaMenu.add(botonSonido).width(250).height(60).row();
-        tablaMenu.add(botonVolver).width(250).height(60);
         
         tablaMenu.pack();
     }
     
     private void actualizarEstadoSonido() {
-        SonidoPersonajeBase.setGlobalSoundEnabled(sonidoActivado);
+        SonidoPersonajeBase.activarSonidoPersonaje(sonidoActivado);
     }
 
     public static boolean comprobarSonidoActivo() {
-        return SonidoPersonajeBase.isGlobalSoundEnabled();
+        return SonidoPersonajeBase.comprobarSonido();
     }
     
     @Override

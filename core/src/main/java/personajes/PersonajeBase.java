@@ -53,6 +53,10 @@ public abstract class PersonajeBase extends Actor {
     // ====== Chequeo de “suelo” por estabilidad de velocidad Y ======
     private int  groundedFrames = 0;
     private boolean grounded     = false;
+    public static final short CATEGORY_PERSONAJE = 0x0001;
+    public static final short CATEGORY_ENTORNO   = 0x0002;
+    public static final short CATEGORY_PROYECTIL = 0x0004; // si más adelante agregás
+
 
     protected float groundEps() { return 0.01f; }           // tolerancia de |vy|
     protected int   groundStableFrames() { return 3; }      // frames consecutivos para considerar suelo
@@ -87,10 +91,12 @@ public abstract class PersonajeBase extends Actor {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.4f;
-        fixtureDef.restitution = 0.1f;
-
+        fixtureDef.friction = 0f; // para que no se queden pegados
+        fixtureDef.filter.categoryBits = CATEGORY_PERSONAJE;
+        // El personaje solo choca con el entorno (NO con otros personajes)
+        fixtureDef.filter.maskBits = CATEGORY_ENTORNO;
         body.createFixture(fixtureDef);
+
         shape.dispose();
 
         setSize(

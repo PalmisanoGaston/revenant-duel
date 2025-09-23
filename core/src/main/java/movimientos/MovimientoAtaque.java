@@ -61,7 +61,9 @@ public abstract class MovimientoAtaque extends MovimientoBase {
 	    FixtureDef fixtureDef = new FixtureDef();
 	    fixtureDef.shape = shape;
 	    fixtureDef.isSensor = true;
-	    
+	    fixtureDef.filter.categoryBits =  0x0002;
+	 // El personaje solo choca con el entorno (NO con otros personajes)
+	    fixtureDef.filter.maskBits = 0x0001;
 	    // Crea la hitbox como un fixture adicional del cuerpo
 	    hitboxFixture = cuerpo.createFixture(fixtureDef);
 	    hitboxFixture.setUserData(new HitboxInfo("HITBOX_ATAQUE", this.daño));

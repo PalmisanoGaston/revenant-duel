@@ -6,7 +6,7 @@ public class AnimacionesJefe extends AnimacionBase {
     
     public AnimacionesJefe() {
 
-        Texture idleSheet = new Texture("jefe/bladeIdle.png");
+        Texture idleSheet = new Texture("jefe/bossidle.png");
         Texture runSheet = new Texture("jefe/bladeWalk.png");
         Texture jumpSheet = new Texture("jefe/bladeIdle.png");
         Texture sheetAtaque = new Texture("jefe/bladeAttack.png");

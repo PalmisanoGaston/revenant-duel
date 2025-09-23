@@ -6,6 +6,8 @@ import java.util.Set;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
+import escenas.Arena;
+
 /**
  * Centraliza todos los inputs y se los pasa a Personaje y Jefe.
  * Respeta tus mapeos originales:
@@ -17,12 +19,14 @@ public class LectorInputs implements InputProcessor {
 
     private final Heroe personaje; // puede ser null
     private final Jefe jefe;           // puede ser null
+    private final Arena arena;
 
     private final Set<Integer> pressed = new HashSet<>();
 
-    public LectorInputs(Heroe personaje, Jefe jefe) {
+    public LectorInputs(Heroe personaje, Jefe jefe, Arena arena) {
         this.personaje = personaje;
         this.jefe = jefe;
+        this.arena = arena;
     }
 
     // ------- Helpers: actualizar movimiento continuo -------
@@ -54,6 +58,14 @@ public class LectorInputs implements InputProcessor {
             else if (keycode == Input.Keys.CONTROL_LEFT)   personaje.requestBackdash();
             else if (keycode == Input.Keys.J)              personaje.requestAttack();
         }
+        
+        
+        if(arena != null) {
+        	if(keycode == Input.Keys.ESCAPE) {
+        		this.arena.mostrarMenuConfiguracion();
+        	}
+        }
+        
 
         if (jefe != null) {
             if (keycode == Input.Keys.UP)           jefe.requestJump();

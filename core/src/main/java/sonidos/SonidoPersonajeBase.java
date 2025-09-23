@@ -9,11 +9,11 @@ public abstract class SonidoPersonajeBase {
     protected Sound salto;
     protected Sound dash;
     
-    public static void setGlobalSoundEnabled(boolean enabled) {
+    public static void activarSonidoPersonaje(boolean enabled) {
     	sonidoActivo = enabled;
     }
     
-    public static boolean isGlobalSoundEnabled() {
+    public static boolean comprobarSonido() {
         return sonidoActivo;
     }
     

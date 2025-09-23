@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -64,6 +65,11 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     private boolean menuVisible = false;
     private LectorInputs lectorInputs;
     
+    public static final short CATEGORY_PERSONAJE = 0x0001;
+    public static final short CATEGORY_ENTORNO   = 0x0002;
+    public static final short CATEGORY_PROYECTIL = 0x0004; // si más adelante agregás
+
+    
     public Arena(Principal juego, Skin skin) {
         this.juego = juego;
         this.batch = new SpriteBatch();
@@ -77,9 +83,10 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
         crearPiso();
         
+        this.jefe = crearJefe();
 	    this.heroe = crearHeroe();
-	    this.jefe = crearJefe();
-        this.lectorInputs = new LectorInputs(this.heroe, this.jefe);
+	    
+        this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
 
 	    this.skin = skin;
         construirArena(skin);
@@ -100,11 +107,11 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
         crearPiso();
         this.skin = skin;
-
+        this.jefe = crearJefe(vidaJefe);
        this.heroe = crearHeroe();
-       this.jefe = crearJefe(vidaJefe);
+     
         construirArena(skin);
-        this.lectorInputs = new LectorInputs(this.heroe, this.jefe);
+        this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
 
 
     }
@@ -147,8 +154,13 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.friction = 0.0f;
+        fixtureDef.friction = 0.5f;
+        fixtureDef.filter.categoryBits = CATEGORY_ENTORNO;
+        // El entorno choca con personajes (pero no necesita chocar con otros entornos)
+        fixtureDef.filter.maskBits = CATEGORY_PERSONAJE;
         body.createFixture(fixtureDef);
+
+        
 
         shape.dispose();
     }
@@ -166,15 +178,14 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(this.ANCHO , 128 * PIXELS_TO_METERS);
         
-        // Definir propiedades físicas
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.5f;
-        fixtureDef.restitution = 0.3f;
-        
-        // Añadir forma al cuerpo
+        fixtureDef.filter.categoryBits = CATEGORY_ENTORNO;
+        // El entorno choca con personajes (pero no necesita chocar con otros entornos)
+        fixtureDef.filter.maskBits = CATEGORY_PERSONAJE;
         body.createFixture(fixtureDef);
+
         
         // Liberar la forma
         shape.dispose();
@@ -199,28 +210,33 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         jefe.setVida(vidaRestante);
         return jefe;
     }
+    
+    
+    public void mostrarMenuConfiguracion() {
+    	System.out.println("Hola");
+
+	    	 if(menuArena == null) {
+	    		 menuArena = new MenuArena(juego,this.skin );
+	         
+	         this.escena.addActor(menuArena);
+	         InputMultiplexer multiplexer = new InputMultiplexer(escena, lectorInputs);
+	         Gdx.input.setInputProcessor(multiplexer); // Asegurar que el menú reciba input
+	         float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2+50;
+	         float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
+	         menuArena.setPosition(centerX, centerY);
+	    	 }
+	      else if (menuArena != null) {
+	    		 menuArena.remove();
+	    		 System.out.println("HOllaa");
+	    		    Gdx.input.setInputProcessor(this.lectorInputs);
+	    		    menuArena = null;
+
+	         }
+    }
 
     @Override
     public void render(float delta) {
-    	 if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-    		 
-    		 menuVisible = !menuVisible;
-    	        
-    	     if(menuVisible) {
-    	    	 if(menuArena == null) {
-    	    		 menuArena = new MenuArena(juego,this.skin );
-    	         }
-    	         this.escena.addActor(menuArena);
-    	         float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2+50;
-    	         float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
-    	         menuArena.setPosition(centerX, centerY);
-    	         Gdx.input.setInputProcessor(escena); 
-    	     } else {
-    	    	 if(menuArena != null) {
-    	    		 menuArena.remove();
-    	         }
-    	     }
-    	 }
+
     	 
     	//Hay que hacerlo de esta manera o si no explota
     	 if(!world.isLocked() && !cuerposAEliminar.isEmpty()) {
@@ -231,12 +247,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
              }
              cuerposAEliminar.clear();
 
-    	            Gdx.input.setInputProcessor(escena); // Asegurar que el menú reciba input
-    	        } else {
-    	            if(menuArena != null) {
-    	                menuArena.remove();
-    	            }
-    	        }
+    	           
+    	        } 
+    	  
     	 
     	//Hay que hacerlo de esta manera o si explota
     	  if(!world.isLocked() && !cuerposAEliminar.isEmpty()) {
@@ -267,7 +280,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     	 escena.draw();
         
     	 // Mostrar hitboxes
-        debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
+       // debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
 }
 
     @Override
