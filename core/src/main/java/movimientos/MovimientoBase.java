@@ -1,5 +1,10 @@
 package movimientos;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+
+import gui.IconMovimiento;
+
 public abstract class MovimientoBase {
 	private String nombre;
     protected int framesInicio;
@@ -9,6 +14,8 @@ public abstract class MovimientoBase {
     protected boolean movimientoCompletado;
     protected float cooldown = 3f;
     protected float cooldownRestante;
+    protected IconMovimiento icon = new IconMovimiento(new Texture("movimientos/dash icon.png"));
+    protected boolean llegoAcero = false; 
     
     public MovimientoBase(String nombre,int inicio, int activos, int recuperacion) {
     	this.nombre = nombre;
@@ -28,21 +35,33 @@ public abstract class MovimientoBase {
     }
     
     public boolean estaListo() {
+ 
         return cooldownRestante <= 0;
     }
     
     public void activarCooldown() {
-        this.cooldownRestante = cooldown;
+        if (cooldownRestante <= 0f) {          // evita re-activar mientras ya está en cooldown
+            this.cooldownRestante = cooldown;
+            this.icon.setEnCooldown(true);     // gris
+            this.llegoAcero = true;
+        }
     }
     
-    
     public void actualizarCooldown(float delta) {
-        if (cooldownRestante > 0) {
+        if (cooldownRestante > 0f) {
             cooldownRestante -= delta;
+            if (cooldownRestante <= 0f) {
+                cooldownRestante = 0f;
+                if (llegoAcero) {
+                    icon.setEnCooldown(false); // vuelve a color normal
+                    llegoAcero = false;
+                }
+            }
         }
     }
 
-    
+
+   
     public boolean estaEnFramesInicio() {
         return frameActual < framesInicio;
     }
@@ -70,6 +89,10 @@ public abstract class MovimientoBase {
     
     public String getNombre() {
     	return this.nombre;
+    }
+    
+    public IconMovimiento getIcon() {
+    	return this.icon;
     }
     
 }

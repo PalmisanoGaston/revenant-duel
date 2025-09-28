@@ -123,15 +123,12 @@ public abstract class PersonajeBase extends Actor {
     public void act(float delta) {
         this.stateTime += delta;
         
-      Collection< MovimientoBase> collecionMovimiento =  this.movimientos.values();
-      MovimientoBase[] movimientosDisponibles = collecionMovimiento.toArray( new MovimientoBase[0]);
-      
-      for(MovimientoBase movimiento : movimientosDisponibles) {
-    	  if(!movimiento.estaListo()) {
-    		  movimiento.actualizarCooldown(delta);
-    	  }
-      }
-      
+        MovimientoBase[] movimientosDisponibles = getArrayMovimientos();
+        for (MovimientoBase movimiento : movimientosDisponibles) {
+            movimiento.actualizarCooldown(delta);  // SIEMPRE
+        }
+
+ 
       
 
         // Actualizar estado “en suelo” con filtro de estabilidad
@@ -244,6 +241,11 @@ public abstract class PersonajeBase extends Actor {
             (body.getPosition().y / Arena.PIXELS_TO_METERS) - getHeight() / 2f
         );
     }
+	public MovimientoBase[] getArrayMovimientos() {
+		Collection< MovimientoBase> collecionMovimiento =  this.movimientos.values();
+		  MovimientoBase[] movimientosDisponibles = collecionMovimiento.toArray( new MovimientoBase[0]);
+		return movimientosDisponibles;
+	}
 
     @Override
     public void draw(Batch batch, float parentAlpha) {

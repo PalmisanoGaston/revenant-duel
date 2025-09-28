@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 
+import movimientos.MovimientoBase;
+
 public class InfoPersonaje extends WidgetGroup {
     private Label labelInfo;
     private Image imagenPersonaje;
@@ -20,7 +22,7 @@ public class InfoPersonaje extends WidgetGroup {
     private Skin skin;
     private boolean esHeroe; 
     
-    public InfoPersonaje(String nombre, int vidaMax, Texture textura, Skin skin, boolean esHeroe) {
+    public InfoPersonaje(String nombre, int vidaMax, Texture textura, Skin skin, boolean esHeroe, MovimientoBase[] movimientos) {
         this.nombre = nombre;
         this.vidaMax = vidaMax;
         this.vidaActual = vidaMax;
@@ -44,8 +46,25 @@ public class InfoPersonaje extends WidgetGroup {
             table.add(imagenPersonaje).size(imagenPersonaje.getWidth(), imagenPersonaje.getHeight());
         }
         
-        this.addActor(table);
+        
         this.setSize(table.getPrefWidth(), table.getPrefHeight());
+        
+        Table tablaMovimientos = new Table();
+        tablaMovimientos.defaults().pad(5);
+        for (MovimientoBase movimiento: movimientos) {
+        	tablaMovimientos.add(movimiento.getIcon()).size(32, 32);
+		}
+        
+        table.row();
+     // que ocupe ambas columnas y se centre
+        table.add(tablaMovimientos)
+             .colspan(2)       // ocupa las 2 columnas
+             .padTop(10f)
+             .expandX()        // toma el ancho disponible
+             .center();        // centra el actor dentro de la celda
+    
+        this.addActor(table);
+        
     }
     
     public void modificarInfo(int vida) {

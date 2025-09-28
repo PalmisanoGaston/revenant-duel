@@ -126,8 +126,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         table.setFillParent(true);
         escena.addActor(table);
         
-        this.uiHeroe = new InfoPersonaje(this.heroe.getNombre(), this.heroe.getVidaMaxima(), new Texture("placeholder.png"), skin, true);
-        this.uiJefe =   new InfoPersonaje(this.jefe.getNombre(), this.jefe.getVidaMaxima(), new Texture("placeholder.png"), skin, false);
+        this.uiHeroe = new InfoPersonaje(this.heroe.getNombre(), this.heroe.getVidaMaxima(), new Texture("placeholder.png"), skin, true, this.heroe.getArrayMovimientos());
+        this.uiJefe =   new InfoPersonaje(this.jefe.getNombre(), this.jefe.getVidaMaxima(), new Texture("placeholder.png"), skin, false,  this.jefe.getArrayMovimientos());
 
         table.add(uiHeroe).pad(100).top().left();
         table.add().expandX(); // Espacio flexible en el centro
