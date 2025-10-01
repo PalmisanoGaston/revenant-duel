@@ -13,13 +13,14 @@ import utiles.HitBox;
 import utiles.HitboxInfo;
 
 public abstract class MovimientoAtaque extends MovimientoBase {
-    private Body cuerpo;
-    private boolean ladoDerecho;
-    private int daño;
+    protected Body cuerpo;
+    protected boolean ladoDerecho;
+    protected int daño;
     private Fixture hitboxFixture;
     private HitBox hitBoxHandler;
     private int largo;
     private int ancho;
+    
 
     public MovimientoAtaque(Body cuerpo, boolean ladoDerecho, int daño, int ancho,int largo, int fInicio, int fActivos, int fRecuperacion, String nombre) {
         super(nombre, fInicio, fActivos, fRecuperacion);

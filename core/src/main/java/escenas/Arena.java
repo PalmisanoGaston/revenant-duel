@@ -2,6 +2,7 @@ package escenas;
 
 
 import java.util.ArrayList;
+import utiles.ProyectilManager;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -42,6 +43,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     private ExtendViewport viewport;
     private World world;
     private Box2DDebugRenderer debugRenderer;
+    private ProyectilManager proyectilManager;
     
     public static final float PIXELS_TO_METERS = 1/100f; // 100 píxeles = 1 metro
     
@@ -77,6 +79,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         this.intentosHeroe = 5;
         
         world = new World(new Vector2(0, -10), true);
+        this.proyectilManager = new ProyectilManager(world);
         debugRenderer = new Box2DDebugRenderer();
         this.viewport = new ExtendViewport(ANCHO, ALTO);
         this.escena = new Stage(viewport);
@@ -100,6 +103,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
         
         world = new World(new Vector2(0, -10), true);
+        this.proyectilManager = new ProyectilManager(world);
         debugRenderer = new Box2DDebugRenderer();
         
         this.viewport = new ExtendViewport(ANCHO, ALTO);
@@ -117,7 +121,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     }
 
 	private void construirArena(Skin skin) {
-        world.setContactListener(new HitBox());
+        world.setContactListener(new HitBox(this.proyectilManager));
 
         crearLimitesMapa(); 
         
@@ -156,9 +160,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         fixtureDef.shape = shape;
         fixtureDef.friction = 0.5f;
         fixtureDef.filter.categoryBits = CATEGORY_ENTORNO;
-        // El entorno choca con personajes (pero no necesita chocar con otros entornos)
-        fixtureDef.filter.maskBits = CATEGORY_PERSONAJE;
-        body.createFixture(fixtureDef);
+	    fixtureDef.filter.maskBits = CATEGORY_PERSONAJE | CATEGORY_PROYECTIL;
+	    
+	    body.createFixture(fixtureDef);
 
         
 
@@ -182,8 +186,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         fixtureDef.shape = shape;
         fixtureDef.friction = 0.5f;
         fixtureDef.filter.categoryBits = CATEGORY_ENTORNO;
-        // El entorno choca con personajes (pero no necesita chocar con otros entornos)
-        fixtureDef.filter.maskBits = CATEGORY_PERSONAJE;
+	    // CORRECCIÓN: El entorno choca con personajes Y proyectiles
+	    fixtureDef.filter.maskBits = CATEGORY_PERSONAJE | CATEGORY_PROYECTIL;
         body.createFixture(fixtureDef);
 
         
@@ -192,7 +196,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     }
     
     private Heroe crearHeroe() {
-        Heroe heroe = new Heroe(world, this, this);
+   	 	Heroe heroe = new Heroe(world, this, this, this.proyectilManager);
         escena.addActor(heroe);
         return heroe;
     }
@@ -272,9 +276,11 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     	 // Actualizar escena
     	 escena.act(delta);
 
+   	  	 proyectilManager.actualizar(delta);
     	 batch.setProjectionMatrix(viewport.getCamera().combined);
     	 batch.begin();
     	 this.fondo.render(batch, delta, viewport.getWorldWidth(), viewport.getWorldHeight());
+    	 proyectilManager.render(batch); 
     	 batch.end();
         
     	 escena.draw();
@@ -293,6 +299,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         batch.dispose();
         escena.dispose();
         texturaBloque.dispose();
+        proyectilManager.limpiar();
     }
 
 	@Override

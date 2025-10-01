@@ -57,6 +57,7 @@ public class LectorInputs implements InputProcessor {
             else if (keycode == Input.Keys.SHIFT_LEFT)     personaje.requestDash();
             else if (keycode == Input.Keys.CONTROL_LEFT)   personaje.requestBackdash();
             else if (keycode == Input.Keys.J)              personaje.requestAttack();
+            else if (keycode == Input.Keys.K)              personaje.requestProyectil();
         }
         
         

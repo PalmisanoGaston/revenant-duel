@@ -43,10 +43,12 @@ public abstract class PersonajeBase extends Actor {
     protected boolean inAttack;
     protected boolean inDash;
     protected boolean inBackdash;
+    protected boolean enAtaqueProyectil;
 
     public void setInputLeft(boolean v)    { this.inLeft = v; }
     public void setInputRight(boolean v)   { this.inRight = v; }
     public void requestJump()              { this.inJump = true; }
+    public void requestProyectil()  {this.enAtaqueProyectil = true;}
     public void requestAttack()            { this.inAttack = true; }
     public void requestDash()              { this.inDash = true; }
     public void requestBackdash()          { this.inBackdash = true; }
@@ -95,7 +97,7 @@ public abstract class PersonajeBase extends Actor {
         fixtureDef.friction = 0f; // para que no se queden pegados
         fixtureDef.filter.categoryBits = CATEGORY_PERSONAJE;
         // El personaje solo choca con el entorno (NO con otros personajes)
-        fixtureDef.filter.maskBits = CATEGORY_ENTORNO;
+        fixtureDef.filter.maskBits = CATEGORY_ENTORNO | CATEGORY_PROYECTIL;
         body.createFixture(fixtureDef);
 
         shape.dispose();

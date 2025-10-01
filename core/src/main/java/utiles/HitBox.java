@@ -6,28 +6,61 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
+import escenas.Arena;
 import personajes.Jefe;
 import personajes.PersonajeBase;
 import mejoras.MejorasHeroe;
 
 public class HitBox implements ContactListener {
+	
+	 private ProyectilManager proyectilManager;
+	 
+	 
+	 public HitBox() {
+		 this.proyectilManager = null;
+	 }
+	 
+	 
+	 public HitBox(ProyectilManager proyectilManager) {
+	        this.proyectilManager = proyectilManager;
+	 }
     
-    @Override
-    public void beginContact(Contact contact) {
-    	
-        Fixture fixtureA = contact.getFixtureA();
-        Fixture fixtureB = contact.getFixtureB();
+	 @Override
+	 public void beginContact(Contact contact) {
+	     Fixture a = contact.getFixtureA();
+	     Fixture b = contact.getFixtureB();
 
-        if (esHitboxAtaque(fixtureA) && esPersonaje(fixtureB)) {
+	     // 1) Proyectil vs Personaje
+	     if (esProyectil(a) && esPersonaje(b)) {
+	         manejarColisionProyectil(a, b); // a = proyectil, b = personaje
+	         return;
+	     }
+	     if (esProyectil(b) && esPersonaje(a)) {
+	         manejarColisionProyectil(b, a); // b = proyectil, a = personaje
+	         return;
+	     }
 
-            aplicarDaño(fixtureA, fixtureB);
-            }
+	     // 2) Proyectil vs Entorno
+	     if (esProyectil(a) && esEntorno(b)) {
+	         manejarColisionProyectilEntorno(a); // a = proyectil
+	         return;
+	     }
+	     if (esProyectil(b) && esEntorno(a)) {
+	         manejarColisionProyectilEntorno(b); // b = proyectil
+	         return;
+	     }
 
-        else if (esHitboxAtaque(fixtureB) && esPersonaje(fixtureA)) {
-            aplicarDaño(fixtureB, fixtureA);
-        }
+	     // 3) Hitbox de ataque cuerpo-a-cuerpo vs Personaje (original)
+	     if (esHitboxAtaque(a) && esPersonaje(b)) {
+	         aplicarDaño(a, b);
+	         return;
+	     }
+	     if (esHitboxAtaque(b) && esPersonaje(a)) {
+	         aplicarDaño(b, a);
+	         return;
+	     }
+	 }
 
-    }
 
     private boolean esHitboxAtaque(Fixture fixture) {
         return fixture.getUserData() instanceof HitboxInfo && 
@@ -64,6 +97,42 @@ public class HitBox implements ContactListener {
         
         System.out.println("Golpe conectado,  Daño: " + hitboxData.getDaño());
     }
+    
+    private boolean esProyectil(Fixture fixture) {
+        return fixture.getUserData() instanceof HitboxInfo && 
+               "PROYECTIL".equals(((HitboxInfo)fixture.getUserData()).getTipo());
+    }
+
+    private boolean esEntorno(Fixture fixture) {
+        return fixture.getFilterData().categoryBits == Arena.CATEGORY_ENTORNO;
+    }
+
+    private void manejarColisionProyectil(Fixture proyectil, Fixture personaje) {
+        HitboxInfo proyectilData = (HitboxInfo)proyectil.getUserData();
+        PersonajeBase pj = (PersonajeBase)personaje.getBody().getUserData();
+
+        if(pj.getVida() == 0 || pj.esInvulnerable()){
+            return;
+        }
+
+        // Aplicar daño
+        if(pj instanceof Jefe) {
+            pj.recibirDaño(proyectilData.getDaño() * MejorasHeroe.DANIO.getMultiplicador());
+        } else {
+            pj.recibirDaño(proyectilData.getDaño());
+        }
+
+        System.out.println("Proyectil golpeó, Daño: " + proyectilData.getDaño());
+        
+        // Marcar proyectil para destrucción
+        proyectil.getBody().setUserData("DESTRUIDO");
+    }
+
+    private void manejarColisionProyectilEntorno(Fixture proyectil) {
+    	System.out.println("Sexo");
+        // Marcar proyectil para destrucción al chocar con entorno
+        proyectil.getBody().setUserData("DESTRUIDO");
+    }  
 
 	@Override
 	public void endContact(Contact contact) {}
