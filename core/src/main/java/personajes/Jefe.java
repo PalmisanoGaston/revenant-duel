@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
+import movimientos.AtaqueBasico;
 import movimientos.AtaqueJefe;
 import movimientos.MovimientoBase;
 import movimientos.Salto;
@@ -30,6 +31,8 @@ public class Jefe extends PersonajeBase {
         super(world, "Jefe", 150, muerteListener, vidaListener, new AnimacionesJefe(), /*fuerzaSalto base*/ 10);
         // Podés seguir llenando el mapa de movimientos si querés, pero el ataque se crea por factory:
         // movimientos.put("Ataque",  new AtaqueJefe(body, lado));
+        this.ataque = new AtaqueJefe(body, lado);
+        movimientos.put("Ataque", ataque);
     }
 
     @Override

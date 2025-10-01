@@ -14,6 +14,7 @@ import escenas.Arena;
 import movimientos.Backdash;
 import movimientos.Dash;
 import movimientos.Morir;
+import movimientos.MovimientoAtaque;
 import movimientos.MovimientoBase;
 import movimientos.Salto;
 
@@ -35,6 +36,7 @@ public abstract class PersonajeBase extends Actor {
     protected MuerteEventListener muerteEventListener;
     protected CambioVidaEventListener cambioVidaEventListener;
     protected Animation<TextureRegion> animacionActual;
+    protected MovimientoAtaque ataque;
 
     // ====== INPUT FLAGS (seteados por LectorInputs) ======
     protected boolean inLeft;
@@ -48,7 +50,7 @@ public abstract class PersonajeBase extends Actor {
     public void setInputLeft(boolean v)    { this.inLeft = v; }
     public void setInputRight(boolean v)   { this.inRight = v; }
     public void requestJump()              { this.inJump = true; }
-    public void requestProyectil()  {this.enAtaqueProyectil = true;}
+    public void requestProyectil()  	   {this.enAtaqueProyectil = true;}
     public void requestAttack()            { this.inAttack = true; }
     public void requestDash()              { this.inDash = true; }
     public void requestBackdash()          { this.inBackdash = true; }
@@ -192,9 +194,9 @@ public abstract class PersonajeBase extends Actor {
                         dash.setLadoDerecho(lado);
                         dash.reiniciar();
                         if(dash.estaListo()) {
-                        movimientoActual = dash;
-                        onPlayDash();
-                        dash.activarCooldown();
+	                        movimientoActual = dash;
+	                        onPlayDash();
+	                        dash.activarCooldown();
                         }// hook de sonido
                     }
                     inDash = false;
@@ -206,22 +208,19 @@ public abstract class PersonajeBase extends Actor {
                         Backdash back = (Backdash) movimientos.get("Backdash");
                         back.setLadoDerecho(lado);
                         back.reiniciar();
-                        movimientoActual = back;
-                        onPlayDash();                        // usa mismo sonido que dash por defecto
+                        if(back.estaListo()) {
+                            movimientoActual = back;
+                            onPlayDash();  
+                            back.activarCooldown();
+                        }
+                      // usa mismo sonido que dash por defecto
                     }
                     inBackdash = false;
                 }
-
-                // Ataque (solo si libre y apoyado)
-                if (inAttack) {
-                    if (movimientoActual == null && isGrounded()) {
-                        MovimientoBase ataque = createAtaque();   // <-- definido por cada subclase
-                        movimientoActual = ataque;
-                        this.stateTime = 0;
-                        onAttackAnimation();                      // hook para poner anim de ataque (Jefe)
-                        onPlayGolpe();                            // hook de sonido
-                    }
-                    inAttack = false;
+                if(inAttack) {
+                	System.out.println("hola");
+                	realizarAtaqueBasico();
+                	inAttack = false;
                 }
 
                 // Hook para acciones extra del hijo (p.ej. toggle bestia del Jefe)
@@ -243,10 +242,33 @@ public abstract class PersonajeBase extends Actor {
             (body.getPosition().y / Arena.PIXELS_TO_METERS) - getHeight() / 2f
         );
     }
+    
+
+    public void realizarAtaqueBasico() {
+        if (movimientoActual == null && isGrounded()) {
+            
+            MovimientoBase ataque = movimientos.get("Ataque");
+            if (ataque != null) {
+            	if(ataque.estaListo()) {
+	                movimientoActual = ataque;	            
+	                this.stateTime = 0;
+	                ataque.reiniciar();
+	                this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
+	                ataque.activarCooldown();
+            	}
+            }
+        }
+    }
+    
 	public MovimientoBase[] getArrayMovimientos() {
 		Collection< MovimientoBase> collecionMovimiento =  this.movimientos.values();
 		  MovimientoBase[] movimientosDisponibles = collecionMovimiento.toArray( new MovimientoBase[0]);
 		return movimientosDisponibles;
+	}
+	
+	
+	public void aplicarMovimiento(MovimientoBase movimiento) {
+		
 	}
 
     @Override

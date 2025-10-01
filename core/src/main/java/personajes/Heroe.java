@@ -27,7 +27,11 @@ public class Heroe extends PersonajeBase {
         this.proyectilManager = proyectilManager;
         
         this.proyectilBasico = new ProyectilBasico(body, lado, world, proyectilManager);
+        
+        this.ataque = new AtaqueBasico(body, lado);
+        movimientos.put("Ataque", ataque);
         movimientos.put("Proyectil", proyectilBasico);
+
     }
 
     @Override
@@ -50,13 +54,17 @@ public class Heroe extends PersonajeBase {
             
             MovimientoBase proyectil = movimientos.get("Proyectil");
             if (proyectil != null) {
-                movimientoActual = proyectil;
-                this.stateTime = 0;
-                proyectil.reiniciar();
-                onPlayProyectil();
+            	if(proyectil.estaListo()) {
+	                movimientoActual = proyectil;
+	                this.stateTime = 0;
+	                proyectil.reiniciar();
+	                onPlayProyectil();
+	                proyectil.activarCooldown();
+            	}
             }
         }
     }
+
 
     // (Opcional) sonidos
     @Override protected void onPlayDash()  { sonidos.playDash(); }
@@ -74,6 +82,7 @@ public class Heroe extends PersonajeBase {
             realizarAtaqueProyectil();
             enAtaqueProyectil = false;
         }
+       
     }
 
     public int getNivelVida() { return (int)this.mejoraVida.getMultiplicador(); }
