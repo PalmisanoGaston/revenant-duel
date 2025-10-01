@@ -22,8 +22,8 @@ public abstract class MovimientoAtaque extends MovimientoBase {
     private int ancho;
     
 
-    public MovimientoAtaque(Body cuerpo, boolean ladoDerecho, int daño, int ancho,int largo, int fInicio, int fActivos, int fRecuperacion, String nombre) {
-        super(nombre, fInicio, fActivos, fRecuperacion);
+    public MovimientoAtaque(Body cuerpo, boolean ladoDerecho, int daño, int ancho,int largo, int fInicio, int fActivos, int fRecuperacion, String nombre, float cooldown) {
+        super(nombre, fInicio, fActivos, fRecuperacion, cooldown);
         this.cuerpo = cuerpo;
         this.ladoDerecho = ladoDerecho;
         this.daño = daño;

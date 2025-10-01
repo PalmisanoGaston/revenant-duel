@@ -17,13 +17,14 @@ public abstract class MovimientoBase {
     protected IconMovimiento icon = new IconMovimiento(new Texture("movimientos/dash icon.png"));
     protected boolean llegoAcero = false; 
     
-    public MovimientoBase(String nombre,int inicio, int activos, int recuperacion) {
+    public MovimientoBase(String nombre,int inicio, int activos, int recuperacion, float cooldown) {
     	this.nombre = nombre;
         this.framesInicio = inicio;
         this.framesActivos = activos;
         this.framesRecuperacion = recuperacion;
         this.frameActual = 0;
         this.movimientoCompletado = false;
+        this.cooldown = cooldown;
     }
     
     public void actualizar() {

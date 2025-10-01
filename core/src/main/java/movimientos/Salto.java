@@ -9,7 +9,7 @@ public class Salto extends MovimientoBase {
     private int fuerza;
     
     public Salto(Body cuerpo, int fuerza) {
-        super("Salto",1, 12, 4); // Frames de inicio: 3, activos: 5, recuperación: 10
+        super("Salto",1, 12, 4, 0f); // Frames de inicio: 3, activos: 5, recuperación: 10
         this.cuerpo = cuerpo;
         this.fuerza = fuerza;
     }

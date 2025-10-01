@@ -9,7 +9,7 @@ public class Dash extends MovimientoBase {
     private final float VELOCIDAD_DASH = 7f;
     
     public Dash(Body cuerpo, boolean ladoDerecho) {
-        super("Dash",3, 12, 10); // Frames de inicio: 3, activos: 5, recuperación: 10
+        super("Dash",3, 12, 10, 3f); // Frames de inicio: 3, activos: 5, recuperación: 10
         this.cuerpo = cuerpo;
         this.ladoDerecho = ladoDerecho;
     }

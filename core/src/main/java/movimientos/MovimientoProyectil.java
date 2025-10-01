@@ -15,8 +15,8 @@ public class MovimientoProyectil extends MovimientoAtaque {
     private Texture texturaProyectil;
     private boolean proyectilLanzado = false;
 
-    public MovimientoProyectil(Body cuerpo, boolean ladoDerecho, int daño, World world, ProyectilManager proyectilManager, String nombre) {
-        super(cuerpo, ladoDerecho, daño, 20, 20, 10, 5, 15, nombre);
+    public MovimientoProyectil(Body cuerpo, boolean ladoDerecho, int daño, World world, ProyectilManager proyectilManager, String nombre, float cooldown) {
+        super(cuerpo, ladoDerecho, daño, 20, 20, 10, 5, 15, nombre, cooldown);
         this.world = world;
         this.proyectilManager = proyectilManager;
         this.texturaProyectil = new Texture("proyectil.png");

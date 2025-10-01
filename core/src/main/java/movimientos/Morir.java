@@ -7,7 +7,7 @@ public class Morir extends MovimientoBase {
 	private PersonajeBase personaje;
 	
 	public Morir(PersonajeBase personaje) {
-		super("Morir", 1, 0, 100);
+		super("Morir", 1, 0, 100, 0f);
 		this.personaje = personaje;
 		
 	}

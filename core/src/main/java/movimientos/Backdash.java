@@ -9,7 +9,7 @@ public class Backdash extends MovimientoBase {
     private final float VELOCIDAD_DASH = 7f;
     
     public Backdash(Body cuerpo, boolean ladoDerecho) {
-        super("Backdash",3, 10, 15); // Frames de inicio: 3, activos: 5, recuperación: 10
+        super("Backdash",3, 10, 15, 3f); // Frames de inicio: 3, activos: 5, recuperación: 10
         this.cuerpo = cuerpo;
         this.ladoDerecho = ladoDerecho;
     }
