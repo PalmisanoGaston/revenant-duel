@@ -88,6 +88,6 @@ public class Heroe extends PersonajeBase {
     public int getNivelVida() { return (int)this.mejoraVida.getMultiplicador(); }
 
     public void mejorarVida() {
-        this.mejoraVida.aumentarNigger();
+        this.mejoraVida.aumentarNivel();
     }
 }

@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import escenas.Arena;
 import escenas.Principal;
-import mejoras.MejoraVida;
 import mejoras.MejorasHeroe;
 import personajes.Jefe;
 import personajes.Heroe;
@@ -62,7 +61,7 @@ public class MenuHeroe implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if(mejoras_permitidas > 0) {
-                    MejorasHeroe.DANIO.aumentarNigger(); // aumenta el nivel
+                    MejorasHeroe.DANIO.aumentarNivel(); // aumenta el nivel
                     botonMejoraDanio.setText("Mejorar Daño (Nivel " + MejorasHeroe.DANIO.getMultiplicador() + ")");
                     mejoras_permitidas--;
                 }
@@ -74,7 +73,7 @@ public class MenuHeroe implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if(mejoras_permitidas > 0) {
-                    MejorasHeroe.VELOCIDAD.aumentarNigger();
+                    MejorasHeroe.VELOCIDAD.aumentarNivel();
                     botonMejoraVelocidad.setText("Mejorar Velocidad (Nivel " + MejorasHeroe.VELOCIDAD.getMultiplicador() + ")");
                     mejoras_permitidas--;
                 }
@@ -86,7 +85,7 @@ public class MenuHeroe implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if(mejoras_permitidas > 0) {
-                    MejorasHeroe.SALTO.aumentarNigger();
+                    MejorasHeroe.SALTO.aumentarNivel();
                     botonMejoraSalto.setText("Mejorar Salto (Nivel " + MejorasHeroe.SALTO.getMultiplicador() + ")");
                     mejoras_permitidas--;
                 }

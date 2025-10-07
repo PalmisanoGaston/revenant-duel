@@ -1,7 +1,5 @@
 package mejoras;
 
-import java.util.Iterator;
-
 public enum MejorasHeroe {
 	VIDA(1),
 	DANIO(1),
@@ -15,7 +13,7 @@ public enum MejorasHeroe {
         this.multiplicador = multiplicador;
     }
 	
-	public void aumentarNigger() {
+	public void aumentarNivel() {
 		if(this.multiplicador < this.nivelMax) {
             this.multiplicador += 1;
         }
