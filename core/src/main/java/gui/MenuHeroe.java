@@ -24,14 +24,18 @@ public class MenuHeroe implements Screen {
     private Stage escena;
     private Skin fuenteTextos;
     private Heroe heroe;
+    private Jefe jefe; // Añadir referencia al jefe
+    private int intentos;
     private int mejoras_permitidas = 1;
 
     public MenuHeroe(Principal juego, Heroe heroe, Jefe jefe, int intentos) {
         this.juego = juego;
         this.escena = new Stage(new ScreenViewport());
         this.heroe = heroe;
+        this.jefe = jefe; // Guardar referencia al jefe
+        this.intentos = intentos;
         this.fuenteTextos = new Skin(Gdx.files.internal("uiskin.json"));
-
+        
         Table table = new Table();
         table.setFillParent(true);
         escena.addActor(table);
@@ -105,12 +109,13 @@ public class MenuHeroe implements Screen {
         botonVolver.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Pasar el multiplicador de vida desde Estadistica
+                // Pasar las estadísticas actualizadas del héroe
                 juego.setScreen(new Arena(
                         juego,
                         fuenteTextos,
                         jefe.getVida(),
-                        intentos
+                        intentos,
+                        heroe.getEstadistica() // ← Pasar las estadísticas
                 ));
             }
         });

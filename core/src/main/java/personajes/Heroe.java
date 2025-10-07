@@ -16,14 +16,18 @@ public class Heroe extends PersonajeBase {
     private ProyectilManager proyectilManager;
     private ProyectilBasico proyectilBasico;
 
-    public Heroe(World world, MuerteEventListener muerteListener, CambioVidaEventListener vidaListener, ProyectilManager proyectilManager) {
-        super(world, "Jugador", (int)(100) , muerteListener, vidaListener,
-                new AnimacionesPersonaje(), (int)(1), 5);
+    public Heroe(World world, MuerteEventListener muerteListener, 
+            CambioVidaEventListener vidaListener, 
+            ProyectilManager proyectilManager, Estadistica estadisticas) {
+   super(world, "Jugador", 100, muerteListener, vidaListener,
+           new AnimacionesPersonaje(), 1, 5f, estadisticas);
         this.proyectilManager = proyectilManager;
         
-        this.proyectilBasico = new ProyectilBasico(body, lado, world, proyectilManager);
+        this.proyectilBasico = new ProyectilBasico(body, lado, world, proyectilManager,this);
+        this.fuerzaSalto = 1 * (int)this.estadisticas.getMultSalto();
+        this.velocidadHorizontal = 5f * this.estadisticas.getMultVelocidad();
         
-        this.ataque = new AtaqueBasico(body, lado);
+        this.ataque = new AtaqueBasico(body, lado,this);
         movimientos.put("Ataque", ataque);
         movimientos.put("Proyectil", proyectilBasico);
 
@@ -31,7 +35,7 @@ public class Heroe extends PersonajeBase {
 
     @Override
     protected MovimientoBase createAtaque() {
-        return new AtaqueBasico(body, lado);
+        return new AtaqueBasico(body, lado,this);
     }
 
     // Método para manejar el ataque con proyectil

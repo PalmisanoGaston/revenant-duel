@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 
 import escenas.Arena;
+import personajes.PersonajeBase;
 import utiles.HitboxInfo;
 import utiles.ProyectilManager;
 
@@ -15,8 +16,8 @@ public class MovimientoProyectil extends MovimientoAtaque {
     private Texture texturaProyectil;
     private boolean proyectilLanzado = false;
 
-    public MovimientoProyectil(Body cuerpo, boolean ladoDerecho, int daño, World world, ProyectilManager proyectilManager, String nombre, float cooldown) {
-        super(cuerpo, ladoDerecho, daño, 20, 20, 10, 5, 15, nombre, cooldown);
+    public MovimientoProyectil(Body cuerpo, boolean ladoDerecho, int daño, World world, ProyectilManager proyectilManager, String nombre, float cooldown, PersonajeBase personaje) {
+        super(cuerpo, ladoDerecho, daño, 20, 20, 10, 5, 15, nombre, cooldown, personaje);
         this.world = world;
         this.proyectilManager = proyectilManager;
         this.texturaProyectil = new Texture("proyectil.png");
@@ -45,7 +46,7 @@ public class MovimientoProyectil extends MovimientoAtaque {
         float x = (posicionCuerpo.x / Arena.PIXELS_TO_METERS) + (direccion * 50);
         float y = (posicionCuerpo.y / Arena.PIXELS_TO_METERS) + 20;
         
-        HitboxInfo info = new HitboxInfo("PROYECTIL", daño);
+        HitboxInfo info = new HitboxInfo("PROYECTIL", daño,this.getPersonaje());
         
         Proyectil proyectil = new Proyectil(world, x, y, direccion, 0, 3f, 
                                            info, texturaProyectil, 20, 20);

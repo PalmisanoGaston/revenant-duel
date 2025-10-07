@@ -28,10 +28,13 @@ public class Jefe extends PersonajeBase {
     public void requestToggleBestia() { this.inToggleBestia = true; }
 
     public Jefe(World world, MuerteEventListener muerteListener, CambioVidaEventListener vidaListener) {
-        super(world, "Jefe", 150, muerteListener, vidaListener, new AnimacionesJefe(), /*fuerzaSalto base*/ 10, 2f);
-        // Podés seguir llenando el mapa de movimientos si querés, pero el ataque se crea por factory:
-        // movimientos.put("Ataque",  new AtaqueJefe(body, lado));
-        this.ataque = new AtaqueJefe(body, lado);
+        super(world, "Jefe", 150, muerteListener, vidaListener, 
+              new AnimacionesJefe(), 10, 2f, new Estadistica()); // ← Jefe usa estadísticas nuevas
+        this.velocidadNormal = 2f * this.estadisticas.getMultVelocidad();
+        this.velocidadBestia = 4f * this.estadisticas.getMultVelocidad();
+        this.fuerzaSaltoNormal = 10 * (int)this.estadisticas.getMultSalto();
+        this.fuerzaSaltoBestia = 20 * (int)this.estadisticas.getMultSalto();
+        this.ataque = new AtaqueJefe(body, lado,this);
         movimientos.put("Ataque", ataque);
     }
 
@@ -42,7 +45,7 @@ public class Jefe extends PersonajeBase {
 
     @Override
     protected MovimientoBase createAtaque() {
-        return new AtaqueJefe(body, lado);
+        return new AtaqueJefe(body, lado,this);
     }
 
     @Override

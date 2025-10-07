@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 import escenas.Arena;
+import personajes.PersonajeBase;
 
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 
@@ -20,9 +21,10 @@ public abstract class MovimientoAtaque extends MovimientoBase {
     private HitBox hitBoxHandler;
     private int largo;
     private int ancho;
+    private PersonajeBase personaje;
     
 
-    public MovimientoAtaque(Body cuerpo, boolean ladoDerecho, int daño, int ancho,int largo, int fInicio, int fActivos, int fRecuperacion, String nombre, float cooldown) {
+    public MovimientoAtaque(Body cuerpo, boolean ladoDerecho, int daño, int ancho,int largo, int fInicio, int fActivos, int fRecuperacion, String nombre, float cooldown, PersonajeBase personaje) {
         super(nombre, fInicio, fActivos, fRecuperacion, cooldown);
         this.cuerpo = cuerpo;
         this.ladoDerecho = ladoDerecho;
@@ -30,6 +32,7 @@ public abstract class MovimientoAtaque extends MovimientoBase {
         this.ancho = ancho;
         this.largo = largo;
         this.hitBoxHandler = new HitBox();
+        this.personaje = personaje;
     }
     
     @Override
@@ -67,9 +70,14 @@ public abstract class MovimientoAtaque extends MovimientoBase {
 	    fixtureDef.filter.maskBits = 0x0001;
 	    // Crea la hitbox como un fixture adicional del cuerpo
 	    hitboxFixture = cuerpo.createFixture(fixtureDef);
-	    hitboxFixture.setUserData(new HitboxInfo("HITBOX_ATAQUE", this.daño));
+	    hitboxFixture.setUserData(new HitboxInfo("HITBOX_ATAQUE", this.daño,this.personaje));
 	}
     
+	protected PersonajeBase getPersonaje() {
+		return this.personaje;
+	}
+	
+	
 	protected void eliminarHitbox() {
 		if (hitboxFixture != null && cuerpo != null) {
 			try {

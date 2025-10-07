@@ -30,6 +30,7 @@ import gui.ScreenPerder;
 import mejoras.MejoraVida;
 import personajes.Jefe;
 import personajes.LectorInputs;
+import personajes.Estadistica;
 import personajes.Heroe;
 import personajes.PersonajeBase;
 import utiles.HitBox;
@@ -52,6 +53,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     private static final int ANCHO = 800;
     private static final int ALTO = 800;    
     
+    private Estadistica estadisticasHeroe; 
     
     private ArrayList<Body> cuerposAEliminar = new ArrayList<>();
 
@@ -79,7 +81,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         this.batch = new SpriteBatch();
         this.texturaBloque = new Texture("tileset.png");
         this.intentosHeroe = 5;
-        
+        this.estadisticasHeroe = new Estadistica();
         world = new World(new Vector2(0, -10), true);
         this.proyectilManager = new ProyectilManager(world);
         debugRenderer = new Box2DDebugRenderer();
@@ -98,12 +100,12 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         construirArena(skin);
     }
 
-    public Arena(Principal juego, Skin skin, int vidaJefe, int intentosRestantes) {
+    public Arena(Principal juego, Skin skin, int vidaJefe, int intentosRestantes, Estadistica estadisticasHeroe) {
         this.juego = juego;
         this.batch = new SpriteBatch();
         this.texturaBloque = new Texture("tileset.png");
         this.intentosHeroe = intentosRestantes;
-        
+        this.estadisticasHeroe = estadisticasHeroe; // ← Guardar las estadísticas pasadas
         
         world = new World(new Vector2(0, -10), true);
         this.proyectilManager = new ProyectilManager(world);
@@ -115,14 +117,12 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         crearPiso();
         this.skin = skin;
         this.jefe = crearJefe(vidaJefe);
-       this.heroe = crearHeroe();
+        this.heroe = crearHeroe(); // ← El héroe usará las estadísticas guardadas
      
         construirArena(skin);
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
         StageInputProcessor stageProcessor = new StageInputProcessor(escena);
         this.inputManager = new InputManager(lectorInputs, stageProcessor);
-
-
     }
 
 	private void construirArena(Skin skin) {
@@ -201,7 +201,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     }
     
     private Heroe crearHeroe() {
-   	 	Heroe heroe = new Heroe(world, this, this, this.proyectilManager);
+        Heroe heroe = new Heroe(world, this, this, this.proyectilManager, this.estadisticasHeroe);
         escena.addActor(heroe);
         return heroe;
     }

@@ -77,6 +77,7 @@ public class HitBox implements ContactListener {
         }
         
         HitboxInfo hitboxData = (HitboxInfo)hitbox.getUserData();
+        PersonajeBase caster = hitboxData.getPersonaje();
         PersonajeBase pj = (PersonajeBase)personaje.getBody().getUserData();
 
         if(pj.getVida() == 0){
@@ -88,11 +89,8 @@ public class HitBox implements ContactListener {
             return;
         }
         
-        if(pj instanceof Jefe) {
-        //	pj.recibirDaño(hitboxData.getDaño() * MejorasHeroe.DANIO.getMultiplicador());
-        }else {
-        	pj.recibirDaño(hitboxData.getDaño());
-        }
+
+        	pj.recibirDaño(hitboxData.getDaño() *(int) caster.getEstadistica().getMultDanio());
         
         System.out.println("Golpe conectado,  Daño: " + hitboxData.getDaño());
     }
@@ -109,18 +107,14 @@ public class HitBox implements ContactListener {
     private void manejarColisionProyectil(Fixture proyectil, Fixture personaje) {
         HitboxInfo proyectilData = (HitboxInfo)proyectil.getUserData();
         PersonajeBase pj = (PersonajeBase)personaje.getBody().getUserData();
+        PersonajeBase caster = proyectilData.getPersonaje();
 
         if(pj.getVida() == 0 || pj.esInvulnerable()){
             return;
         }
 
-        // Aplicar daño
-        if(pj instanceof Jefe) {
-          //  pj.recibirDaño(proyectilData.getDaño() * MejorasHeroe.DANIO.getMultiplicador());
-        } else {
-            pj.recibirDaño(proyectilData.getDaño());
-        }
-
+        pj.recibirDaño(proyectilData.getDaño() *(int) caster.getEstadistica().getMultDanio());
+        
         System.out.println("Proyectil golpeó, Daño: " + proyectilData.getDaño());
         
         // Marcar proyectil para destrucción

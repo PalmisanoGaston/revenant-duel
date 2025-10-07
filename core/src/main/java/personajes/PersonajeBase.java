@@ -41,7 +41,7 @@ public abstract class PersonajeBase extends Actor {
 
 
     // ===== Multimplicadores =====
-    protected Estadistica estadisticas;
+    protected Estadistica estadisticas = new Estadistica();
     protected float mejoraVida = estadisticas.getMultVida();
     protected float mejoraSalto = estadisticas.getMultSalto();
     protected float mejoraDanio = estadisticas.getMultDanio();
@@ -77,17 +77,21 @@ public abstract class PersonajeBase extends Actor {
     protected final boolean isGrounded() { return grounded; }
 
     public PersonajeBase(World world, String nombre, int vida,
-                         MuerteEventListener muerteListener,
-                         CambioVidaEventListener vidaListener,
-                         AnimacionBase animacion, int fuerzaSalto, float velocidadHorizontal) {
-        this.nombre = nombre;
-        this.vida = vida * (int) this.estadisticas.getMultVida();
-        this.vidaMaxima = vida;
-        this.muerteEventListener = muerteListener;
-        this.cambioVidaEventListener = vidaListener;
-        this.animacionPersonaje = animacion;
-        this.fuerzaSalto = fuerzaSalto * (int)this.estadisticas.getMultSalto(); // <<< IMPORTANTE
-        this.velocidadHorizontal = velocidadHorizontal;
+            MuerteEventListener muerteListener,
+            CambioVidaEventListener vidaListener,
+            AnimacionBase animacion, int fuerzaSalto, 
+            float velocidadHorizontal, Estadistica estadisticas) {
+
+		this.estadisticas = estadisticas; // ← Usar las estadísticas pasadas
+		
+		this.nombre = nombre;
+		this.vida = vida * (int) this.estadisticas.getMultVida();
+		this.vidaMaxima = vida * (int) this.estadisticas.getMultVida();
+		this.muerteEventListener = muerteListener;
+		this.cambioVidaEventListener = vidaListener;
+		this.animacionPersonaje = animacion;
+		this.fuerzaSalto = fuerzaSalto * (int)this.estadisticas.getMultSalto();
+		this.velocidadHorizontal = velocidadHorizontal;
 
         // Configuración física común
         BodyDef bodyDef = new BodyDef();
