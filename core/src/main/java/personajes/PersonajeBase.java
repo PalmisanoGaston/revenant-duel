@@ -38,6 +38,14 @@ public abstract class PersonajeBase extends Actor {
     protected Animation<TextureRegion> animacionActual;
     protected MovimientoAtaque ataque;
 
+
+    // ===== Multimplicadores =====
+    protected Estadistica estadisticas;
+    protected float mejoraVida = estadisticas.getMultVida();
+    protected float mejoraSalto = estadisticas.getMultSalto();
+    protected float mejoraDanio = estadisticas.getMultDanio();
+    protected float mejoraVelocidad = estadisticas.getMultVelocidad();
+
     // ====== INPUT FLAGS (seteados por LectorInputs) ======
     protected boolean inLeft;
     protected boolean inRight;
