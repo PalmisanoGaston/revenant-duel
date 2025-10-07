@@ -28,7 +28,6 @@ import gui.MenuArena;
 import gui.MenuHeroe;
 import gui.ScreenPerder;
 import mejoras.MejoraVida;
-import mejoras.MejorasHeroe;
 import personajes.Jefe;
 import personajes.LectorInputs;
 import personajes.Heroe;
@@ -99,7 +98,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         construirArena(skin);
     }
 
-    public Arena(Principal juego, Skin skin, int mejoraVida, int vidaJefe, int intentosRestantes) {
+    public Arena(Principal juego, Skin skin, int vidaJefe, int intentosRestantes) {
         this.juego = juego;
         this.batch = new SpriteBatch();
         this.texturaBloque = new Texture("tileset.png");

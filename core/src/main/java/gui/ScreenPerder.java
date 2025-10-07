@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import escenas.Menu;
 import escenas.Principal;
-import mejoras.MejorasHeroe;
 
 public class ScreenPerder implements Screen {
 	
@@ -41,7 +40,6 @@ public class ScreenPerder implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) { 
                 juego.setScreen(new Menu(juego));
-                MejorasHeroe.restStats();
             }
         });
 

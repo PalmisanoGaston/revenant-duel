@@ -9,7 +9,6 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import escenas.Arena;
 import personajes.Jefe;
 import personajes.PersonajeBase;
-import mejoras.MejorasHeroe;
 
 public class HitBox implements ContactListener {
 	
@@ -90,7 +89,7 @@ public class HitBox implements ContactListener {
         }
         
         if(pj instanceof Jefe) {
-        	pj.recibirDaño(hitboxData.getDaño() * MejorasHeroe.DANIO.getMultiplicador());
+        //	pj.recibirDaño(hitboxData.getDaño() * MejorasHeroe.DANIO.getMultiplicador());
         }else {
         	pj.recibirDaño(hitboxData.getDaño());
         }
@@ -117,7 +116,7 @@ public class HitBox implements ContactListener {
 
         // Aplicar daño
         if(pj instanceof Jefe) {
-            pj.recibirDaño(proyectilData.getDaño() * MejorasHeroe.DANIO.getMultiplicador());
+          //  pj.recibirDaño(proyectilData.getDaño() * MejorasHeroe.DANIO.getMultiplicador());
         } else {
             pj.recibirDaño(proyectilData.getDaño());
         }

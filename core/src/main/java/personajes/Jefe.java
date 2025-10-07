@@ -28,7 +28,7 @@ public class Jefe extends PersonajeBase {
     public void requestToggleBestia() { this.inToggleBestia = true; }
 
     public Jefe(World world, MuerteEventListener muerteListener, CambioVidaEventListener vidaListener) {
-        super(world, "Jefe", 150, muerteListener, vidaListener, new AnimacionesJefe(), /*fuerzaSalto base*/ 10);
+        super(world, "Jefe", 150, muerteListener, vidaListener, new AnimacionesJefe(), /*fuerzaSalto base*/ 10, 2f);
         // Podés seguir llenando el mapa de movimientos si querés, pero el ataque se crea por factory:
         // movimientos.put("Ataque",  new AtaqueJefe(body, lado));
         this.ataque = new AtaqueJefe(body, lado);

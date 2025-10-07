@@ -37,6 +37,7 @@ public abstract class PersonajeBase extends Actor {
     protected CambioVidaEventListener cambioVidaEventListener;
     protected Animation<TextureRegion> animacionActual;
     protected MovimientoAtaque ataque;
+    protected float velocidadHorizontal;
 
 
     // ===== Multimplicadores =====
@@ -78,14 +79,15 @@ public abstract class PersonajeBase extends Actor {
     public PersonajeBase(World world, String nombre, int vida,
                          MuerteEventListener muerteListener,
                          CambioVidaEventListener vidaListener,
-                         AnimacionBase animacion, int fuerzaSalto) {
+                         AnimacionBase animacion, int fuerzaSalto, float velocidadHorizontal) {
         this.nombre = nombre;
-        this.vida = vida;
+        this.vida = vida * (int) this.estadisticas.getMultVida();
         this.vidaMaxima = vida;
         this.muerteEventListener = muerteListener;
         this.cambioVidaEventListener = vidaListener;
         this.animacionPersonaje = animacion;
-        this.fuerzaSalto = fuerzaSalto; // <<< IMPORTANTE
+        this.fuerzaSalto = fuerzaSalto * (int)this.estadisticas.getMultSalto(); // <<< IMPORTANTE
+        this.velocidadHorizontal = velocidadHorizontal;
 
         // Configuración física común
         BodyDef bodyDef = new BodyDef();
@@ -334,7 +336,9 @@ public abstract class PersonajeBase extends Actor {
     // ================== HOOKS/CONTRATOS PARA SUBCLASES ==================
 
     /** Velocidad horizontal base: Personaje = 5f, Jefe = (bestia?4:2) */
-    protected abstract float getVelocidadHorizontal();
+    protected float getVelocidadHorizontal() {
+    	return this.velocidadHorizontal * this.estadisticas.getMultVelocidad(); 
+    }
 
     /** Crear el movimiento de ataque correcto (Personaje: AtaqueBasico, Jefe: AtaqueJefe). */
     protected abstract MovimientoBase createAtaque();
@@ -355,4 +359,8 @@ public abstract class PersonajeBase extends Actor {
 
     /** Acciones extra por frame (p.ej. toggle de modo bestia del Jefe) */
     protected void onExtraActions() {}
+    
+    public Estadistica getEstadistica() {
+    	return this.estadisticas;
+    }
 }

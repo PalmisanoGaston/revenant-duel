@@ -4,7 +4,6 @@ package personajes;
 import com.badlogic.gdx.physics.box2d.World;
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
-import mejoras.MejorasHeroe;
 import movimientos.AtaqueBasico;
 import movimientos.MovimientoBase;
 import movimientos.ProyectilBasico;
@@ -13,17 +12,13 @@ import utiles.ProyectilManager;
 
 public class Heroe extends PersonajeBase {
 
-    private MejorasHeroe mejoraVida = MejorasHeroe.VIDA;
-    private MejorasHeroe mejoraDanio = MejorasHeroe.DANIO;
-    private MejorasHeroe mejoraVelocidad = MejorasHeroe.VELOCIDAD;
-    private MejorasHeroe mejoraSalto = MejorasHeroe.SALTO;
     private SonidosPersonaje sonidos = new SonidosPersonaje();
     private ProyectilManager proyectilManager;
     private ProyectilBasico proyectilBasico;
 
     public Heroe(World world, MuerteEventListener muerteListener, CambioVidaEventListener vidaListener, ProyectilManager proyectilManager) {
-        super(world, "Jugador", (int)(100 * MejorasHeroe.VIDA.getMultiplicador()), muerteListener, vidaListener,
-                new AnimacionesPersonaje(), (int)(1*MejorasHeroe.SALTO.getMultiplicador()) );
+        super(world, "Jugador", (int)(100) , muerteListener, vidaListener,
+                new AnimacionesPersonaje(), (int)(1), 5);
         this.proyectilManager = proyectilManager;
         
         this.proyectilBasico = new ProyectilBasico(body, lado, world, proyectilManager);
@@ -32,11 +27,6 @@ public class Heroe extends PersonajeBase {
         movimientos.put("Ataque", ataque);
         movimientos.put("Proyectil", proyectilBasico);
 
-    }
-
-    @Override
-    protected float getVelocidadHorizontal() {
-        return 5f * mejoraVelocidad.getMultiplicador();
     }
 
     @Override
@@ -85,9 +75,4 @@ public class Heroe extends PersonajeBase {
        
     }
 
-    public int getNivelVida() { return (int)this.mejoraVida.getMultiplicador(); }
-
-    public void mejorarVida() {
-        this.mejoraVida.aumentarNivel();
-    }
 }
