@@ -60,11 +60,10 @@ public class LectorInputs implements InputProcessor {
             else if (keycode == Input.Keys.K)              personaje.requestProyectil();
         }
         
-        
         if(arena != null) {
-        	if(keycode == Input.Keys.ESCAPE) {
-        		this.arena.mostrarMenuConfiguracion();
-        	}
+            if(keycode == Input.Keys.ESCAPE) {
+                this.arena.mostrarMenuConfiguracion();
+            }
         }
         
 

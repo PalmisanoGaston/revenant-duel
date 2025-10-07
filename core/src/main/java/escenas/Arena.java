@@ -3,6 +3,7 @@ package escenas;
 
 import java.util.ArrayList;
 import utiles.ProyectilManager;
+import utiles.StageInputProcessor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -33,6 +34,7 @@ import personajes.LectorInputs;
 import personajes.Heroe;
 import personajes.PersonajeBase;
 import utiles.HitBox;
+import utiles.InputManager;
 
 public class Arena implements Screen, MuerteEventListener , CambioVidaEventListener {
     private Principal juego;
@@ -70,7 +72,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     public static final short CATEGORY_PERSONAJE = 0x0001;
     public static final short CATEGORY_ENTORNO   = 0x0002;
     public static final short CATEGORY_PROYECTIL = 0x0004; // si más adelante agregás
-
+    private InputManager inputManager;
+    
     
     public Arena(Principal juego, Skin skin) {
         this.juego = juego;
@@ -90,7 +93,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	    this.heroe = crearHeroe();
 	    
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
-
+        StageInputProcessor stageProcessor = new StageInputProcessor(escena);
+        this.inputManager = new InputManager(lectorInputs, stageProcessor);
 	    this.skin = skin;
         construirArena(skin);
     }
@@ -116,6 +120,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
      
         construirArena(skin);
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
+        StageInputProcessor stageProcessor = new StageInputProcessor(escena);
+        this.inputManager = new InputManager(lectorInputs, stageProcessor);
 
 
     }
@@ -220,22 +226,25 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     	System.out.println("Hola");
 
 	    	 if(menuArena == null) {
-	    		 menuArena = new MenuArena(juego,this.skin );
+	    		 menuArena = new MenuArena(juego,this.skin, this );
 	         
 	         this.escena.addActor(menuArena);
-	         InputMultiplexer multiplexer = new InputMultiplexer(escena, lectorInputs);
-	         Gdx.input.setInputProcessor(multiplexer); // Asegurar que el menú reciba input
+	         
 	         float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2+50;
 	         float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
 	         menuArena.setPosition(centerX, centerY);
+	         inputManager.setMenuMode();
 	    	 }
 	      else if (menuArena != null) {
-	    		 menuArena.remove();
-	    		 System.out.println("HOllaa");
-	    		    Gdx.input.setInputProcessor(this.lectorInputs);
-	    		    menuArena = null;
-
+	    		 
 	         }
+    }
+    
+    
+    public void cerrarMenu() {
+    	menuArena.remove();
+	    menuArena = null;
+	    inputManager.setArenaMode();
     }
 
     @Override
@@ -314,7 +323,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
 	@Override
 	public void show() {
-	    Gdx.input.setInputProcessor(this.lectorInputs);
+		  Gdx.input.setInputProcessor(this.inputManager);
 	}
 
 	@Override
@@ -349,6 +358,10 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	        return;
 	    }
 	}
+	
+	
+	
+	
 
 	@Override
 	public void onCambioVida(PersonajeBase personaje) {

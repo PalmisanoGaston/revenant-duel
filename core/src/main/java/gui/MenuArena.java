@@ -11,21 +11,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import escenas.Arena;
 import escenas.Menu;
 import escenas.Principal;
 import sonidos.SonidoPersonajeBase;
 
 public class MenuArena extends WidgetGroup {
-    
     private final Principal juego;
     private final Skin skin;
     private final Table tablaMenu;
     private static boolean sonidoActivado = true;
     private TextButton botonSonido;
+    private final Arena arena; // Reference to arena for closing menu
     
-    public MenuArena(Principal juego, Skin skin) {
+    public MenuArena(Principal juego, Skin skin, Arena arena) {
         this.juego = juego;
         this.skin = skin;
+        this.arena = arena; // Store arena reference
         
         this.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
@@ -49,6 +51,14 @@ public class MenuArena extends WidgetGroup {
             }
         });
         
+        TextButton botonCerrar = new TextButton("Cerrar Menú", skin);
+        botonCerrar.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                arena.cerrarMenu(); 
+            }
+        });
+        
         botonSonido = new TextButton(sonidoActivado ? "Silenciar Audio" : "Activar Audio", skin);
         botonSonido.addListener(new ClickListener() {
             @Override
@@ -59,16 +69,22 @@ public class MenuArena extends WidgetGroup {
             }
         });
         
-        
         tablaMenu.add(titulo).colspan(1).padBottom(30).row();
         tablaMenu.add(botonInicio).width(250).height(60).row();
         tablaMenu.add(botonSonido).width(250).height(60).row();
+        tablaMenu.add(botonCerrar).width(250).height(60).row();
         
         tablaMenu.pack();
     }
     
+ 
+    
     private void actualizarEstadoSonido() {
         SonidoPersonajeBase.activarSonidoPersonaje(sonidoActivado);
+    }
+    
+    private void prueba() {
+    	System.out.println("Probando");
     }
 
     public static boolean comprobarSonidoActivo() {
