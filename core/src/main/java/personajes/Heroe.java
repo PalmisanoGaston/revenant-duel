@@ -23,19 +23,19 @@ public class Heroe extends PersonajeBase {
            new AnimacionesPersonaje(), 1, 5f, estadisticas);
         this.proyectilManager = proyectilManager;
         
-        this.proyectilBasico = new ProyectilBasico(body, lado, world, proyectilManager,this);
-        this.fuerzaSalto = 1 * (int)this.estadisticas.getMultSalto();
-        this.velocidadHorizontal = 5f * this.estadisticas.getMultVelocidad();
-        
-        this.ataque = new AtaqueBasico(body, lado,this);
-        movimientos.put("Ataque", ataque);
+        this.proyectilBasico = new ProyectilBasico(body, super.lado, world, proyectilManager,this);
+        super.fuerzaSalto = 1 * (int)this.estadisticas.getMultSalto();
+        super.velocidadHorizontal = 5f * this.estadisticas.getMultVelocidad();
+
+        super.ataque = new AtaqueBasico(body, super.lado,this);
+        movimientos.put("Ataque", super.ataque);
         movimientos.put("Proyectil", proyectilBasico);
 
     }
 
     @Override
     protected MovimientoBase createAtaque() {
-        return new AtaqueBasico(body, lado,this);
+        return new AtaqueBasico(body, super.lado,this);
     }
 
     // Método para manejar el ataque con proyectil
@@ -43,14 +43,14 @@ public class Heroe extends PersonajeBase {
         if (movimientoActual == null && isGrounded()) {
             // Actualizar la dirección del proyectil antes de lanzarlo
             if (proyectilBasico != null) {
-                proyectilBasico.actualizarDireccion(lado);
+                proyectilBasico.actualizarDireccion(super.lado);
             }
             
             MovimientoBase proyectil = movimientos.get("Proyectil");
             if (proyectil != null) {
             	if(proyectil.estaListo()) {
 	                movimientoActual = proyectil;
-	                this.stateTime = 0;
+	                super.stateTime = 0;
 	                proyectil.reiniciar();
 	                onPlayProyectil();
 	                proyectil.activarCooldown();
@@ -72,9 +72,9 @@ public class Heroe extends PersonajeBase {
     @Override
     protected void onExtraActions() {
         // Manejar el ataque con proyectil
-        if (enAtaqueProyectil) {
+        if (super.enAtaqueProyectil) {
             realizarAtaqueProyectil();
-            enAtaqueProyectil = false;
+            super.enAtaqueProyectil = false;
         }
        
     }

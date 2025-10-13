@@ -34,8 +34,8 @@ public class Jefe extends PersonajeBase {
         this.velocidadBestia = 4f * this.estadisticas.getMultVelocidad();
         this.fuerzaSaltoNormal = 10 * (int)this.estadisticas.getMultSalto();
         this.fuerzaSaltoBestia = 20 * (int)this.estadisticas.getMultSalto();
-        this.ataque = new AtaqueJefe(body, lado,this);
-        movimientos.put("Ataque", ataque);
+        super.ataque = new AtaqueJefe(body, super.lado,this);
+        movimientos.put("Ataque", super.ataque);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class Jefe extends PersonajeBase {
 
     @Override
     protected MovimientoBase createAtaque() {
-        return new AtaqueJefe(body, lado,this);
+        return new AtaqueJefe(body, super.lado,this);
     }
 
     @Override
@@ -60,8 +60,8 @@ public class Jefe extends PersonajeBase {
     @Override
     protected void onAttackAnimation() {
         // Jefe tiene animación de ataque específica
-        this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
-        this.stateTime = 0;
+        super.animacionActual = super.animacionPersonaje.getAnimacionAtaque();
+        super.stateTime = 0;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class Jefe extends PersonajeBase {
         this.modoBestia = true;
         this.setColor(colorBestia);
         // si querés que el salto base también suba al entrar en bestia:
-        this.fuerzaSalto = fuerzaSaltoBestia; // opcional; tus velocidades ya dependen de modoBestia
+        super.fuerzaSalto = fuerzaSaltoBestia; // opcional; tus velocidades ya dependen de modoBestia
     }
 
 }
