@@ -1,15 +1,17 @@
 package utiles;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import movimientos.Proyectil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class ProyectilManager {
+public class ProyectilManager extends Actor{
     private ArrayList<Proyectil> proyectiles;
     private World world;
 
@@ -21,8 +23,10 @@ public class ProyectilManager {
     public void agregarProjectil(Proyectil proyectil) {
         proyectiles.add(proyectil);
     }
-
-    public void actualizar(float delta) {
+    
+    @Override
+    public void act(float delta) {
+    	super.act(delta);
         Iterator<Proyectil> iterator = proyectiles.iterator();
         while (iterator.hasNext()) {
             Proyectil proyectil = iterator.next();
@@ -42,13 +46,19 @@ public class ProyectilManager {
         }
     }
 
-    public void render(SpriteBatch batch) {
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+
         for (Proyectil proyectil : proyectiles) {
             if (proyectil.estaActivo()) {
-                proyectil.render(batch);
+                // El método render de Proyectil probablemente sí recibe un SpriteBatch
+                // Así que simplemente casteás (Batch -> SpriteBatch)
+                proyectil.render((SpriteBatch) batch);
             }
         }
     }
+
 
     public void limpiar() {
         for (Proyectil proyectil : proyectiles) {

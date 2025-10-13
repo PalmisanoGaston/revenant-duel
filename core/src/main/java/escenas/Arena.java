@@ -93,7 +93,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
         this.jefe = crearJefe();
 	    this.heroe = crearHeroe();
-	    
+	    escena.addActor(this.proyectilManager);
+
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
         StageInputProcessor stageProcessor = new StageInputProcessor(escena);
         this.inputManager = new InputManager(lectorInputs, stageProcessor);
@@ -119,6 +120,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         this.skin = skin;
         this.jefe = crearJefe(vidaJefe);
         this.heroe = crearHeroe(); // ← El héroe usará las estadísticas guardadas
+	    escena.addActor(this.proyectilManager);
      
         construirArena(skin);
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
@@ -127,6 +129,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     }
 
 	private void construirArena(Skin skin) {
+        this.fondo = new FondoPrueba();
+        escena.addActor(this.fondo);
+        this.fondo.toBack();
         world.setContactListener(new HitBox(this.proyectilManager));
 
         crearLimitesMapa(); 
@@ -142,8 +147,6 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         table.add(uiHeroe).pad(100).top().left();
         table.add().expandX(); // Espacio flexible en el centro
         table.add(uiJefe).pad(100).top().right();
-
-        this.fondo = new FondoPrueba();
 	}
         
     private void crearLimitesMapa() {
@@ -284,14 +287,6 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
     	 // Actualizar escena
     	 escena.act(delta);
-
-   	  	 proyectilManager.actualizar(delta);
-    	 batch.setProjectionMatrix(viewport.getCamera().combined);
-    	 batch.begin();
-    	 this.fondo.render(batch, delta, viewport.getWorldWidth(), viewport.getWorldHeight());
-    	 proyectilManager.render(batch); 
-    	 batch.end();
-        
     	 escena.draw();
         
     	 // Mostrar hitboxes

@@ -2,11 +2,13 @@ package fondos;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
 
-public abstract class FondoBase {
+public abstract class FondoBase extends Actor {
 	
 	private Animation<TextureRegion> animacion;
 	private float stateTime = 0f; 
@@ -32,11 +34,27 @@ public abstract class FondoBase {
         return new Animation<TextureRegion>(frameDuration, frames, Animation.PlayMode.LOOP);
     }
 	
-	  public void render(SpriteBatch batch, float delta, float width, float height) { 
-        stateTime += delta; 
-        TextureRegion currentFrame = animacion.getKeyFrame(stateTime);
-        batch.draw(currentFrame, 0, 0, width, height); 
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        stateTime += delta;
     }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+
+        TextureRegion currentFrame = animacion.getKeyFrame(stateTime, true);
+
+        // Dibuja el fondo ocupando todo el escenario
+        batch.draw(
+            currentFrame,
+            0, 0,
+            getStage().getViewport().getWorldWidth(),
+            getStage().getViewport().getWorldHeight()
+        );
+    }
+
     
 	public Animation<TextureRegion> getAnimacion() {
 		return this.animacion;
