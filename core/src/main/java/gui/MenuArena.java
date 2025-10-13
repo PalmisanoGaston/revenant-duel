@@ -1,5 +1,6 @@
 package gui;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -17,14 +18,14 @@ import escenas.Principal;
 import sonidos.SonidoPersonajeBase;
 
 public class MenuArena extends WidgetGroup {
-    private final Principal juego;
+    private final Game juego;
     private final Skin skin;
     private final Table tablaMenu;
     private static boolean sonidoActivado = true;
     private TextButton botonSonido;
     private final Arena arena; // Reference to arena for closing menu
     
-    public MenuArena(Principal juego, Skin skin, Arena arena) {
+    public MenuArena(Game juego, Skin skin, Arena arena) {
         this.juego = juego;
         this.skin = skin;
         this.arena = arena; // Store arena reference

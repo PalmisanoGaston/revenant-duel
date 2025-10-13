@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import utiles.ProyectilManager;
 import utiles.StageInputProcessor;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -37,7 +38,7 @@ import utiles.HitBox;
 import utiles.InputManager;
 
 public class Arena implements Screen, MuerteEventListener , CambioVidaEventListener {
-    private Principal juego;
+    private Game juego;
     private Stage escena;
     private SpriteBatch batch;
     private Texture texturaBloque;
@@ -76,7 +77,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     private InputManager inputManager;
     
     
-    public Arena(Principal juego, Skin skin) {
+    public Arena(Game juego, Skin skin) {
         this.juego = juego;
         this.batch = new SpriteBatch();
         this.texturaBloque = new Texture("tileset.png");
@@ -100,7 +101,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         construirArena(skin);
     }
 
-    public Arena(Principal juego, Skin skin, int vidaJefe, int intentosRestantes, Estadistica estadisticasHeroe) {
+    public Arena(Game juego, Skin skin, int vidaJefe, int intentosRestantes, Estadistica estadisticasHeroe) {
         this.juego = juego;
         this.batch = new SpriteBatch();
         this.texturaBloque = new Texture("tileset.png");

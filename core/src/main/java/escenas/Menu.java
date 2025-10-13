@@ -1,5 +1,6 @@
 package escenas;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -16,11 +17,11 @@ import gui.InfoJuego;
 
 public class Menu implements Screen {
 	
-	private Principal juego;
+	private Game juego;
 	private Stage escena;
 	private Skin fuenteTextos;
 	
-	public Menu(Principal juego) {
+	public Menu(Game juego) {
 		this.juego = juego;
 		this.escena = new Stage(new ScreenViewport());
 		

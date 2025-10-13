@@ -1,5 +1,6 @@
 package gui;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -20,7 +21,7 @@ import personajes.Heroe;
 
 public class MenuHeroe implements Screen {
 
-    private Principal juego;
+    private Game juego;
     private Stage escena;
     private Skin fuenteTextos;
     private Heroe heroe;
@@ -28,7 +29,7 @@ public class MenuHeroe implements Screen {
     private int intentos;
     private int mejoras_permitidas = 1;
 
-    public MenuHeroe(Principal juego, Heroe heroe, Jefe jefe, int intentos) {
+    public MenuHeroe(Game juego, Heroe heroe, Jefe jefe, int intentos) {
         this.juego = juego;
         this.escena = new Stage(new ScreenViewport());
         this.heroe = heroe;
