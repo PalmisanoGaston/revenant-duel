@@ -1,78 +1,75 @@
 package utiles;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import personajes.LectorInputs;
 
 public class InputManager implements InputProcessor {
-    private InputProcessor currentProcessor;
-    private InputProcessor arenaProcessor;
-    private InputProcessor menuProcessor;
-    
-    public InputManager(InputProcessor arenaProcessor, InputProcessor menuProcessor) {
-        this.arenaProcessor = arenaProcessor;
-        this.menuProcessor = menuProcessor;
-        this.currentProcessor = arenaProcessor; // Start with arena inputs
+
+    private final LectorInputs lectorInputs;
+    private final ClickReceptor clickReceptor;
+    private boolean menuMode = false;
+
+    public InputManager(LectorInputs lectorInputs, ClickReceptor clickReceptor) {
+        this.lectorInputs = lectorInputs;
+        this.clickReceptor = clickReceptor;
     }
-    
-    public void setArenaMode() {
-        this.currentProcessor = arenaProcessor;
-    }
-    
+
     public void setMenuMode() {
-        this.currentProcessor = menuProcessor;
+        menuMode = true;
     }
-    
-    public boolean isInMenuMode() {
-        return currentProcessor == menuProcessor;
+
+    public void setArenaMode() {
+        menuMode = false;
     }
-    
-    public boolean isInArenaMode() {
-        return currentProcessor == arenaProcessor;
-    }
-    
-    // Delegate all input methods to the current processor
+
     @Override
     public boolean keyDown(int keycode) {
-        return currentProcessor.keyDown(keycode);
+        if (menuMode && keycode != Input.Keys.ESCAPE)
+            return false;
+
+        lectorInputs.keyDownDelegado(keycode);
+        return true;
     }
-    
+
     @Override
     public boolean keyUp(int keycode) {
-        return currentProcessor.keyUp(keycode);
+        if (menuMode && keycode != Input.Keys.ESCAPE)
+            return false;
+
+        lectorInputs.keyUpDelegado(keycode);
+        return true;
     }
-    
-    @Override
-    public boolean keyTyped(char character) {
-        return currentProcessor.keyTyped(character);
-    }
-    
+
+    // --- Redirigir clicks al Stage cuando el menú está activo ---
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return currentProcessor.touchDown(screenX, screenY, pointer, button);
+        if (menuMode) {
+            return clickReceptor.touchDown(screenX, screenY, pointer, button);
+        }
+        return false;
     }
-    
+
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return currentProcessor.touchUp(screenX, screenY, pointer, button);
+        if (menuMode) {
+            return clickReceptor.touchUp(screenX, screenY, pointer, button);
+        }
+        return false;
     }
-    
-    @Override
-    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-        return currentProcessor.touchCancelled(screenX, screenY, pointer, button);
-    }
-    
+
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return currentProcessor.touchDragged(screenX, screenY, pointer);
+        if (menuMode) {
+            return clickReceptor.touchDragged(screenX, screenY, pointer);
+        }
+        return false;
     }
-    
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return currentProcessor.mouseMoved(screenX, screenY);
-    }
-    
-    @Override
-    public boolean scrolled(float amountX, float amountY) {
-        return currentProcessor.scrolled(amountX, amountY);
-    }
+
+    @Override public boolean keyTyped(char character) { return false; }
+    @Override public boolean mouseMoved(int screenX, int screenY) { return false; }
+    @Override public boolean scrolled(float amountX, float amountY) { return false; }
+    @Override public boolean touchCancelled(int screenX, int screenY, int pointer, int button) { return false; }
 }

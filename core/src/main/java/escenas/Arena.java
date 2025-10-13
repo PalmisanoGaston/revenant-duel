@@ -34,10 +34,11 @@ import personajes.LectorInputs;
 import personajes.Estadistica;
 import personajes.Heroe;
 import personajes.PersonajeBase;
+import utiles.ClickReceptor;
 import utiles.HitBox;
 import utiles.InputManager;
 
-public class Arena implements Screen, MuerteEventListener , CambioVidaEventListener {
+public class Arena implements Screen, MuerteEventListener , CambioVidaEventListener, ClickReceptor {
     private Game juego;
     private Stage escena;
     private SpriteBatch batch;
@@ -97,7 +98,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
         StageInputProcessor stageProcessor = new StageInputProcessor(escena);
-        this.inputManager = new InputManager(lectorInputs, stageProcessor);
+        this.inputManager = new InputManager(this.lectorInputs, this);
 	    this.skin = skin;
         construirArena(skin);
     }
@@ -125,7 +126,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         construirArena(skin);
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
         StageInputProcessor stageProcessor = new StageInputProcessor(escena);
-        this.inputManager = new InputManager(lectorInputs, stageProcessor);
+        this.inputManager = new InputManager(this.lectorInputs, this);
     }
 
 	private void construirArena(Skin skin) {
@@ -226,29 +227,30 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     
     
     public void mostrarMenuConfiguracion() {
-    	System.out.println("Hola");
+        if (menuArena == null) {
+            menuArena = new MenuArena(juego, this.skin, this);
+            this.escena.addActor(menuArena);
 
-	    	 if(menuArena == null) {
-	    		 menuArena = new MenuArena(juego,this.skin, this );
-	         
-	         this.escena.addActor(menuArena);
-	         
-	         float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2+50;
-	         float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
-	         menuArena.setPosition(centerX, centerY);
-	         inputManager.setMenuMode();
-	    	 }
-	      else if (menuArena != null) {
-	    		 
-	         }
+            float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2 + 50;
+            float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
+            menuArena.setPosition(centerX, centerY);
+
+            inputManager.setMenuMode();  // ← reactivamos esta línea
+        }
     }
-    
-    
+
     public void cerrarMenu() {
-    	menuArena.remove();
-	    menuArena = null;
-	    inputManager.setArenaMode();
+        menuArena.remove();
+        menuArena = null;
+        inputManager.setArenaMode();    // ← también reactivamos esta
     }
+    
+ // Agregá esto en la clase Arena (cerca de los otros métodos públicos)
+    public boolean isMenuAbierto() {
+        return menuArena != null;
+    }
+
+
 
     @Override
     public void render(float delta) {
@@ -373,4 +375,19 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	        uiJefe.modificarInfo(jefe.getVida());
 	    }
 	}
+
+	@Override
+	public boolean touchDown(int x, int y, int pointer, int button) {
+	    return escena.touchDown(x, y, pointer, button);
+	}
+	@Override
+	public boolean touchUp(int x, int y, int pointer, int button) {
+	    return escena.touchUp(x, y, pointer, button);
+	}
+	@Override
+	public boolean touchDragged(int x, int y, int pointer) {
+	    return escena.touchDragged(x, y, pointer);
+	}
+	
+
 }
