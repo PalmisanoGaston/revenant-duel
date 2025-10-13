@@ -148,7 +148,7 @@ public abstract class PersonajeBase extends Actor {
 
 
 
-
+        float velX = 0f;
         // Actualizar estado “en suelo” con filtro de estabilidad
         float vy = body.getLinearVelocity().y;
         if (Math.abs(vy) < groundEps()) {
@@ -161,9 +161,8 @@ public abstract class PersonajeBase extends Actor {
 
         if (this.vida > 0) {
             if (movimientoActual == null || movimientoActual.estaCompletado()) {
-
-                float velX = 0f;
-
+            	velX =0;
+                
                 // === Movimiento horizontal continuo (izq/der) ===
                 if (inLeft && !inRight) {
                     velX = -getVelocidadHorizontal();
@@ -246,6 +245,7 @@ public abstract class PersonajeBase extends Actor {
         if (movimientoActual != null && !movimientoActual.estaCompletado()) {
             movimientoActual.actualizar();
             movimientoActual.aplicarEfecto();
+            velX = 0f;
         } else {
             movimientoActual = null;
         }
@@ -264,6 +264,7 @@ public abstract class PersonajeBase extends Actor {
             MovimientoBase ataque = movimientos.get("Ataque");
             if (ataque != null) {
                 if(ataque.estaListo()) {
+                	this.body.setLinearVelocity(0f, this.body.getLinearVelocity().y);
                     movimientoActual = ataque;
                     this.stateTime = 0;
                     ataque.reiniciar();

@@ -148,6 +148,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         table.add(uiHeroe).pad(100).top().left();
         table.add().expandX(); // Espacio flexible en el centro
         table.add(uiJefe).pad(100).top().right();
+        this.jefe.recibirDaño(0);
 	}
         
     private void crearLimitesMapa() {
@@ -300,12 +301,12 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         if(menuArena != null) {
             menuArena.remove();
         }
-        world.dispose();
-        debugRenderer.dispose();
-        batch.dispose();
-        escena.dispose();
-        texturaBloque.dispose();
-        proyectilManager.limpiar();
+        this.world.dispose();
+        this.debugRenderer.dispose();
+        this.batch.dispose();
+        this.escena.dispose();
+        this. texturaBloque.dispose();
+        this. proyectilManager.limpiar();
     }
 
 	@Override

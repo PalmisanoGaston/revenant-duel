@@ -109,6 +109,11 @@ public class HitBox implements ContactListener {
         PersonajeBase pj = (PersonajeBase)personaje.getBody().getUserData();
         PersonajeBase caster = proyectilData.getPersonaje();
 
+        if(pj.equals(caster)) {
+        	return;
+        }
+        
+        
         if(pj.getVida() == 0 || pj.esInvulnerable()){
             return;
         }
