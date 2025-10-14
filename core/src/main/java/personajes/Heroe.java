@@ -50,6 +50,7 @@ public class Heroe extends PersonajeBase {
             if (proyectil != null) {
             	if(proyectil.estaListo()) {
 	                movimientoActual = proyectil;
+	                this.body.setLinearVelocity(0f, this.body.getLinearVelocity().y);
 	                super.stateTime = 0;
 	                proyectil.reiniciar();
 	                onPlayProyectil();
