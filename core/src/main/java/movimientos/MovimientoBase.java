@@ -9,13 +9,13 @@ public abstract class MovimientoBase {
 	private String nombre;
     protected int framesInicio;
     protected int framesActivos;
-    protected int framesRecuperacion;
+    private int framesRecuperacion;
     protected int frameActual;
-    protected boolean movimientoCompletado;
-    protected float cooldown = 3f;
-    protected float cooldownRestante;
-    protected IconMovimiento icon = new IconMovimiento(new Texture("movimientos/dash icon.png"));
-    protected boolean llegoAcero = false; 
+    private boolean movimientoCompletado;
+    private float cooldown = 3f;
+    private float cooldownRestante;
+    private IconMovimiento icon = new IconMovimiento(new Texture("movimientos/dash icon.png"));
+    private boolean llegoAcero = false;
     
     public MovimientoBase(String nombre,int inicio, int activos, int recuperacion, float cooldown) {
     	this.nombre = nombre;
