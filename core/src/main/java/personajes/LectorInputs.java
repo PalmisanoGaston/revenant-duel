@@ -50,6 +50,8 @@ public class LectorInputs {
             else if (keycode == Input.Keys.CONTROL_LEFT) personaje.requestBackdash();
             else if (keycode == Input.Keys.J)            personaje.requestAttack();
             else if (keycode == Input.Keys.K)            personaje.requestProyectil();
+            else if (keycode == Input.Keys.L)            personaje.requestToggleVolador();
+
         }
 
         // --- ESC: toggle de menú ---
@@ -69,6 +71,9 @@ public class LectorInputs {
             else if (keycode == Input.Keys.CONTROL_RIGHT)jefe.requestBackdash();
             else if (keycode == Input.Keys.M)            jefe.requestAttack();
             else if (keycode == Input.Keys.H)            jefe.requestToggleBestia();
+            else if (keycode == Input.Keys.N)            jefe.requestToggleVertical();
+            else if (keycode == Input.Keys.B)            jefe.requestToggleFinal();
+
         }
     }
 

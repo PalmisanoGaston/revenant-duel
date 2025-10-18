@@ -22,9 +22,10 @@ public abstract class MovimientoAtaque extends MovimientoBase {
     private int largo;
     private int ancho;
     private PersonajeBase personaje;
+    private float posicion =0;
     
 
-    public MovimientoAtaque(Body cuerpo, boolean ladoDerecho, int daño, int ancho,int largo, int fInicio, int fActivos, int fRecuperacion, String nombre, float cooldown, PersonajeBase personaje) {
+    public MovimientoAtaque(Body cuerpo, boolean ladoDerecho, int daño,float posicion, int ancho,int largo, int fInicio, int fActivos, int fRecuperacion, String nombre, float cooldown, PersonajeBase personaje) {
         super(nombre, fInicio, fActivos, fRecuperacion, cooldown);
         this.cuerpo = cuerpo;
         this.ladoDerecho = ladoDerecho;
@@ -33,6 +34,7 @@ public abstract class MovimientoAtaque extends MovimientoBase {
         this.largo = largo;
         this.hitBoxHandler = new HitBox();
         this.personaje = personaje;
+        this.posicion = posicion;
     }
     
     @Override
@@ -58,7 +60,7 @@ public abstract class MovimientoAtaque extends MovimientoBase {
 	    float largoMetros = this.largo * Arena.PIXELS_TO_METERS;
 	    
 	    // Posición relativa (1.5 metros hacia adelante/atrás según la dirección)
-	    Vector2 posicionRelativa = new Vector2(ladoDerecho ? 0.6f : -0.6f, 0);
+	    Vector2 posicionRelativa = new Vector2(ladoDerecho ? this.posicion : (-1* this.posicion), 0);
 	    
 	    shape.setAsBox(anchoMetros, largoMetros, posicionRelativa, 0);
 	    

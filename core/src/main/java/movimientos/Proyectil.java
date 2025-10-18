@@ -23,7 +23,7 @@ public class Proyectil {
     public static final short CATEGORY_PERSONAJE = 0x0001;  // Personaje
     public static final short CATEGORY_ENTORNO   = 0x0002;  // Entorno
 
-    public Proyectil(World world, float x, float y, float dirX, float dirY, float velocidad, HitboxInfo info, Texture textura, float ancho, float alto) {
+    public Proyectil(World world, float x, float y, float dirX, float dirY, float velocidad, HitboxInfo info, Texture textura, float ancho, float alto, float gravedad) {
         this.posicion = new Vector2(x, y);
         this.velocidad = new Vector2(dirX, dirY).nor().scl(velocidad);
         this.info = info;
@@ -31,16 +31,16 @@ public class Proyectil {
         this.ancho = ancho;
         this.alto = alto;
 
-        crearCuerpo(world);
+        crearCuerpo(world,gravedad);
     }
 
-    private void crearCuerpo(World world) {
+    private void crearCuerpo(World world, float gravedad) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(posicion.x * Arena.PIXELS_TO_METERS, posicion.y * Arena.PIXELS_TO_METERS);
         bodyDef.fixedRotation = true;
         bodyDef.bullet = true;
-        bodyDef.gravityScale = 0.0f;
+        bodyDef.gravityScale = gravedad;
 
         cuerpo = world.createBody(bodyDef);
 

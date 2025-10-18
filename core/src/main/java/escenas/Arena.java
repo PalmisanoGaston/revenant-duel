@@ -293,7 +293,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     	 escena.draw();
         
     	 // Mostrar hitboxes
-       // debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
+        debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
 }
 
     @Override

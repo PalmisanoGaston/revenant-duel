@@ -261,8 +261,9 @@ public abstract class PersonajeBase extends Actor {
     public void realizarAtaqueBasico() {
         if (movimientoActual == null && isGrounded()) {
 
-            MovimientoBase ataque = movimientos.get("Ataque");
+        	 MovimientoAtaque ataque = (MovimientoAtaque) movimientos.get("Ataque");
             if (ataque != null) {
+            	   ataque.setLadoDerecho(lado);
                 if(ataque.estaListo()) {
                 	this.body.setLinearVelocity(0f, this.body.getLinearVelocity().y);
                     movimientoActual = ataque;
