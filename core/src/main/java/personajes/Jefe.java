@@ -77,7 +77,6 @@ public class Jefe extends PersonajeBase {
         super.stateTime = 0;
     }
 
-    
     private void realizarAtaqueVertical() {
         if (movimientoActual == null && isGrounded()) {
         	 ataqueVertical.setLadoDerecho(super.lado);
@@ -86,6 +85,7 @@ public class Jefe extends PersonajeBase {
             if (ataqueVertical != null) {
             	if(ataqueVertical.estaListo()) {
 	                movimientoActual = ataqueVertical;
+	                super.animacionActual = super.animacionPersonaje.getVerticalAttackAnimation();
 	                this.body.setLinearVelocity(0f, this.body.getLinearVelocity().y);
 	                super.stateTime = 0;
 	                ataqueVertical.reiniciar();

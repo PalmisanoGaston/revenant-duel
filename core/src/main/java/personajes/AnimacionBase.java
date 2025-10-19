@@ -13,7 +13,7 @@ public abstract class AnimacionBase {
     protected Animation<TextureRegion> jumpAnimation;
     protected Animation<TextureRegion> animacionAtaque;
     protected Animation<TextureRegion> animacionMuerte;
-
+    protected Animation<TextureRegion> animacionAtaqueVertical;
 
     protected Animation<TextureRegion> createAnimationFromSheet(Texture sheet, float frameDuration, int ancho, int alto) {
         TextureRegion[][] tmp = TextureRegion.split(sheet, ancho, alto);
@@ -29,6 +29,10 @@ public abstract class AnimacionBase {
         }
 
         return new Animation<TextureRegion>(frameDuration, frames, Animation.PlayMode.LOOP);
+    }
+    
+    public Animation<TextureRegion> getVerticalAttackAnimation(){
+    	return this.animacionAtaqueVertical;
     }
     
     public Animation<TextureRegion> getRunAnimation() {

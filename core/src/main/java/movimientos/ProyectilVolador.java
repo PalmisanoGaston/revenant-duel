@@ -9,7 +9,7 @@ import utiles.ProyectilManager;
 public class ProyectilVolador extends MovimientoProyectil {
 
     public ProyectilVolador(Body cuerpo, boolean ladoDerecho, World world, ProyectilManager proyectilManager, PersonajeBase personaje) {
-        super(cuerpo, ladoDerecho, 5, world, proyectilManager, "Proyectil Basico", 5f, personaje,1f);
+        super(cuerpo, ladoDerecho, 5, world, proyectilManager, "Proyectil Basico", 5f, personaje,0.5f);
      
     }
 }
