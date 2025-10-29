@@ -17,6 +17,7 @@ import escenas.Arena;
 import escenas.Principal;
 // import mejoras.MejorasHeroe;  // ← eliminado
 import personajes.Jefe;
+import sonidos.ControladorMusica;
 import personajes.Heroe;
 
 public class MenuHeroe implements Screen {
@@ -130,6 +131,8 @@ public class MenuHeroe implements Screen {
         table.add(botonMejoraSalto).width(300).height(60).padBottom(20);
         table.row();
         table.add(botonVolver).width(200).height(50);
+        ControladorMusica.play("musicaTienda.mp3");
+
     }
 
     private String descripcionMejoraVida() {

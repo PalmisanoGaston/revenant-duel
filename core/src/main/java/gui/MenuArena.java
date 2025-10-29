@@ -69,11 +69,15 @@ public class MenuArena extends WidgetGroup {
                 actualizarEstadoSonido();
             }
         });
+        BotonSilenciar botonMusica = new BotonSilenciar(skin);
         
         tablaMenu.add(titulo).colspan(1).padBottom(30).row();
         tablaMenu.add(botonInicio).width(250).height(60).row();
         tablaMenu.add(botonSonido).width(250).height(60).row();
+        tablaMenu.add(botonMusica).width(250).height(60).row();
+
         tablaMenu.add(botonCerrar).width(250).height(60).row();
+
         
         tablaMenu.pack();
     }

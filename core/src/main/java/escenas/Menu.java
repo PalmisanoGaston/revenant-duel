@@ -13,7 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import gui.BotonSilenciar;
 import gui.InfoJuego;
+import sonidos.ControladorMusica;
 
 public class Menu implements Screen {
 	
@@ -48,11 +50,13 @@ public class Menu implements Screen {
                 juego.setScreen(new InfoJuego(juego));
             }
         });
-
+        BotonSilenciar botonMusica = new BotonSilenciar(fuenteTextos);
         table.add(titulo).padBottom(30);
         table.row();
         table.add(botonJugar).width(200).height(50);
         table.add(botonManual).width(200).height(50);
+        table.add(botonMusica).width(200).height(50);
+        ControladorMusica.play("musicaMenuPrincipal.mp3");
 	}
 
 	@Override

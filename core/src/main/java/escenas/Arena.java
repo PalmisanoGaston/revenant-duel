@@ -34,6 +34,7 @@ import personajes.LectorInputs;
 import personajes.Estadistica;
 import personajes.Heroe;
 import personajes.PersonajeBase;
+import sonidos.ControladorMusica;
 import utiles.ClickReceptor;
 import utiles.HitBox;
 import utiles.InputManager;
@@ -145,10 +146,11 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         this.uiHeroe = new InfoPersonaje(this.heroe.getNombre(), this.heroe.getVidaMaxima(), new Texture("placeholder.png"), skin, true, this.heroe.getArrayMovimientos());
         this.uiJefe =   new InfoPersonaje(this.jefe.getNombre(), this.jefe.getVidaMaxima(), new Texture("placeholder.png"), skin, false,  this.jefe.getArrayMovimientos());
 
-        table.add(uiHeroe).pad(100).top().left();
+        table.add(uiHeroe).pad(150).top().left();
         table.add().expandX(); // Espacio flexible en el centro
-        table.add(uiJefe).pad(100).top().right();
+        table.add(uiJefe).pad(150).top().right();
         this.jefe.recibirDaño(0);
+        ControladorMusica.play("temaBatalla.mp3");
 	}
         
     private void crearLimitesMapa() {
