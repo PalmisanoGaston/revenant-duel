@@ -81,15 +81,9 @@ public class MenuArena extends WidgetGroup {
         
         tablaMenu.pack();
     }
-    
- 
-    
+   
     private void actualizarEstadoSonido() {
         SonidoPersonajeBase.activarSonidoPersonaje(sonidoActivado);
-    }
-    
-    private void prueba() {
-    	System.out.println("Probando");
     }
 
     public static boolean comprobarSonidoActivo() {

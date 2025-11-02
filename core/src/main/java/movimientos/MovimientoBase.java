@@ -14,10 +14,10 @@ public abstract class MovimientoBase {
     private boolean movimientoCompletado;
     private float cooldown = 3f;
     private float cooldownRestante;
-    private IconMovimiento icon = new IconMovimiento(new Texture("movimientos/dash icon.png"));
+    private IconMovimiento icon;
     private boolean llegoAcero = false;
     
-    public MovimientoBase(String nombre,int inicio, int activos, int recuperacion, float cooldown) {
+    public MovimientoBase(String nombre,int inicio, int activos, int recuperacion, float cooldown, IconMovimiento icon) {
     	this.nombre = nombre;
         this.framesInicio = inicio;
         this.framesActivos = activos;
@@ -25,6 +25,11 @@ public abstract class MovimientoBase {
         this.frameActual = 0;
         this.movimientoCompletado = false;
         this.cooldown = cooldown;
+        this.icon = icon;
+    }
+    
+    public MovimientoBase(String nombre,int inicio, int activos, int recuperacion, float cooldown) {
+    	this(nombre, inicio, activos, recuperacion, cooldown, new IconMovimiento(new Texture("movimientos/dash icon.png")));
     }
     
     public void actualizar() {

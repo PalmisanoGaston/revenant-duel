@@ -1,7 +1,10 @@
 package movimientos;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+
+import gui.IconMovimiento;
 
 public class Salto extends MovimientoBase {
     private Body cuerpo;
@@ -9,7 +12,7 @@ public class Salto extends MovimientoBase {
     private int fuerza;
     
     public Salto(Body cuerpo, int fuerza) {
-        super("Salto",1, 12, 4, 0f); // Frames de inicio: 3, activos: 5, recuperación: 10
+        super("Salto",1, 12, 4, 1f, new IconMovimiento(new Texture("movimientos/salto.jpg"))); // Frames de inicio: 3, activos: 5, recuperación: 10
         this.cuerpo = cuerpo;
         this.fuerza = fuerza;
     }

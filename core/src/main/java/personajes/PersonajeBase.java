@@ -39,7 +39,6 @@ public abstract class PersonajeBase extends Actor {
     protected MovimientoAtaque ataque;
     protected float velocidadHorizontal;
 
-
     // ===== Multimplicadores =====
     protected Estadistica estadisticas = new Estadistica();
     private float mejoraVida = estadisticas.getMultVida();
@@ -191,14 +190,18 @@ public abstract class PersonajeBase extends Actor {
                 if (inJump) {
                     if (isGrounded()) {
                         Salto salto = (Salto) movimientos.get("Salto");
-                        prepareSalto(salto);                 // hook por si el Jefe cambia la fuerza
-                        salto.reiniciar();
-                        this.movimientoActual = salto;
-                        this.animacionActual = this.animacionPersonaje.getJumpAnimation();
-                        onPlaySalto();                       // hook de sonido
+                        if (salto.estaListo()) {                     // ✅ nuevo chequeo real de cooldown
+                            prepareSalto(salto);
+                            salto.reiniciar();
+                            this.movimientoActual = salto;
+                            this.animacionActual = this.animacionPersonaje.getJumpAnimation();
+                            onPlaySalto();
+                            salto.activarCooldown();
+                        }
                     }
                     inJump = false;
                 }
+
 
                 // Dash (solo si está apoyado)
                 if (inDash) {

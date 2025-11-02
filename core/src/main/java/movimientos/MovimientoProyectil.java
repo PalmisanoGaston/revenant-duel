@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 
 import escenas.Arena;
+import gui.IconMovimiento;
 import personajes.PersonajeBase;
 import utiles.HitboxInfo;
 import utiles.ProyectilManager;
@@ -17,8 +18,8 @@ public class MovimientoProyectil extends MovimientoAtaque {
     private boolean proyectilLanzado = false;
     private float gravedad;
 
-    public MovimientoProyectil(Body cuerpo, boolean ladoDerecho, int daño, World world, ProyectilManager proyectilManager, String nombre, float cooldown, PersonajeBase personaje, float gravedad) {
-        super(cuerpo, ladoDerecho, daño,0.6f, 20, 20, 10, 5, 15, nombre, cooldown, personaje);
+    public MovimientoProyectil(Body cuerpo, boolean ladoDerecho, int daño, World world, ProyectilManager proyectilManager, String nombre, float cooldown, PersonajeBase personaje, float gravedad, IconMovimiento icon) {
+        super(cuerpo, ladoDerecho, daño,0.6f, 20, 20, 10, 5, 15, nombre, cooldown, personaje, icon);
         this.world = world;
         this.proyectilManager = proyectilManager;
         this.texturaProyectil = new Texture("proyectil.png");

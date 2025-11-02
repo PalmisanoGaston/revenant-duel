@@ -10,13 +10,13 @@ import sonidos.ControladorMusica;
 public class BotonSilenciar extends TextButton {
 
     public BotonSilenciar(Skin skin) {
-        super("Silenciar", skin);
+        super("Silenciar Musica", skin);
 
         addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ControladorMusica.silenciarMusica();
-                setText(ControladorMusica.estaSilenciado() ? "Activar Sonido" : "Silenciar");
+                setText(ControladorMusica.estaSilenciado() ? "Activar Musica" : "Silenciar Musica");
             }
         });
     }

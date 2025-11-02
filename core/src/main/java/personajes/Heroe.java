@@ -39,7 +39,6 @@ public class Heroe extends PersonajeBase {
         movimientos.put("Ataque", super.ataque);
         movimientos.put("Proyectil", proyectilBasico);
         movimientos.put("ProyectilVolador", proyectilVolador);
-
     }
 
     @Override

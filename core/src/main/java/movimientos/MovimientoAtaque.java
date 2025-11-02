@@ -1,11 +1,13 @@
 package movimientos;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 import escenas.Arena;
+import gui.IconMovimiento;
 import personajes.PersonajeBase;
 
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -25,8 +27,8 @@ public abstract class MovimientoAtaque extends MovimientoBase {
     private float posicion =0;
     
 
-    public MovimientoAtaque(Body cuerpo, boolean ladoDerecho, int daño,float posicion, int ancho,int largo, int fInicio, int fActivos, int fRecuperacion, String nombre, float cooldown, PersonajeBase personaje) {
-        super(nombre, fInicio, fActivos, fRecuperacion, cooldown);
+    public MovimientoAtaque(Body cuerpo, boolean ladoDerecho, int daño,float posicion, int ancho,int largo, int fInicio, int fActivos, int fRecuperacion, String nombre, float cooldown, PersonajeBase personaje, IconMovimiento icon) {
+        super(nombre, fInicio, fActivos, fRecuperacion, cooldown, icon);
         this.cuerpo = cuerpo;
         this.ladoDerecho = ladoDerecho;
         this.daño = daño;

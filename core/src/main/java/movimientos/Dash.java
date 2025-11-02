@@ -1,7 +1,10 @@
 package movimientos;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+
+import gui.IconMovimiento;
 
 public class Dash extends MovimientoBase {
     private Body cuerpo;
@@ -9,7 +12,7 @@ public class Dash extends MovimientoBase {
     private final float VELOCIDAD_DASH = 7f;
     
     public Dash(Body cuerpo, boolean ladoDerecho) {
-        super("Dash",3, 12, 10, 3f); // Frames de inicio: 3, activos: 5, recuperación: 10
+        super("Dash",3, 12, 10, 3f, new IconMovimiento(new Texture("movimientos/dash icon.png"))); // Frames de inicio: 3, activos: 5, recuperación: 10
         this.cuerpo = cuerpo;
         this.ladoDerecho = ladoDerecho;
     }

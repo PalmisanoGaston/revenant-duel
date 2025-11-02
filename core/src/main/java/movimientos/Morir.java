@@ -1,5 +1,8 @@
 package movimientos;
 
+import com.badlogic.gdx.graphics.Texture;
+
+import gui.IconMovimiento;
 import personajes.PersonajeBase;
 
 public class Morir extends MovimientoBase {
