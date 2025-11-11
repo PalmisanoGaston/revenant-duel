@@ -47,4 +47,29 @@ public class Estadistica {
     public float getMultVida() {
         return this.multVida;
     }
+
+	public void setMultVida(float multVida2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public int getNivelMax() {
+		return nivelMax;
+	}
+
+	public void setNivelMax(int nivelMax) {
+		this.nivelMax = nivelMax;
+	}
+
+	public void setMultDanio(float multDanio) {
+		this.multDanio = multDanio;
+	}
+
+	public void setMultVelocidad(float multVelocidad) {
+		this.multVelocidad = multVelocidad;
+	}
+
+	public void setMultSalto(float multSalto) {
+		this.multSalto = multSalto;
+	}
 }

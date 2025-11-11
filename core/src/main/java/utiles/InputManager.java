@@ -25,23 +25,7 @@ public class InputManager implements InputProcessor {
         menuMode = false;
     }
 
-    @Override
-    public boolean keyDown(int keycode) {
-        if (menuMode && keycode != Input.Keys.ESCAPE)
-            return false;
 
-        lectorInputs.keyDownDelegado(keycode);
-        return true;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        if (menuMode && keycode != Input.Keys.ESCAPE)
-            return false;
-
-        lectorInputs.keyUpDelegado(keycode);
-        return true;
-    }
 
     // --- Redirigir clicks al Stage cuando el menú está activo ---
     @Override
@@ -72,4 +56,16 @@ public class InputManager implements InputProcessor {
     @Override public boolean mouseMoved(int screenX, int screenY) { return false; }
     @Override public boolean scrolled(float amountX, float amountY) { return false; }
     @Override public boolean touchCancelled(int screenX, int screenY, int pointer, int button) { return false; }
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

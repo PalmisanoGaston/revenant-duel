@@ -84,7 +84,8 @@ public abstract class PersonajeBase extends Actor {
         this.estadisticas = estadisticas; // ← Usar las estadísticas pasadas
 
         this.nombre = nombre;
-        this.vida = vida * (int) this.estadisticas.getMultVida();
+        this.vida = Math.round(vida * this.estadisticas.getMultVida());
+        this.vidaMaxima = Math.round(vida * this.estadisticas.getMultVida());
         this.vidaMaxima = vida * (int) this.estadisticas.getMultVida();
         this.muerteEventListener = muerteListener;
         this.cambioVidaEventListener = vidaListener;

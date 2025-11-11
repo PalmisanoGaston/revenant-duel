@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import Interfaces.CambioVidaEventListener;
+import Interfaces.GameController;
 import Interfaces.MuerteEventListener;
 import fondos.FondoBase;
 import fondos.FondoPrueba;
@@ -34,12 +35,13 @@ import personajes.LectorInputs;
 import personajes.Estadistica;
 import personajes.Heroe;
 import personajes.PersonajeBase;
+import red.ServerThread;
 import sonidos.ControladorMusica;
 import utiles.ClickReceptor;
 import utiles.HitBox;
 import utiles.InputManager;
 
-public class Arena implements Screen, MuerteEventListener , CambioVidaEventListener, ClickReceptor {
+public class Arena implements Screen, MuerteEventListener , CambioVidaEventListener, ClickReceptor, GameController {
     private Game juego;
     private Stage escena;
     private SpriteBatch batch;
@@ -64,7 +66,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     
     private int intentosHeroe;
     private Jefe jefe;
-    
+    private int storedBossHealth;
+
     
     private InfoPersonaje uiHeroe;
     private InfoPersonaje uiJefe;
@@ -77,6 +80,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     public static final short CATEGORY_ENTORNO   = 0x0002;
     public static final short CATEGORY_PROYECTIL = 0x0004; // si más adelante agregás
     private InputManager inputManager;
+    
+    private ServerThread serverThread;
     
     
     public Arena(Game juego, Skin skin) {
@@ -101,7 +106,10 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         StageInputProcessor stageProcessor = new StageInputProcessor(escena);
         this.inputManager = new InputManager(this.lectorInputs, this);
 	    this.skin = skin;
+	    this.serverThread = new ServerThread(this);
         construirArena(skin);
+        this.serverThread.start();
+
     }
 
     public Arena(Game juego, Skin skin, int vidaJefe, int intentosRestantes, Estadistica estadisticasHeroe) {
@@ -121,13 +129,15 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         crearPiso();
         this.skin = skin;
         this.jefe = crearJefe(vidaJefe);
-        this.heroe = crearHeroe(); // ← El héroe usará las estadísticas guardadas
-	    escena.addActor(this.proyectilManager);
+        this.heroe = crearHeroe(); // ← This hero should now use the upgraded stats
+        escena.addActor(this.proyectilManager);
      
         construirArena(skin);
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
         StageInputProcessor stageProcessor = new StageInputProcessor(escena);
         this.inputManager = new InputManager(this.lectorInputs, this);
+        
+        // Don't start a new server thread here - it should be set by the calling method
     }
 
 	private void construirArena(Skin skin) {
@@ -211,6 +221,13 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     private Heroe crearHeroe() {
         Heroe heroe = new Heroe(world, this, this, this.proyectilManager, this.estadisticasHeroe);
         escena.addActor(heroe);
+        
+        // Debug output to verify stats
+        System.out.println("Hero created with stats - Vida: " + this.estadisticasHeroe.getMultVida() +
+                          ", Daño: " + this.estadisticasHeroe.getMultDanio() +
+                          ", Velocidad: " + this.estadisticasHeroe.getMultVelocidad() +
+                          ", Salto: " + this.estadisticasHeroe.getMultSalto());
+        
         return heroe;
     }
     
@@ -251,6 +268,11 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
  // Agregá esto en la clase Arena (cerca de los otros métodos públicos)
     public boolean isMenuAbierto() {
         return menuArena != null;
+    }
+    
+    public void storeBossHealth() {
+        this.storedBossHealth = this.jefe.getVida();
+        System.out.println("Stored boss health: " + storedBossHealth);
     }
 
 
@@ -334,8 +356,6 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
 	@Override
 	public void hide() {}
-
-	@Override
 	public void onPersonajeMuerto(PersonajeBase personaje) {
 	    if (personaje.getBody() != null) {
 	        this.cuerposAEliminar.add(personaje.getBody());
@@ -343,25 +363,62 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
 	    // 1) Murió el Jefe => gana el héroe
 	    if (personaje == this.jefe) {
-	        this.juego.setScreen(new ScreenPerder(this.juego, false)); // false = el héroe NO perdió
+	        this.juego.setScreen(new ScreenPerder(this.juego, false));
+	        serverThread.sendMessageToAll("EndGame:0"); // Hero wins
 	        return;
 	    }
 
 	    // 2) Murió el Héroe
 	    if (personaje == this.heroe) {
 	        if (this.intentosHeroe > 0) {
-	            this.intentosHeroe--;
-	            this.juego.setScreen(new MenuHeroe(this.juego, this.heroe, this.jefe, this.intentosHeroe));
+	            this.intentosHeroe--; // Decrement attempts
+	            
+	            // Store current game state
+	        this.storedBossHealth= this.jefe.getVida();
+	            
+	            // Notify server thread to handle upgrade process
+	            serverThread.heroDied(
+	                heroe.getVida(), 
+	                this.intentosHeroe,
+	                heroe.getEstadistica().getMultVida(),
+	                heroe.getEstadistica().getMultDanio(),
+	                heroe.getEstadistica().getMultVelocidad(),
+	                heroe.getEstadistica().getMultSalto()
+	            );
 	        } else {
-	            this.juego.setScreen(new ScreenPerder(this.juego, true)); // true = el héroe perdió
+	            this.juego.setScreen(new ScreenPerder(this.juego, true));
+	            serverThread.sendMessageToAll("EndGame:1"); // Boss wins
 	        }
 	        return;
 	    }
 	}
 	
+	public Arena resumeGameWithUpgrades(float multVida, float multDanio, float multVelocidad, float multSalto, int intentos) {
+	    
+	    this.estadisticasHeroe.setMultVida(multVida);
+	    this.estadisticasHeroe.setMultDanio(multDanio);
+	    this.estadisticasHeroe.setMultVelocidad(multVelocidad);
+	    this.estadisticasHeroe.setMultSalto(multSalto);
+	    
+	    // Use the passed intentos instead of constant 5
+	    Arena reconnectedArena = new Arena(juego, skin, this.storedBossHealth, intentos, estadisticasHeroe);
+	    
+	    reconnectedArena.setServerThread(this.serverThread);
+	    this.juego.setScreen(reconnectedArena);
+	    
+	    System.out.println("Game resumed with upgrades - Vida: " + multVida + 
+	                      ", Daño: " + multDanio + ", Velocidad: " + multVelocidad + 
+	                      ", Salto: " + multSalto + ", Boss Health: " + storedBossHealth +
+	                      ", Intentos restantes: " + intentos);
+	    
+	    return reconnectedArena;
+	}
 	
 	
-	
+
+	public void setServerThread(ServerThread serverThread) {
+		this.serverThread = serverThread;
+	}
 
 	@Override
 	public void onCambioVida(PersonajeBase personaje) {
@@ -378,6 +435,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	        uiJefe.modificarInfo(jefe.getVida());
 	    }
 	}
+	
+
+	
 
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
@@ -390,6 +450,48 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
 	    return escena.touchDragged(x, y, pointer);
+	}
+
+	@Override
+	public void startGame() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void accionar(int rol, int keycode) {
+	    System.out.println("Server: Processing input - Role: " + rol + ", Keycode: " + keycode);
+	    
+	    // Use the new input processing method
+	    this.lectorInputs.procesarInputPorRol(rol, keycode, true);
+	    
+	    // Also send keyup after a short delay to simulate key release
+	    // This ensures movement stops when keys are released
+	    // In a real implementation, you'd need to track key states
+	}
+
+	// Add a method for key releases as well
+	public void liberarInput(int rol, int keycode) {
+	    this.lectorInputs.procesarInputPorRol(rol, keycode, false);
+	}
+
+	@Override
+	public void heroDied(int heroVida, int intentosRestantes, float multVida, float multDanio, float multVelocidad,
+			float multSalto) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void heroUpgraded(float multVida, float multDanio, float multVelocidad, float multSalto) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resumeGame() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 
