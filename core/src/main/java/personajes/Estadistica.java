@@ -47,4 +47,21 @@ public class Estadistica {
     public float getMultVida() {
         return this.multVida;
     }
+
+	public void setMultDanio(float multDanio) {
+		this.multDanio = multDanio;
+	}
+
+	public void setMultVelocidad(float multVelocidad) {
+		this.multVelocidad = multVelocidad;
+	}
+
+	public void setMultSalto(float multSalto) {
+		this.multSalto = multSalto;
+	}
+
+	public void setMultVida(float multVida2) {
+		this.multVida = multVida2;
+		
+	}
 }

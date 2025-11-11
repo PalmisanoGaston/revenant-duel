@@ -13,31 +13,45 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import escenas.Arena;
-import escenas.Principal;
-// import mejoras.MejorasHeroe;  // ← eliminado
-import personajes.Jefe;
+import red.ClientThread;
 import sonidos.ControladorMusica;
-import personajes.Heroe;
 
 public class MenuHeroe implements Screen {
 
     private Game juego;
     private Stage escena;
     private Skin fuenteTextos;
-    private Heroe heroe;
-    private Jefe jefe; // Añadir referencia al jefe
     private int intentos;
     private int mejoras_permitidas = 1;
+    private ClientThread clientThread;
+    
+    // Current stats (will be modified by upgrades)
+    private float multVida;
+    private float multDanio;
+    private float multVelocidad;
+    private float multSalto;
+    
+    // UI elements to update
+    private TextButton botonMejoraVida;
+    private TextButton botonMejoraDanio;
+    private TextButton botonMejoraVelocidad;
+    private TextButton botonMejoraSalto;
 
-    public MenuHeroe(Game juego, Heroe heroe, Jefe jefe, int intentos) {
+    public MenuHeroe(Game juego, int intentos, float multVida, float multDanio, float multVelocidad, float multSalto) {
         this.juego = juego;
         this.escena = new Stage(new ScreenViewport());
-        this.heroe = heroe;
-        this.jefe = jefe; // Guardar referencia al jefe
         this.intentos = intentos;
+        this.multVida = multVida;
+        this.multDanio = multDanio;
+        this.multVelocidad = multVelocidad;
+        this.multSalto = multSalto;
         this.fuenteTextos = new Skin(Gdx.files.internal("uiskin.json"));
         
+        construirInterfaz();
+        ControladorMusica.play("musicaTienda.mp3");
+    }
+
+    private void construirInterfaz() {
         Table table = new Table();
         table.setFillParent(true);
         escena.addActor(table);
@@ -51,57 +65,57 @@ public class MenuHeroe implements Screen {
         table.row();
 
         // VIDA
-        TextButton botonMejoraVida = new TextButton("Mejorar Vida (" + descripcionMejoraVida() + ")", fuenteTextos);
+        botonMejoraVida = new TextButton("Mejorar Vida (x" + formatearMult(multVida) + ")", fuenteTextos);
         botonMejoraVida.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (mejoras_permitidas > 0) {
-                    // Asumiendo que este método aplica el aumento de vida (si preferís usar Estadistica directamente, reemplazar por heroe.getEstadistica().aumentarMultVida();)
-                    heroe.getEstadistica().aumentarMultVida();
-                    botonMejoraVida.setText("Mejorar Vida (" + descripcionMejoraVida() + ")");
+                    multVida += 0.5f; // Increase by 50%
+                    botonMejoraVida.setText("Mejorar Vida (x" + formatearMult(multVida) + ")");
                     mejoras_permitidas--;
+                    actualizarBotones();
                 }
             }
         });
 
         // DAÑO
-        TextButton botonMejoraDanio = new TextButton(
-                "Mejorar Daño (x" + formatearMult(heroe.getEstadistica().getMultDanio()) + ")", fuenteTextos);
+        botonMejoraDanio = new TextButton("Mejorar Daño (x" + formatearMult(multDanio) + ")", fuenteTextos);
         botonMejoraDanio.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (mejoras_permitidas > 0) {
-                    heroe.getEstadistica().aumentarmultDanio();
-                    botonMejoraDanio.setText("Mejorar Daño (x" + formatearMult(heroe.getEstadistica().getMultDanio()) + ")");
+                    multDanio += 0.5f; // Increase by 50%
+                    botonMejoraDanio.setText("Mejorar Daño (x" + formatearMult(multDanio) + ")");
                     mejoras_permitidas--;
+                    actualizarBotones();
                 }
             }
         });
 
         // VELOCIDAD
-        TextButton botonMejoraVelocidad = new TextButton(
-                "Mejorar Velocidad (x" + formatearMult(heroe.getEstadistica().getMultVelocidad()) + ")", fuenteTextos);
+        botonMejoraVelocidad = new TextButton("Mejorar Velocidad (x" + formatearMult(multVelocidad) + ")", fuenteTextos);
         botonMejoraVelocidad.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (mejoras_permitidas > 0) {
-                    heroe.getEstadistica().aumentarmultVelocidad();
-                    botonMejoraVelocidad.setText("Mejorar Velocidad (x" + formatearMult(heroe.getEstadistica().getMultVelocidad()) + ")");
+                    multVelocidad += 0.5f; // Increase by 50%
+                    botonMejoraVelocidad.setText("Mejorar Velocidad (x" + formatearMult(multVelocidad) + ")");
                     mejoras_permitidas--;
+                    actualizarBotones();
                 }
             }
         });
 
         // SALTO
-        TextButton botonMejoraSalto = new TextButton(
-                "Mejorar Salto (x" + formatearMult(heroe.getEstadistica().getMultSalto()) + ")", fuenteTextos);
+        botonMejoraSalto = new TextButton("Mejorar Salto (x" + formatearMult(multSalto) + ")", fuenteTextos);
         botonMejoraSalto.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (mejoras_permitidas > 0) {
-                    heroe.getEstadistica().aumentarmultSalto();
-                    botonMejoraSalto.setText("Mejorar Salto (x" + formatearMult(heroe.getEstadistica().getMultSalto()) + ")");
+                    multSalto += 0.5f; // Increase by 50%
+                    botonMejoraSalto.setText("Mejorar Salto (x" + formatearMult(multSalto) + ")");
                     mejoras_permitidas--;
+                    actualizarBotones();
                 }
             }
         });
@@ -111,14 +125,15 @@ public class MenuHeroe implements Screen {
         botonVolver.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Pasar las estadísticas actualizadas del héroe
-                juego.setScreen(new Arena(
-                        juego,
-                        fuenteTextos,
-                        jefe.getVida(),
-                        intentos,
-                        heroe.getEstadistica() // ← Pasar las estadísticas
-                ));
+                // Send upgraded stats to server
+                if (clientThread != null) {
+                    clientThread.sendHeroUpgraded(multVida, multDanio, multVelocidad, multSalto, intentos);
+                    System.out.println("Sent upgrades to server - Vida: " + multVida + ", Daño: " + multDanio + 
+                                     ", Velocidad: " + multVelocidad + ", Salto: " + multSalto);
+                } else {
+                    System.out.println("Error: ClientThread not set in MenuHeroe");
+                }
+                // Don't create new Arena here - server will send ResumeGame message
             }
         });
 
@@ -131,17 +146,24 @@ public class MenuHeroe implements Screen {
         table.add(botonMejoraSalto).width(300).height(60).padBottom(20);
         table.row();
         table.add(botonVolver).width(200).height(50);
-        ControladorMusica.play("musicaTienda.mp3");
-
+        
+        actualizarBotones();
     }
 
-    private String descripcionMejoraVida() {
-        // Mostrar el multiplicador actual sin depender de nivelMax de otra clase
-        return "x" + formatearMult(heroe.getEstadistica().getMultVida());
+    private void actualizarBotones() {
+        // Disable buttons if no upgrades left
+        boolean habilitado = (mejoras_permitidas > 0);
+        botonMejoraVida.setDisabled(!habilitado);
+        botonMejoraDanio.setDisabled(!habilitado);
+        botonMejoraVelocidad.setDisabled(!habilitado);
+        botonMejoraSalto.setDisabled(!habilitado);
+    }
+
+    public void setClientThread(ClientThread clientThread) {
+        this.clientThread = clientThread;
     }
 
     private String formatearMult(float mult) {
-        // Evita mostrar demasiados decimales (e.g., 1.0, 2.0, 3.0)
         if (Math.abs(mult - Math.round(mult)) < 1e-3) {
             return String.valueOf((int) Math.round(mult));
         }
