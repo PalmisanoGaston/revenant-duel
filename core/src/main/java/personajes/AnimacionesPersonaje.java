@@ -6,7 +6,7 @@ public class AnimacionesPersonaje extends AnimacionBase {
     
     public AnimacionesPersonaje() {
 
-        Texture idleSheet = new Texture("heroe/idle.png");
+        Texture idleSheet = new Texture("heroe/Idle.png");
         Texture runSheet = new Texture("heroe/run.png");
         Texture jumpSheet = new Texture("heroe/Jump.png");
         Texture deathSheet = new Texture("heroe/death.png");

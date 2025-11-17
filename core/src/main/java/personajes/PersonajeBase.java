@@ -55,6 +55,8 @@ public abstract class PersonajeBase extends Actor {
     private boolean inBackdash;
     protected boolean enAtaqueProyectil;
 
+    private boolean remoteControlled = false;
+
     public void setInputLeft(boolean v)    { this.inLeft = v; }
     public void setInputRight(boolean v)   { this.inRight = v; }
     public void requestJump()              { this.inJump = true; }
@@ -86,7 +88,6 @@ public abstract class PersonajeBase extends Actor {
         this.nombre = nombre;
         this.vida = Math.round(vida * this.estadisticas.getMultVida());
         this.vidaMaxima = Math.round(vida * this.estadisticas.getMultVida());
-        this.vidaMaxima = vida * (int) this.estadisticas.getMultVida();
         this.muerteEventListener = muerteListener;
         this.cambioVidaEventListener = vidaListener;
         this.animacionPersonaje = animacion;
@@ -139,6 +140,10 @@ public abstract class PersonajeBase extends Actor {
     // ================== ACT UNIFICADO ==================
     @Override
     public void act(float delta) {
+        if (remoteControlled) {
+            return;
+        }
+
         this.stateTime += delta;
 
         MovimientoBase[] movimientosDisponibles = getArrayMovimientos();
@@ -342,6 +347,74 @@ public abstract class PersonajeBase extends Actor {
     public boolean getLado() { return this.lado; }
     public AnimacionBase getAnimacionPersonaje() { return this.animacionPersonaje; }
     public MuerteEventListener getMuerteEventListener() { return this.muerteEventListener; }
+
+    public boolean isRemoteControlled() { return remoteControlled; }
+
+    public void setRemoteControlled(boolean remoteControlled) {
+        this.remoteControlled = remoteControlled;
+    }
+
+    public float getX() {
+        return this.body.getPosition().x / Arena.PIXELS_TO_METERS;
+    }
+
+    public float getY() {
+        return this.body.getPosition().y / Arena.PIXELS_TO_METERS;
+    }
+
+    public float getStateTime() {
+        return this.stateTime;
+    }
+
+    public String getAnimacionActualNombre() {
+        if (this.animacionActual == this.animacionPersonaje.getRunAnimation()) {
+            return "run";
+        }
+        if (this.animacionActual == this.animacionPersonaje.getJumpAnimation()) {
+            return "jump";
+        }
+        if (this.animacionActual == this.animacionPersonaje.getAnimacionAtaque()) {
+            return "attack";
+        }
+        if (this.animacionPersonaje.getAnimacionMuerte() != null
+                && this.animacionActual == this.animacionPersonaje.getAnimacionMuerte()) {
+            return "death";
+        }
+        return "idle";
+    }
+
+    public void applyRemoteState(float x, float y, boolean facingRight, String animationKey,
+                                 float remoteStateTime, int vidaActual, int vidaMaxima) {
+        this.remoteControlled = true;
+        this.body.setTransform(x * Arena.PIXELS_TO_METERS, y * Arena.PIXELS_TO_METERS, 0f);
+        this.body.setLinearVelocity(0f, 0f);
+        this.lado = facingRight;
+        this.stateTime = remoteStateTime;
+        this.vida = vidaActual;
+        this.vidaMaxima = vidaMaxima;
+        this.movimientoActual = null;
+        this.animacionActual = resolveAnimation(animationKey);
+    }
+
+    private Animation<TextureRegion> resolveAnimation(String key) {
+        if (key == null) {
+            return this.animacionPersonaje.getIdleAnimation();
+        }
+        switch (key) {
+            case "run":
+                return this.animacionPersonaje.getRunAnimation();
+            case "jump":
+                return this.animacionPersonaje.getJumpAnimation();
+            case "attack":
+                return this.animacionPersonaje.getAnimacionAtaque();
+            case "death":
+                return this.animacionPersonaje.getAnimacionMuerte() != null
+                        ? this.animacionPersonaje.getAnimacionMuerte()
+                        : this.animacionPersonaje.getIdleAnimation();
+            default:
+                return this.animacionPersonaje.getIdleAnimation();
+        }
+    }
 
     // ================== HOOKS/CONTRATOS PARA SUBCLASES ==================
 

@@ -2,6 +2,8 @@ package escenas;
 
 
 import java.util.ArrayList;
+import java.util.Locale;
+
 import utiles.ProyectilManager;
 import utiles.StageInputProcessor;
 
@@ -35,6 +37,7 @@ import personajes.LectorInputs;
 import personajes.Estadistica;
 import personajes.Heroe;
 import personajes.PersonajeBase;
+import movimientos.Proyectil;
 import red.ServerThread;
 import sonidos.ControladorMusica;
 import utiles.ClickReceptor;
@@ -56,7 +59,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     
     private Skin skin;
     private static final int ANCHO = 800;
-    private static final int ALTO = 800;    
+    private static final int ALTO = 800;
+    private static final Locale LOCALE = Locale.US;
     
     private Estadistica estadisticasHeroe; 
     
@@ -82,6 +86,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     private InputManager inputManager;
     
     private ServerThread serverThread;
+    private boolean gameFinished = false;
     
     
     public Arena(Game juego, Skin skin) {
@@ -314,7 +319,9 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         
     	 // Actualizar escena
     	 escena.act(delta);
-    	 escena.draw();
+        escena.draw();
+
+        broadcastGameState();
         
     	 // Mostrar hitboxes
         debugRenderer.render(world, escena.getCamera().combined.scl(1/PIXELS_TO_METERS));
@@ -331,6 +338,46 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         this.escena.dispose();
         this. texturaBloque.dispose();
         this. proyectilManager.limpiar();
+    }
+
+    private void broadcastGameState() {
+        if (serverThread == null || gameFinished || serverThread.getConnectedClientsCount() == 0) {
+            return;
+        }
+
+        StringBuilder builder = new StringBuilder("State");
+        appendCharacterState(builder, this.heroe);
+        appendCharacterState(builder, this.jefe);
+
+        ArrayList<Proyectil> activos = new ArrayList<>();
+        for (Proyectil proyectil : this.proyectilManager.getProyectiles()) {
+            if (proyectil != null && proyectil.estaActivo()) {
+                activos.add(proyectil);
+            }
+        }
+
+        builder.append(':').append(activos.size());
+        for (Proyectil proyectil : activos) {
+            builder.append(':').append(proyectil.getTipo())
+                   .append(':').append(formatFloat(proyectil.getPosicion().x))
+                   .append(':').append(formatFloat(proyectil.getPosicion().y));
+        }
+
+        serverThread.sendMessageToAll(builder.toString());
+    }
+
+    private void appendCharacterState(StringBuilder builder, PersonajeBase personaje) {
+        builder.append(':').append(formatFloat(personaje.getX()))
+               .append(':').append(formatFloat(personaje.getY()))
+               .append(':').append(personaje.getVida())
+               .append(':').append(personaje.getVidaMaxima())
+               .append(':').append(personaje.getLado() ? 1 : 0)
+               .append(':').append(personaje.getAnimacionActualNombre())
+               .append(':').append(formatFloat(personaje.getStateTime()));
+    }
+
+    private String formatFloat(float value) {
+        return String.format(LOCALE, "%.2f", value);
     }
 
 	@Override
@@ -362,11 +409,15 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	    }
 
 	    // 1) Murió el Jefe => gana el héroe
-	    if (personaje == this.jefe) {
-	        this.juego.setScreen(new ScreenPerder(this.juego, false));
-	        serverThread.sendMessageToAll("EndGame:0"); // Hero wins
-	        return;
-	    }
+            if (personaje == this.jefe) {
+                this.juego.setScreen(new ScreenPerder(this.juego, false));
+                if (serverThread != null) {
+                    serverThread.sendMessageToAll("EndGame:0"); // Hero wins
+                    serverThread.disconnectClients();
+                }
+                this.gameFinished = true;
+                return;
+            }
 
 	    // 2) Murió el Héroe
 	    if (personaje == this.heroe) {
@@ -385,12 +436,16 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	                heroe.getEstadistica().getMultVelocidad(),
 	                heroe.getEstadistica().getMultSalto()
 	            );
-	        } else {
-	            this.juego.setScreen(new ScreenPerder(this.juego, true));
-	            serverThread.sendMessageToAll("EndGame:1"); // Boss wins
-	        }
-	        return;
-	    }
+                } else {
+                    this.juego.setScreen(new ScreenPerder(this.juego, true));
+                    if (serverThread != null) {
+                        serverThread.sendMessageToAll("EndGame:1"); // Boss wins
+                        serverThread.disconnectClients();
+                    }
+                    this.gameFinished = true;
+                }
+                return;
+            }
 	}
 	
 	public Arena resumeGameWithUpgrades(float multVida, float multDanio, float multVelocidad, float multSalto, int intentos) {
@@ -459,21 +514,20 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	}
 
 	@Override
-	public void accionar(int rol, int keycode) {
-	    System.out.println("Server: Processing input - Role: " + rol + ", Keycode: " + keycode);
-	    
-	    // Use the new input processing method
-	    this.lectorInputs.procesarInputPorRol(rol, keycode, true);
-	    
-	    // Also send keyup after a short delay to simulate key release
-	    // This ensures movement stops when keys are released
-	    // In a real implementation, you'd need to track key states
-	}
+        public void accionar(int rol, int keycode) {
+            boolean keyDown = keycode >= 0;
+            int codigoReal = Math.abs(keycode);
 
-	// Add a method for key releases as well
-	public void liberarInput(int rol, int keycode) {
-	    this.lectorInputs.procesarInputPorRol(rol, keycode, false);
-	}
+            System.out.println("Server: Processing input - Role: " + rol + ", Keycode: " + codigoReal +
+                               (keyDown ? " (DOWN)" : " (UP)"));
+
+            this.lectorInputs.procesarInputPorRol(rol, codigoReal, keyDown);
+        }
+
+        // Add a method for key releases as well
+        public void liberarInput(int rol, int keycode) {
+            this.lectorInputs.procesarInputPorRol(rol, keycode, false);
+        }
 
 	@Override
 	public void heroDied(int heroVida, int intentosRestantes, float multVida, float multDanio, float multVelocidad,

@@ -17,19 +17,22 @@ public class Proyectil {
     private HitboxInfo info;
     private float ancho;
     private float alto;
+    private final String tipo;
 
     // Constantes para las categorías (deben coincidir con Arena.java)
     public static final short CATEGORY_PROYECTIL = 0x0004;  // Proyectil
     public static final short CATEGORY_PERSONAJE = 0x0001;  // Personaje
     public static final short CATEGORY_ENTORNO   = 0x0002;  // Entorno
 
-    public Proyectil(World world, float x, float y, float dirX, float dirY, float velocidad, HitboxInfo info, Texture textura, float ancho, float alto, float gravedad) {
+    public Proyectil(World world, float x, float y, float dirX, float dirY, float velocidad,
+                     String tipo, HitboxInfo info, Texture textura, float ancho, float alto, float gravedad) {
         this.posicion = new Vector2(x, y);
         this.velocidad = new Vector2(dirX, dirY).nor().scl(velocidad);
         this.info = info;
         this.textura = textura;
         this.ancho = ancho;
         this.alto = alto;
+        this.tipo = tipo;
 
         crearCuerpo(world,gravedad);
     }
@@ -97,6 +100,10 @@ public class Proyectil {
 
     public Vector2 getPosicion() {
         return posicion;
+    }
+
+    public String getTipo() {
+        return tipo;
     }
 
     public void dispose() {

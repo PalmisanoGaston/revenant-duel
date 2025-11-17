@@ -48,10 +48,9 @@ public class Estadistica {
         return this.multVida;
     }
 
-	public void setMultVida(float multVida2) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void setMultVida(float multVida) {
+        this.multVida = multVida;
+    }
 
 	public int getNivelMax() {
 		return nivelMax;

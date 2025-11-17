@@ -231,4 +231,8 @@ public class ServerThread extends Thread {
         this.clients.clear();
         this.connectedClients = 0;
     }
+
+    public int getConnectedClientsCount() {
+        return connectedClients;
+    }
 }
