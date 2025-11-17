@@ -17,13 +17,17 @@ public class MovimientoProyectil extends MovimientoAtaque {
     private Texture texturaProyectil;
     private boolean proyectilLanzado = false;
     private float gravedad;
+    private final String tipoIdentificador;
 
-    public MovimientoProyectil(Body cuerpo, boolean ladoDerecho, int daño, World world, ProyectilManager proyectilManager, String nombre, float cooldown, PersonajeBase personaje, float gravedad, IconMovimiento icon) {
+    public MovimientoProyectil(Body cuerpo, boolean ladoDerecho, int daño, World world, ProyectilManager proyectilManager,
+                               String tipoIdentificador, String nombre, float cooldown, PersonajeBase personaje,
+                               float gravedad, IconMovimiento icon) {
         super(cuerpo, ladoDerecho, daño,0.6f, 20, 20, 10, 5, 15, nombre, cooldown, personaje, icon);
         this.world = world;
         this.proyectilManager = proyectilManager;
         this.texturaProyectil = new Texture("proyectil.png");
         this.gravedad = gravedad;
+        this.tipoIdentificador = tipoIdentificador;
     }
 
     // Método para actualizar la dirección cuando el personaje cambie de lado
@@ -51,8 +55,8 @@ public class MovimientoProyectil extends MovimientoAtaque {
         
         HitboxInfo info = new HitboxInfo("PROYECTIL", daño,this.getPersonaje());
         
-        Proyectil proyectil = new Proyectil(world, x, y, direccion, 0, 3f, 
-                                           info, texturaProyectil, 20, 20, this.gravedad);
+        Proyectil proyectil = new Proyectil(world, x, y, direccion, 0, 3f,
+                                           this.tipoIdentificador, info, texturaProyectil, 20, 20, this.gravedad);
         
         proyectilManager.agregarProjectil(proyectil);
     }

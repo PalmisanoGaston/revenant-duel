@@ -109,9 +109,41 @@ public class ClientThread extends Thread {
                     }
                 });
                 break;
-                
+
+            case "State":
+                if (gameController instanceof escenas.Arena) {
+                    final String[] stateParts = parts.clone();
+                    Gdx.app.postRunnable(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((escenas.Arena) gameController).applyServerState(stateParts);
+                        }
+                    });
+                }
+                break;
+
+            case "EndGame":
+                if (parts.length >= 2 && gameController instanceof escenas.Arena) {
+                    final int winner = Integer.parseInt(parts[1]);
+                    Gdx.app.postRunnable(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((escenas.Arena) gameController).onGameEnded(winner);
+                        }
+                    });
+                }
+                break;
+
             case "Disconnect":
-                // Handle disconnect if needed
+                if (gameController instanceof escenas.Arena) {
+                    Gdx.app.postRunnable(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((escenas.Arena) gameController).onServerDisconnected();
+                        }
+                    });
+                }
+                terminate();
                 break;
         }
     }
@@ -148,5 +180,9 @@ public class ClientThread extends Thread {
         this.end = true;
         socket.close();
         this.interrupt();
+    }
+
+    public void setGameController(GameController gameController) {
+        this.gameController = gameController;
     }
 }

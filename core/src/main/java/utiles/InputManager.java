@@ -32,21 +32,17 @@ public class InputManager implements com.badlogic.gdx.InputProcessor {
         
         // Only send game inputs if not in menu mode
         if (!menuMode && arena != null && !arena.isMenuAbierto()) {
-            // Get the actual assigned role from arena
-            int role = arena.getPlayerRole();
-            if (role != -1) { // Only send if role is assigned
-                System.out.println("Sending input - Role: " + role + ", Key: " + keycode);
-                gameController.accionar(role, keycode);
-            } else {
-                System.out.println("Role not assigned yet, cannot send input");
-            }
+            enviarInput(keycode, true);
         }
         return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        return false;
+        if (!menuMode && arena != null && !arena.isMenuAbierto()) {
+            enviarInput(keycode, false);
+        }
+        return true;
     }
 
     @Override
@@ -85,6 +81,17 @@ public class InputManager implements com.badlogic.gdx.InputProcessor {
 
     public void setArenaMode() {
         this.menuMode = false;
+    }
+
+    private void enviarInput(int keycode, boolean presionado) {
+        int role = arena.getPlayerRole();
+        if (role != -1) { // Only send if role is assigned
+            int codigo = presionado ? keycode : -keycode;
+            System.out.println("Sending input - Role: " + role + ", Key: " + codigo);
+            gameController.accionar(role, codigo);
+        } else {
+            System.out.println("Role not assigned yet, cannot send input");
+        }
     }
 
 	@Override
