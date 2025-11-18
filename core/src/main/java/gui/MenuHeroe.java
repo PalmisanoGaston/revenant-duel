@@ -57,7 +57,7 @@ public class MenuHeroe implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 if (mejoras_permitidas > 0) {
                     // Asumiendo que este método aplica el aumento de vida (si preferís usar Estadistica directamente, reemplazar por heroe.getEstadistica().aumentarMultVida();)
-                    heroe.getEstadistica().aumentarMultVida();
+                    heroe.getEstadistica().aumentarMultVida(0.5f);
                     botonMejoraVida.setText("Mejorar Vida (" + descripcionMejoraVida() + ")");
                     mejoras_permitidas--;
                 }
@@ -71,7 +71,7 @@ public class MenuHeroe implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (mejoras_permitidas > 0) {
-                    heroe.getEstadistica().aumentarmultDanio();
+                    heroe.getEstadistica().aumentarMultDanio(1.0f);
                     botonMejoraDanio.setText("Mejorar Daño (x" + formatearMult(heroe.getEstadistica().getMultDanio()) + ")");
                     mejoras_permitidas--;
                 }
@@ -85,7 +85,7 @@ public class MenuHeroe implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (mejoras_permitidas > 0) {
-                    heroe.getEstadistica().aumentarmultVelocidad();
+                    heroe.getEstadistica().aumentarMultVelocidad(0.5f);
                     botonMejoraVelocidad.setText("Mejorar Velocidad (x" + formatearMult(heroe.getEstadistica().getMultVelocidad()) + ")");
                     mejoras_permitidas--;
                 }
@@ -99,7 +99,7 @@ public class MenuHeroe implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (mejoras_permitidas > 0) {
-                    heroe.getEstadistica().aumentarmultSalto();
+                    heroe.getEstadistica().aumentarMultSalto(0.5f);
                     botonMejoraSalto.setText("Mejorar Salto (x" + formatearMult(heroe.getEstadistica().getMultSalto()) + ")");
                     mejoras_permitidas--;
                 }

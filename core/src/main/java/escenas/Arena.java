@@ -414,6 +414,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
                 if (serverThread != null) {
                     serverThread.sendMessageToAll("EndGame:0"); // Hero wins
                     serverThread.disconnectClients();
+                    serverThread.terminate(); // Terminate thread
+                    serverThread = null;
                 }
                 this.gameFinished = true;
                 return;
@@ -441,6 +443,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
                     if (serverThread != null) {
                         serverThread.sendMessageToAll("EndGame:1"); // Boss wins
                         serverThread.disconnectClients();
+                        serverThread.terminate(); // Terminate thread
+                        serverThread = null;
                     }
                     this.gameFinished = true;
                 }

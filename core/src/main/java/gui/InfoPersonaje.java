@@ -66,9 +66,16 @@ public class InfoPersonaje extends WidgetGroup {
         this.addActor(table);
         
     }
-    
     public void modificarInfo(int vida) {
         this.vidaActual = Math.max(0, Math.min(vida, vidaMax));
+        this.labelInfo.setText(nombre + ": " + vidaActual + "/" + vidaMax);
+    }
+
+    // Add a new method to update max health:
+    public void actualizarVidaMaxima(int nuevaVidaMax) {
+        this.vidaMax = nuevaVidaMax;
+        // Keep current health within new bounds
+        this.vidaActual = Math.min(this.vidaActual, this.vidaMax);
         this.labelInfo.setText(nombre + ": " + vidaActual + "/" + vidaMax);
     }
     

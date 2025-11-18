@@ -8,27 +8,28 @@ public class Estadistica {
             multSalto = 1.f;
 
 
-    public void aumentarMultVida() {
+    public void aumentarMultVida(float incremento) {
         if (this.multVida <= this.nivelMax) {
-            this.multVida += 1;
+            this.multVida += incremento;
         }
     }
 
-    public void aumentarmultDanio() {
+    // Similar methods for other stats
+    public void aumentarMultDanio(float incremento) {
         if (this.multDanio <= this.nivelMax) {
-            this.multDanio += 1;
+            this.multDanio += incremento;
         }
     }
 
-    public void aumentarmultVelocidad() {
+    public void aumentarMultVelocidad(float incremento) {
         if (this.multVelocidad <= this.nivelMax) {
-            this.multVelocidad += 1;
+            this.multVelocidad += incremento;
         }
     }
 
-    public void aumentarmultSalto() {
+    public void aumentarMultSalto(float incremento) {
         if (this.multSalto <= this.nivelMax) {
-            this.multSalto += 1;
+            this.multSalto += incremento;
         }
     }
 
