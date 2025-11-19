@@ -14,11 +14,13 @@ public class RemoteProjectileManager extends Actor {
         public final String type;
         public final float x;
         public final float y;
+        public final boolean facingRight; // Add direction
 
-        public ProjectileState(String type, float x, float y) {
+        public ProjectileState(String type, float x, float y, boolean facingRight) {
             this.type = type;
             this.x = x;
             this.y = y;
+            this.facingRight = facingRight;
         }
     }
 
@@ -26,14 +28,21 @@ public class RemoteProjectileManager extends Actor {
         Texture texture;
         float x;
         float y;
+        float width;
+        float height;
+        boolean facingRight; // Store direction
     }
 
     private final Map<String, Texture> textureCache = new HashMap<>();
+    private final Map<String, Float> projectileSizes = new HashMap<>();
     private final List<RemoteProjectile> projectiles = new ArrayList<>();
 
     public RemoteProjectileManager() {
         textureCache.put("basico", new Texture("proyectil.png"));
         textureCache.put("volador", new Texture("movimientos/proyectilVolador.png"));
+        
+        projectileSizes.put("basico", 20f);
+        projectileSizes.put("volador", 20f);
     }
 
     public void updateProjectiles(List<ProjectileState> states) {
@@ -50,6 +59,17 @@ public class RemoteProjectileManager extends Actor {
             projectile.texture = texture;
             projectile.x = state.x;
             projectile.y = state.y;
+            projectile.facingRight = state.facingRight; // Store direction
+            
+            Float size = projectileSizes.get(state.type);
+            if (size != null) {
+                projectile.width = size;
+                projectile.height = size;
+            } else {
+                projectile.width = 20f;
+                projectile.height = 20f;
+            }
+            
             projectiles.add(projectile);
         }
     }
@@ -72,9 +92,24 @@ public class RemoteProjectileManager extends Actor {
             if (texture == null) {
                 continue;
             }
-            float width = texture.getWidth();
-            float height = texture.getHeight();
-            batch.draw(texture, projectile.x - width / 2f, projectile.y - height / 2f, width, height);
+            
+            float width = projectile.width;
+            float height = projectile.height;
+            
+            // Handle texture flipping based on direction
+            if (!projectile.facingRight) {
+                // When facing left, we need to flip the texture
+                batch.draw(texture, 
+                          projectile.x + width / 2f,  // Start from right edge
+                          projectile.y - height / 2f, 
+                          -width, height);           // Negative width flips horizontally
+            } else {
+                // Normal drawing for right direction
+                batch.draw(texture, 
+                          projectile.x - width / 2f, 
+                          projectile.y - height / 2f, 
+                          width, height);
+            }
         }
     }
 
@@ -83,6 +118,7 @@ public class RemoteProjectileManager extends Actor {
             texture.dispose();
         }
         textureCache.clear();
+        projectileSizes.clear();
         projectiles.clear();
     }
 }
