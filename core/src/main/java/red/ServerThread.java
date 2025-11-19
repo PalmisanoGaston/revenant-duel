@@ -56,7 +56,6 @@ public class ServerThread extends Thread {
         String message = (new String(packet.getData())).trim();
         String[] parts = message.split(":");
         int index = findClientIndex(packet);
-        System.out.println("Mensaje recibido " + message);
 
         if(parts[0].equals("Connect")){
 
