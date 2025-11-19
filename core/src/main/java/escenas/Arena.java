@@ -360,7 +360,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         for (Proyectil proyectil : activos) {
             builder.append(':').append(proyectil.getTipo())
                    .append(':').append(formatFloat(proyectil.getPosicion().x))
-                   .append(':').append(formatFloat(proyectil.getPosicion().y));
+                   .append(':').append(formatFloat(proyectil.getPosicion().y))
+                   .append(':').append(proyectil.getVelocidad().x > 0 ? 1 : 0); // Add direction (1=right, 0=left)
         }
 
         serverThread.sendMessageToAll(builder.toString());

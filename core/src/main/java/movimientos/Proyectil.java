@@ -115,4 +115,13 @@ public class Proyectil {
     public Body getCuerpo() {
         return this.cuerpo;
     }
+
+    public Vector2 getVelocidad() {
+        if (cuerpo != null) {
+            return cuerpo.getLinearVelocity();
+        }
+        return this.velocidad;
+    }
+
+
 }
