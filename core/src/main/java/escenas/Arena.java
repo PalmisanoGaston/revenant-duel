@@ -365,11 +365,12 @@ public class Arena implements Screen, GameController {
 
             int projectileCount = Integer.parseInt(parts[index++]);
             List<RemoteProjectileManager.ProjectileState> projectileStates = new ArrayList<>();
-            for (int i = 0; i < projectileCount && index + 2 < parts.length; i++) {
+            for (int i = 0; i < projectileCount && index + 3 < parts.length; i++) {
                 String type = parts[index++];
                 float projX = Float.parseFloat(parts[index++]);
                 float projY = Float.parseFloat(parts[index++]);
-                projectileStates.add(new RemoteProjectileManager.ProjectileState(type, projX, projY));
+                int direction = Integer.parseInt(parts[index++]); // 1=right, 0=left
+                projectileStates.add(new RemoteProjectileManager.ProjectileState(type, projX, projY, direction == 1));
             }
 
             this.heroe.applyRemoteState(heroX, heroY, heroFacing, heroAnim, heroStateTime, heroVida, heroVidaMax);
