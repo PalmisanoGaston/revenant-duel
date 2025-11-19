@@ -1,0 +1,37 @@
+default.fnt
+fondoSpriteSheet.png
+font-small.fnt
+heroe/Idle.png
+heroe/Jump.png
+heroe/attack.png
+heroe/death.png
+heroe/run.png
+jefe/bladeAttack.png
+jefe/bladeIdle.png
+jefe/bladeVerticalAttack.png
+jefe/bladeWalk.png
+jefe/bossidle.png
+libgdx.png
+movimientos/ataqueFinalJefe.png
+movimientos/ataqueJefe-4.png
+movimientos/ataqueJefe.png
+movimientos/backDash icon.png
+movimientos/basicAttack.png
+movimientos/dash icon.png
+movimientos/proyectilVolador.png
+movimientos/salto.jpg
+movimientos/verticalHitJefe.png
+movimientos/verticalHitJefe2.png
+musicaMenuPrincipal.mp3
+musicaTienda.mp3
+placeholder.png
+proyectil.png
+sonidos/ataque1.WAV
+sonidos/ataque2.WAV
+sonidos/dash.WAV
+sonidos/salto.WAV
+temaBatalla.mp3
+tileset.png
+uiskin.atlas
+uiskin.json
+uiskin.png
