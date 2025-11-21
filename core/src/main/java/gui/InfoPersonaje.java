@@ -67,10 +67,11 @@ public class InfoPersonaje extends WidgetGroup {
         
     }
     
-    public void modificarInfo(int vida) {
+    public void modificarInfo(int vida, int vidaMax) {
         this.vidaActual = Math.max(0, Math.min(vida, vidaMax));
         this.labelInfo.setText(nombre + ": " + vidaActual + "/" + vidaMax);
     }
+
     
     @Override
     public void draw(Batch batch, float parentAlpha) {

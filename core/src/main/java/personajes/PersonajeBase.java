@@ -446,4 +446,22 @@ public abstract class PersonajeBase extends Actor {
     public Estadistica getEstadistica() {
         return this.estadisticas;
     }
+
+    public void applyCooldowns(String cooldownsStr) {
+        if (cooldownsStr == null || cooldownsStr.isEmpty()) {
+            return;
+        }
+
+        String[] cooldownValues = cooldownsStr.split(",");
+        MovimientoBase[] movs = getArrayMovimientos();
+
+        for (int i = 0; i < Math.min(cooldownValues.length, movs.length); i++) {
+            try {
+                float cooldownRestante = Float.parseFloat(cooldownValues[i]);
+                movs[i].setCooldownRestante(cooldownRestante);
+            } catch (NumberFormatException e) {
+                // Ignorar valores inválidos
+            }
+        }
+    }
 }

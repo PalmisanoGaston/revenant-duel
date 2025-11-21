@@ -100,5 +100,21 @@ public abstract class MovimientoBase {
     public IconMovimiento getIcon() {
     	return this.icon;
     }
-    
+
+    public void setCooldownRestante(float cooldownRestante) {
+        this.cooldownRestante = cooldownRestante;
+
+        // Actualizar el estado visual del icono
+        if (cooldownRestante > 0) {
+            if (!llegoAcero) {
+                this.icon.setEnCooldown(true);
+                this.llegoAcero = true;
+            }
+        } else {
+            if (llegoAcero) {
+                this.icon.setEnCooldown(false);
+                this.llegoAcero = false;
+            }
+        }
+    }
 }

@@ -354,6 +354,7 @@ public class Arena implements Screen, GameController {
             boolean heroFacing = Integer.parseInt(parts[index++]) == 1;
             String heroAnim = parts[index++];
             float heroStateTime = Float.parseFloat(parts[index++]);
+            String heroCooldowns = parts[index++];
 
             float bossX = Float.parseFloat(parts[index++]);
             float bossY = Float.parseFloat(parts[index++]);
@@ -362,6 +363,8 @@ public class Arena implements Screen, GameController {
             boolean bossFacing = Integer.parseInt(parts[index++]) == 1;
             String bossAnim = parts[index++];
             float bossStateTime = Float.parseFloat(parts[index++]);
+            boolean modoBestia = Integer.parseInt(parts[index++]) == 1;
+            String bossCooldowns = parts[index++];
 
             int projectileCount = Integer.parseInt(parts[index++]);
             List<RemoteProjectileManager.ProjectileState> projectileStates = new ArrayList<>();
@@ -373,10 +376,16 @@ public class Arena implements Screen, GameController {
                 projectileStates.add(new RemoteProjectileManager.ProjectileState(type, projX, projY, direction == 1));
             }
 
+            if(modoBestia){
+                this.jefe.modoBestia();
+            }
+
             this.heroe.applyRemoteState(heroX, heroY, heroFacing, heroAnim, heroStateTime, heroVida, heroVidaMax);
+            this.heroe.applyCooldowns(heroCooldowns);
             this.jefe.applyRemoteState(bossX, bossY, bossFacing, bossAnim, bossStateTime, bossVida, bossVidaMax);
-            this.uiHeroe.modificarInfo(heroVida);
-            this.uiJefe.modificarInfo(bossVida);
+            this.jefe.applyCooldowns(bossCooldowns);
+            this.uiHeroe.modificarInfo(heroVida, heroVidaMax);
+            this.uiJefe.modificarInfo(bossVida, bossVidaMax);
             this.vidaJefe = bossVida;
             this.remoteProjectileManager.updateProjectiles(projectileStates);
         } catch (NumberFormatException ex) {
