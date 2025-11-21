@@ -40,8 +40,6 @@ public class Heroe extends PersonajeBase {
         movimientos.put("Proyectil", proyectilBasico);
         movimientos.put("ProyectilVolador", proyectilVolador);
     }
-    
-    
 
     @Override
     protected MovimientoBase createAtaque() {

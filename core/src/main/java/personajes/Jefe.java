@@ -142,4 +142,8 @@ public class Jefe extends PersonajeBase {
         super.fuerzaSalto = fuerzaSaltoBestia; // opcional; tus velocidades ya dependen de modoBestia
     }
 
+    public boolean isModoBestia() {
+        return this.modoBestia;
+    }
+
 }

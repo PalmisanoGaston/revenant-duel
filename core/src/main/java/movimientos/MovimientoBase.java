@@ -100,5 +100,8 @@ public abstract class MovimientoBase {
     public IconMovimiento getIcon() {
     	return this.icon;
     }
-    
+
+    public float getCooldownRestante() {
+        return cooldownRestante;
+    }
 }
