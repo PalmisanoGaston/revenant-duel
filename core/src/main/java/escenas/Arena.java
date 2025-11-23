@@ -276,27 +276,47 @@ public class Arena implements Screen, GameController {
     }
 
     private void renderWaitingScreen() {
-        // Usar el Stage para renderizar el texto
-        Stage waitingStage = new Stage(viewport);
+        if(this.clientThread.getConencted()) {
+            // Usar el Stage para renderizar el texto
+            Stage waitingStage = new Stage(viewport);
 
-        Table table = new Table();
-        table.setFillParent(true);
-        table.center();
+            Table table = new Table();
+            table.setFillParent(true);
+            table.center();
 
-        com.badlogic.gdx.scenes.scene2d.ui.Label waitingLabel =
-                new com.badlogic.gdx.scenes.scene2d.ui.Label("Esperando al otro jugador...", skin);
-        waitingLabel.setFontScale(2f); // Hacer el texto más grande
+            com.badlogic.gdx.scenes.scene2d.ui.Label waitingLabel =
+                    new com.badlogic.gdx.scenes.scene2d.ui.Label("Esperando al otro jugador...", skin);
+            waitingLabel.setFontScale(2f); // Hacer el texto más grande
 
-        com.badlogic.gdx.scenes.scene2d.ui.Label waitingLabel2 =
-                new com.badlogic.gdx.scenes.scene2d.ui.Label("Tu rol es: " + (this.playerRole == 0 ? "Heroe" : "Jefe"), skin);
-        waitingLabel2.setFontScale(2f); // Hacer el texto más grande
+            com.badlogic.gdx.scenes.scene2d.ui.Label waitingLabel2 =
+                    new com.badlogic.gdx.scenes.scene2d.ui.Label("Tu rol es: " + (this.playerRole == 0 ? "Heroe" : "Jefe"), skin);
+            waitingLabel2.setFontScale(2f); // Hacer el texto más grande
 
-        table.add(waitingLabel);
-        table.add(waitingLabel2);
-        waitingStage.addActor(table);
+            table.add(waitingLabel);
+            table.add(waitingLabel2);
+            waitingStage.addActor(table);
 
-        waitingStage.draw();
-        waitingStage.dispose();
+            waitingStage.draw();
+            waitingStage.dispose();
+        } else {
+            // Usar el Stage para renderizar el texto
+            Stage waitingStage = new Stage(viewport);
+
+            Table table = new Table();
+            table.setFillParent(true);
+            table.center();
+
+            com.badlogic.gdx.scenes.scene2d.ui.Label waitingLabel =
+                    new com.badlogic.gdx.scenes.scene2d.ui.Label("Conectando al servidor...", skin);
+            waitingLabel.setFontScale(2f); // Hacer el texto más grande
+
+            table.add(waitingLabel);
+            waitingStage.addActor(table);
+
+            waitingStage.draw();
+            waitingStage.dispose();
+
+        }
     }
 
     @Override
@@ -434,6 +454,41 @@ public class Arena implements Screen, GameController {
             clientThread = null;
         }
         juego.setScreen(new ScreenPerder(juego, winner != 0));
+    }
+
+    // ✅ NUEVO: Método para manejar fallo de conexión
+    public void onConnectionFailed() {
+        if (gameEnded) {
+            return;
+        }
+        gameEnded = true;
+
+        System.out.println("Failed to connect to server - returning to menu");
+
+        if (clientThread != null) {
+            clientThread.terminate();
+            clientThread = null;
+        }
+
+        // Ir a pantalla de error de conexión
+        juego.setScreen(new gui.ScreenConnectionError(juego, skin));
+    }
+
+    // ✅ NUEVO: Método para cuando el otro jugador se desconecta
+    public void onPlayerDisconnected() {
+        if (gameEnded) {
+            return;
+        }
+        gameEnded = true;
+
+        System.out.println("Other player disconnected - returning to menu");
+
+        if (clientThread != null) {
+            clientThread.terminate();
+            clientThread = null;
+        }
+
+        juego.setScreen(new Menu(juego));
     }
 
     public void onServerDisconnected() {

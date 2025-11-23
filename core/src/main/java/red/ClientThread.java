@@ -13,16 +13,22 @@ public class ClientThread extends Thread {
 
     private DatagramSocket socket;
     private int serverPort = 5555;
-    private String ipServerStr = "255.255.255.255"; // Change to actual server IP
+    private String ipServerStr = "255.255.255.255";
     private InetAddress ipServer;
     private boolean end = false;
     private GameController gameController;
+
+    // ✅ NUEVO: Para manejar timeout de conexión
+    private boolean connected = false;
+    private boolean connectionAttempted = false;
+    private static final int CONNECTION_TIMEOUT = 5000; // 5 segundos
 
     private ClientThread(GameController gameController) {
         try {
             this.gameController = gameController;
             ipServer = InetAddress.getByName(ipServerStr);
             socket = new DatagramSocket();
+            socket.setSoTimeout(CONNECTION_TIMEOUT); // ✅ NUEVO: Timeout para receive
             registerShutdownHook();
         } catch (SocketException | UnknownHostException e) {
             e.printStackTrace();
@@ -54,22 +60,37 @@ public class ClientThread extends Thread {
         return instance;
     }
 
-    public static boolean isActive() {
-        return instance != null && !instance.end;
-    }
-
     @Override
     public void run() {
+        // ✅ NUEVO: Esperar respuesta inicial de conexión
+        long startTime = System.currentTimeMillis();
+
         do {
             DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
             try {
                 socket.receive(packet);
                 processMessage(packet);
+
+                // ✅ NUEVO: Si recibimos un mensaje, la conexión fue exitosa
+                if (!connected && connectionAttempted) {
+                    connected = true;
+                }
+
+            } catch (SocketTimeoutException e) {
+                // ✅ NUEVO: Timeout - verificar si aún estamos intentando conectar
+                if (connectionAttempted && !connected) {
+                    long elapsed = System.currentTimeMillis() - startTime;
+                    if (elapsed > CONNECTION_TIMEOUT) {
+                        System.out.println("Connection timeout - server not responding");
+                        notifyConnectionFailed();
+                        break;
+                    }
+                }
+                // Si ya estamos conectados, ignorar timeouts (el servidor enviará datos cuando los tenga)
+
             } catch (SocketException e) {
-                // ✅ NUEVO: Manejar cierre de socket limpiamente
                 if (!end) {
                     System.out.println("Connection lost - socket closed");
-                    // Notificar al game controller que se perdió conexión
                     if (gameController instanceof escenas.Arena) {
                         Gdx.app.postRunnable(new Runnable() {
                             @Override
@@ -79,7 +100,7 @@ public class ClientThread extends Thread {
                         });
                     }
                 }
-                break; // Salir del loop
+                break;
             } catch (IOException e) {
                 if (!end) {
                     e.printStackTrace();
@@ -88,6 +109,17 @@ public class ClientThread extends Thread {
         } while(!end);
     }
 
+    // ✅ NUEVO: Notificar al GameController que falló la conexión
+    private void notifyConnectionFailed() {
+        if (gameController instanceof escenas.Arena) {
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    ((escenas.Arena) gameController).onConnectionFailed();
+                }
+            });
+        }
+    }
 
     private void processMessage(DatagramPacket packet) {
         String message = (new String(packet.getData())).trim();
@@ -98,37 +130,38 @@ public class ClientThread extends Thread {
         switch(parts[0]){
             case "AlreadyConnected":
                 System.out.println("Ya estas conectado");
+                connected = true; // ✅ NUEVO
                 break;
             case "Connected":
-                // STORE THE ASSIGNED ROLE!
                 int assignedRole = Integer.parseInt(parts[1]);
                 System.out.println("Conectado al servidor como rol: " + assignedRole);
                 this.ipServer = packet.getAddress();
-                
-                // Notify the game controller about the assigned role
+                connected = true; // ✅ NUEVO
+
                 if (gameController instanceof escenas.Arena) {
                     ((escenas.Arena) gameController).setPlayerRole(assignedRole);
                 }
                 break;
             case "Full":
                 System.out.println("Servidor lleno");
+                connected = true; // ✅ NUEVO: Técnicamente conectamos, pero está lleno
                 this.end = true;
+                // TODO: Podrías agregar un callback específico para "servidor lleno"
                 break;
             case "Start":
                 this.gameController.startGame();
                 break;
             case "ShowUpgradeMenu":
                 System.out.println("DEBUG: Received ShowUpgradeMenu message");
-                // Parse hero stats and show upgrade menu
                 int heroVida = Integer.parseInt(parts[1]);
                 int intentosRestantes = Integer.parseInt(parts[2]);
                 float multVida = Float.parseFloat(parts[3]);
                 float multDanio = Float.parseFloat(parts[4]);
                 float multVelocidad = Float.parseFloat(parts[5]);
                 float multSalto = Float.parseFloat(parts[6]);
-                
+
                 System.out.println("DEBUG: Calling gameController.heroDied()");
-                
+
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
@@ -136,18 +169,17 @@ public class ClientThread extends Thread {
                     }
                 });
                 break;
-                
+
             case "HeroUpgrading":
-            	 Gdx.app.postRunnable(new Runnable() {
-            	        @Override
-            	        public void run() {
-            	            gameController.heroDied(0, 0, 0, 0, 0, 0);
-            	        }
-            	    });
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        gameController.heroDied(0, 0, 0, 0, 0, 0);
+                    }
+                });
                 break;
-                
+
             case "ResumeGame":
-                // Resume game with updated stats
                 float newMultVida = Float.parseFloat(parts[1]);
                 float newMultDanio = Float.parseFloat(parts[2]);
                 float newMultVelocidad = Float.parseFloat(parts[3]);
@@ -195,12 +227,25 @@ public class ClientThread extends Thread {
                 }
                 terminate();
                 break;
+
+            // ✅ NUEVO: Manejar desconexión de otro jugador
+            case "PlayerDisconnected":
+                System.out.println("Other player disconnected");
+                if (gameController instanceof escenas.Arena) {
+                    Gdx.app.postRunnable(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((escenas.Arena) gameController).onPlayerDisconnected();
+                        }
+                    });
+                }
+                break;
         }
     }
 
     public void sendHeroDied(int heroVida, int intentosRestantes, float multVida, float multDanio, float multVelocidad, float multSalto) {
-        sendMessage("HeroDied:" + heroVida + ":" + intentosRestantes + ":" + 
-                   multVida + ":" + multDanio + ":" + multVelocidad + ":" + multSalto);
+        sendMessage("HeroDied:" + heroVida + ":" + intentosRestantes + ":" +
+                multVida + ":" + multDanio + ":" + multVelocidad + ":" + multSalto);
     }
 
     public void sendHeroUpgraded(float multVida, float multDanio, float multVelocidad, float multSalto, int numIntentos) {
@@ -208,12 +253,15 @@ public class ClientThread extends Thread {
     }
 
     public void sendMessage(String message) {
+        if (socket == null || socket.isClosed()) {
+            return;
+        }
         byte[] byteMessage = message.getBytes();
         DatagramPacket packet = new DatagramPacket(byteMessage, byteMessage.length, ipServer, serverPort);
         try {
             socket.send(packet);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error sending message: " + e.getMessage());
         }
     }
 
@@ -223,17 +271,17 @@ public class ClientThread extends Thread {
     }
 
     public void connectToServer() {
+        connectionAttempted = true; // ✅ NUEVO: Marcar que intentamos conectar
         sendMessage("Connect");
     }
 
     public void terminate() {
         this.end = true;
 
-        // Notificar al servidor antes de cerrar
         if (socket != null && !socket.isClosed()) {
             try {
                 sendMessage("Disconnect");
-                Thread.sleep(100); // Dar tiempo para que se envíe el mensaje
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -243,10 +291,14 @@ public class ClientThread extends Thread {
         }
 
         this.interrupt();
-        instance = null; // Limpiar la instancia
+        instance = null;
     }
 
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
+    }
+
+    public boolean getConencted() {
+        return this.connected;
     }
 }
