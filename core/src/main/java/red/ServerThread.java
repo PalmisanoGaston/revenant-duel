@@ -12,6 +12,8 @@ import escenas.Arena;
 
 public class ServerThread extends Thread {
 
+    private static ServerThread instance;
+
     private DatagramSocket socket;
     private int serverPort = 5555;
     private boolean end = false;
@@ -26,8 +28,7 @@ public class ServerThread extends Thread {
     private int intentosRestantes;
     private Arena serverArena;
 
-
-    public ServerThread(GameController gameController) {
+    private ServerThread(GameController gameController) {
         this.gameController = gameController;
         if (gameController instanceof escenas.Arena) {
             this.serverArena = (escenas.Arena) gameController;
@@ -37,6 +38,17 @@ public class ServerThread extends Thread {
         } catch (SocketException e) {
 //            throw new RuntimeException(e);
         }
+    }
+
+    public static ServerThread getInstance(GameController gameController) {
+        if (instance == null || instance.end) {
+            instance = new ServerThread(gameController);
+        }
+        return instance;
+    }
+
+    public static ServerThread getInstance() {
+        return instance;
     }
 
     @Override
@@ -219,6 +231,8 @@ public class ServerThread extends Thread {
     }
 
     public void terminate(){
+        sendMessageToAll("Disconnect");
+
         this.end = true;
         socket.close();
         this.interrupt();

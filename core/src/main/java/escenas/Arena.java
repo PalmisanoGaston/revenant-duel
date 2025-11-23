@@ -111,7 +111,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         StageInputProcessor stageProcessor = new StageInputProcessor(escena);
         this.inputManager = new InputManager(this.lectorInputs, this);
 	    this.skin = skin;
-	    this.serverThread = new ServerThread(this);
+	    this.serverThread = ServerThread.getInstance(this);
         construirArena(skin);
         this.serverThread.start();
 
