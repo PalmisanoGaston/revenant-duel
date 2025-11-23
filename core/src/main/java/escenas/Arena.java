@@ -62,6 +62,7 @@ public class Arena implements Screen, GameController {
     private int intentosRestantes;
     private final boolean isReconnection;
     private boolean gameEnded = false;
+    private boolean player2 = false;
 
     public static final float PIXELS_TO_METERS = 1 / 100f;
     private static final int ANCHO = 800;
@@ -197,6 +198,11 @@ public class Arena implements Screen, GameController {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        if (!player2) {
+            renderWaitingScreen();
+            return; // No renderizar el juego aún
+        }
+
         escena.act(delta);
         escena.draw();
     }
@@ -266,6 +272,31 @@ public class Arena implements Screen, GameController {
     @Override
     public void startGame() {
         System.out.println("Game started!");
+        this.player2 = true;
+    }
+
+    private void renderWaitingScreen() {
+        // Usar el Stage para renderizar el texto
+        Stage waitingStage = new Stage(viewport);
+
+        Table table = new Table();
+        table.setFillParent(true);
+        table.center();
+
+        com.badlogic.gdx.scenes.scene2d.ui.Label waitingLabel =
+                new com.badlogic.gdx.scenes.scene2d.ui.Label("Esperando al otro jugador...", skin);
+        waitingLabel.setFontScale(2f); // Hacer el texto más grande
+
+        com.badlogic.gdx.scenes.scene2d.ui.Label waitingLabel2 =
+                new com.badlogic.gdx.scenes.scene2d.ui.Label("Tu rol es: " + (this.playerRole == 0 ? "Heroe" : "Jefe"), skin);
+        waitingLabel2.setFontScale(2f); // Hacer el texto más grande
+
+        table.add(waitingLabel);
+        table.add(waitingLabel2);
+        waitingStage.addActor(table);
+
+        waitingStage.draw();
+        waitingStage.dispose();
     }
 
     @Override
@@ -273,7 +304,7 @@ public class Arena implements Screen, GameController {
         if (clientThread == null) {
             return;
         }
-        if (!isMenuAbierto() && playerRole != -1) {
+        if (!isMenuAbierto() && playerRole != -1 && this.player2) {
             clientThread.sendInput(playerRole, keycode);
         } else if (playerRole == -1) {
             System.out.println("Cannot send input - player role not assigned yet");

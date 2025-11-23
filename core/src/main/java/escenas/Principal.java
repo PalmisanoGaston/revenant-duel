@@ -10,7 +10,7 @@ public class Principal extends Game {
         setScreen(new Menu(this));
     }
 
-    @Override public void dispose() { 
+    @Override public void dispose() {
         Screen current = getScreen();
         if (current != null) { 
             current.dispose(); 
