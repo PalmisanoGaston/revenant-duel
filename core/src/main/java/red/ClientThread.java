@@ -9,6 +9,8 @@ import Interfaces.GameController;
 
 public class ClientThread extends Thread {
 
+    private static ClientThread instance;
+
     private DatagramSocket socket;
     private int serverPort = 5555;
     private String ipServerStr = "255.255.255.255"; // Change to actual server IP
@@ -16,14 +18,44 @@ public class ClientThread extends Thread {
     private boolean end = false;
     private GameController gameController;
 
-    public ClientThread(GameController gameController) {
+    private ClientThread(GameController gameController) {
         try {
             this.gameController = gameController;
             ipServer = InetAddress.getByName(ipServerStr);
             socket = new DatagramSocket();
+            registerShutdownHook();
         } catch (SocketException | UnknownHostException e) {
             e.printStackTrace();
         }
+    }
+
+    private void registerShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (!end) {
+                System.out.println("Application closing - disconnecting client...");
+                try {
+                    sendMessage("Disconnect");
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }));
+    }
+
+    public static ClientThread getInstance(GameController gameController) {
+        if (instance == null || instance.end) {
+            instance = new ClientThread(gameController);
+        }
+        return instance;
+    }
+
+    public static ClientThread getInstance() {
+        return instance;
+    }
+
+    public static boolean isActive() {
+        return instance != null && !instance.end;
     }
 
     @Override
@@ -33,11 +65,29 @@ public class ClientThread extends Thread {
             try {
                 socket.receive(packet);
                 processMessage(packet);
+            } catch (SocketException e) {
+                // ✅ NUEVO: Manejar cierre de socket limpiamente
+                if (!end) {
+                    System.out.println("Connection lost - socket closed");
+                    // Notificar al game controller que se perdió conexión
+                    if (gameController instanceof escenas.Arena) {
+                        Gdx.app.postRunnable(new Runnable() {
+                            @Override
+                            public void run() {
+                                ((escenas.Arena) gameController).onServerDisconnected();
+                            }
+                        });
+                    }
+                }
+                break; // Salir del loop
             } catch (IOException e) {
-                if (!end) e.printStackTrace();
+                if (!end) {
+                    e.printStackTrace();
+                }
             }
         } while(!end);
     }
+
 
     private void processMessage(DatagramPacket packet) {
         String message = (new String(packet.getData())).trim();
@@ -178,8 +228,22 @@ public class ClientThread extends Thread {
 
     public void terminate() {
         this.end = true;
-        socket.close();
+
+        // Notificar al servidor antes de cerrar
+        if (socket != null && !socket.isClosed()) {
+            try {
+                sendMessage("Disconnect");
+                Thread.sleep(100); // Dar tiempo para que se envíe el mensaje
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                System.out.println("Error sending disconnect message: " + e.getMessage());
+            }
+            socket.close();
+        }
+
         this.interrupt();
+        instance = null; // Limpiar la instancia
     }
 
     public void setGameController(GameController gameController) {

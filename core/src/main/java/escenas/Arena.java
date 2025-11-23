@@ -181,7 +181,7 @@ public class Arena implements Screen, GameController {
     }
 
     private void initializeNetwork() {
-        this.clientThread = new ClientThread(this);
+        this.clientThread = ClientThread.getInstance(this);
         this.clientThread.start();
         this.clientThread.connectToServer();
     }
