@@ -160,6 +160,13 @@ public class ServerThread extends Thread {
                     sendMessageToAll("ResumeGame:" + heroStats[0] + ":" + heroStats[1] + ":" + 
                                    heroStats[2] + ":" + heroStats[3]);
                     break;
+
+                case "Disconnect":
+                    clients.remove(index);
+                    connectedClients--;
+                    disconnectClients();
+                    break;
+
             }
         }
     }
