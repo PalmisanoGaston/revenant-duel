@@ -15,22 +15,49 @@ public abstract class AnimacionBase {
     protected Animation<TextureRegion> animacionMuerte;
     protected Animation<TextureRegion> animacionAtaqueVertical;
 
-    protected Animation<TextureRegion> createAnimationFromSheet(Texture sheet, float frameDuration, int ancho, int alto) {
-        TextureRegion[][] tmp = TextureRegion.split(sheet, ancho, alto);
-        Array<TextureRegion> frames = new Array<>();
-        for (TextureRegion[] row : tmp) {
-            for (TextureRegion frame : row) {
-                frames.add(frame);
-            }
-        }
-
-        if (frames.size == 0) {
-            throw new IllegalArgumentException("La hoja de sprites no contiene frames o no se ha cargado correctamente: " + sheet);
-        }
-
-        return new Animation<TextureRegion>(frameDuration, frames, Animation.PlayMode.LOOP);
-    }
+    public Animation<TextureRegion> createAnimationFromSheet(Texture sheet, float frameDuration, 
+            int frameWidth, int frameHeight,
+            int rows, int[] colsPerRow) {
+		
+		TextureRegion[][] tmp = TextureRegion.split(sheet, frameWidth, frameHeight);
+		int totalFrames = 0;
+		
+		for (int cols : colsPerRow) {
+		totalFrames += cols;
+		}
+		
+		TextureRegion[] frames = new TextureRegion[totalFrames];
+		int frameIndex = 0;
+		
+		for (int row = 0; row < rows; row++) {
+		int colsInRow = colsPerRow[row];
+		for (int col = 0; col < colsInRow; col++) {
+		if (frameIndex < totalFrames) {
+		frames[frameIndex++] = tmp[row][col];
+				}
+			}
+		}
+		
+		return new Animation<TextureRegion>(frameDuration, frames);
+		}
     
+    public Animation<TextureRegion> createAnimationFromSheet(Texture sheet, float frameDuration, 
+            int frameWidth, int frameHeight) {
+		TextureRegion[][] tmp = TextureRegion.split(sheet, frameWidth, frameHeight);
+		int rows = tmp.length;
+		int cols = tmp[0].length;
+		TextureRegion[] frames = new TextureRegion[rows * cols];
+		int index = 0;
+		
+		for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+		frames[index++] = tmp[i][j];
+				}
+			}
+		
+		return new Animation<TextureRegion>(frameDuration, frames);
+		}
+				    
     public Animation<TextureRegion> getVerticalAttackAnimation(){
     	return this.animacionAtaqueVertical;
     }
