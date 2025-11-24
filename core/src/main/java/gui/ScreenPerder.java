@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import escenas.Menu;
 import escenas.Principal;
+import sonidos.ControladorMusica;
 
 public class ScreenPerder implements Screen {
 	
@@ -47,6 +48,7 @@ public class ScreenPerder implements Screen {
         table.add(titulo).padBottom(30);
         table.row();
         table.add(botonJugar).width(200).height(50);
+		ControladorMusica.play("musicaTienda.mp3");
 	}
 
 	@Override

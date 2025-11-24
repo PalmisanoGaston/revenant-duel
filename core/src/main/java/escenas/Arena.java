@@ -33,6 +33,7 @@ import personajes.Estadistica;
 import personajes.Heroe;
 import personajes.Jefe;
 import red.ClientThread;
+import sonidos.ControladorMusica;
 import utiles.InputManager;
 import utiles.RemoteProjectileManager;
 import utiles.ProyectilManager;
@@ -101,6 +102,8 @@ public class Arena implements Screen, GameController {
                 ", Vida Jefe: " + vidaJefe +
                 ", Intentos: " + intentosRestantes +
                 ", HP Multiplier: " + estadisticasHeroe.getMultVida());
+
+        ControladorMusica.play("temaBatalla.mp3");
     }
 
     private void setupSceneActors() {

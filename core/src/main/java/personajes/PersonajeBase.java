@@ -407,6 +407,8 @@ public abstract class PersonajeBase extends Actor {
                 return this.animacionPersonaje.getJumpAnimation();
             case "attack":
                 return this.animacionPersonaje.getAnimacionAtaque();
+            case "attack-Vertical":
+                return this.animacionPersonaje.getVerticalAttackAnimation();
             case "death":
                 return this.animacionPersonaje.getAnimacionMuerte() != null
                         ? this.animacionPersonaje.getAnimacionMuerte()

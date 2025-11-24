@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import sonidos.ControladorMusica;
 
 public class EscenaEspera implements Screen {
     private Game juego;
@@ -31,6 +32,7 @@ public class EscenaEspera implements Screen {
         
         Label mensaje = new Label("El héroe está eligiendo mejoras...", skin);
         table.add(mensaje);
+        ControladorMusica.play("musicaTienda.mp3");
     }
 
     @Override
