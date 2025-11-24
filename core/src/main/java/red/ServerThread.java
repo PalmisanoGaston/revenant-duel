@@ -178,8 +178,13 @@ public class ServerThread extends Thread {
                     break;
 
                 case "Disconnect":
+                    int role = 0;
                     clients.remove(index);
                     connectedClients--;
+                    for(Client client : clients) {
+                         role = client.getNum();
+                    }
+                    sendMessageToAll("EndGame:" + role); // Notify remaining client
                     disconnectClients();
                     terminate(); // Terminate thread
                     Gdx.app.postRunnable(() -> {
