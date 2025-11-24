@@ -1,8 +1,6 @@
 package personajes;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class AnimacionesJefe extends AnimacionBase {
     
@@ -18,7 +16,10 @@ public class AnimacionesJefe extends AnimacionBase {
         super.jumpAnimation = createAnimationFromSheet(jumpSheet, 0.2f,179,186);
         super.runAnimation = createAnimationFromSheet(runSheet, 0.0555f,185,172);
         super.animacionAtaque = createAnimationFromSheet(sheetAtaque,0.0183f, 397, 198);
-        super.animacionAtaqueVertical = createAnimationFromSheet(sheetAtaqueVertical,0.02f, 367, 257);
+        // NUEVO: Para el ataque vertical con estructura irregular
+        int[] columnsPerRow = {7, 7, 7, 7, 6, 6, 6, 6, 6}; // 9 filas: 4x7 + 5x6
+        super.animacionAtaqueVertical = createAnimationFromSheet(sheetAtaqueVertical, 0.0172f,
+                367, 257, 9, columnsPerRow);
     }
  
 }

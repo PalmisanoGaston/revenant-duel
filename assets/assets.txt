@@ -8,6 +8,7 @@ heroe/death.png
 heroe/run.png
 jefe/bladeAttack.png
 jefe/bladeIdle.png
+jefe/bladeVerticalAttack (2).png
 jefe/bladeVerticalAttack.png
 jefe/bladeWalk.png
 jefe/bossidle.png

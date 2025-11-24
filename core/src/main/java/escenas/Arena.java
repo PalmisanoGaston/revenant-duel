@@ -72,11 +72,11 @@ public class Arena implements Screen, GameController {
     public static final short CATEGORY_PROYECTIL = 0x0004;
 
     public Arena(Game juego, Skin skin) {
-        this(juego, skin, 150, 5, new Estadistica(), false, -1);
+        this(juego, skin, 150, 5, new Estadistica(), false, -1, false);
     }
 
     public Arena(Game juego, Skin skin, int vidaJefe, int intentosRestantes, Estadistica estadisticasHeroe,
-                 boolean isReconnection, int rol) {
+                 boolean isReconnection, int rol, boolean player2) {
         this.juego = juego;
         this.skin = skin;
         this.vidaJefe = vidaJefe;
@@ -85,6 +85,7 @@ public class Arena implements Screen, GameController {
         this.isReconnection = isReconnection;
         this.viewport = new ExtendViewport(ANCHO, ALTO);
         this.escena = new Stage(viewport);
+        this.player2 = player2;
 
         setupSceneActors();
         this.inputManager = new InputManager(this);
@@ -276,7 +277,7 @@ public class Arena implements Screen, GameController {
     }
 
     private void renderWaitingScreen() {
-        if(this.clientThread.getConencted()) {
+        if(this.clientThread.getConencted() && !this.player2) {
             // Usar el Stage para renderizar el texto
             Stage waitingStage = new Stage(viewport);
 
@@ -298,7 +299,7 @@ public class Arena implements Screen, GameController {
 
             waitingStage.draw();
             waitingStage.dispose();
-        } else {
+        } else if (!this.clientThread.getConencted() && !this.player2) {
             // Usar el Stage para renderizar el texto
             Stage waitingStage = new Stage(viewport);
 
@@ -363,7 +364,7 @@ public class Arena implements Screen, GameController {
                 ", Velocidad: " + multVelocidad + ", Salto: " + multSalto +
                 ", Intentos restantes: " + intentosRestantes);
 
-        Arena reconnectedArena = new Arena(juego, skin, vidaJefe, intentosRestantes, estadisticasHeroe, true, this.playerRole);
+        Arena reconnectedArena = new Arena(juego, skin, vidaJefe, intentosRestantes, estadisticasHeroe, true, this.playerRole, this.player2);
         ClientThread existingThread = this.clientThread;
         this.clientThread = null;
         reconnectedArena.setClientThread(existingThread);
