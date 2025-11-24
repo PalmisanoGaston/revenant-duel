@@ -158,7 +158,6 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         table.add().expandX(); // Espacio flexible en el centro
         table.add(uiJefe).pad(150).top().right();
         this.jefe.recibirDaño(0);
-        ControladorMusica.play("temaBatalla.mp3");
 	}
         
     private void crearLimitesMapa() {
