@@ -24,11 +24,7 @@ import Interfaces.GameController;
 import Interfaces.MuerteEventListener;
 import fondos.FondoBase;
 import fondos.FondoPrueba;
-import gui.EscenaEspera;
-import gui.InfoPersonaje;
-import gui.MenuArena;
-import gui.MenuHeroe;
-import gui.ScreenPerder;
+import gui.*;
 import personajes.Estadistica;
 import personajes.Heroe;
 import personajes.Jefe;
@@ -506,6 +502,6 @@ public class Arena implements Screen, GameController {
             clientThread.terminate();
             clientThread = null;
         }
-        juego.setScreen(new ScreenPerder(juego, true));
+        juego.setScreen(new ScreenServerError(juego));
     }
 }
