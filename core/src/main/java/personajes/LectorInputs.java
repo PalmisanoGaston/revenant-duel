@@ -20,18 +20,15 @@ public class LectorInputs {
     }
 
     private void actualizarMovimiento(int rol) {
+        boolean left = pressed.contains(Input.Keys.A);
+        boolean right = pressed.contains(Input.Keys.D);
         if (rol == 0 && personaje != null) {
             // Hero movement - A/D keys
-            boolean pLeft = pressed.contains(Input.Keys.A);
-            boolean pRight = pressed.contains(Input.Keys.D);
-            personaje.setInputLeft(pLeft);
-            personaje.setInputRight(pRight);
+            personaje.setInputLeft(left);
+            personaje.setInputRight(right);
         } else if (rol == 1 && jefe != null) {
-            // Boss movement - LEFT/RIGHT keys  
-            boolean jLeft = pressed.contains(Input.Keys.LEFT);
-            boolean jRight = pressed.contains(Input.Keys.RIGHT);
-            jefe.setInputLeft(jLeft);
-            jefe.setInputRight(jRight);
+            jefe.setInputLeft(left);
+            jefe.setInputRight(right);
         }
     }
 
@@ -80,8 +77,7 @@ public class LectorInputs {
 
     private void handleBossInput(int keycode) {
         switch (keycode) {
-            case Input.Keys.SPACE:
-            case Input.Keys.UP:
+            case Input.Keys.W:
                 jefe.requestJump();
                 break;
             case Input.Keys.SHIFT_LEFT:
@@ -93,18 +89,15 @@ public class LectorInputs {
                 jefe.requestBackdash();
                 break;
             case Input.Keys.Q:
-            case Input.Keys.M:
                 jefe.requestAttack();
                 break;
             case Input.Keys.H:
                 jefe.requestToggleBestia();
                 break;
             case Input.Keys.E:
-            case Input.Keys.N:
                 jefe.requestToggleVertical();
                 break;
             case Input.Keys.R:
-            case Input.Keys.B:
                 jefe.requestToggleFinal();
                 break;
         }
