@@ -34,8 +34,8 @@ public class LectorInputs {
             personaje.setInputRight(pRight);
         }
 
-        boolean jLeft  = pressed.contains(Input.Keys.LEFT);
-        boolean jRight = pressed.contains(Input.Keys.RIGHT);
+        boolean jLeft  = pressed.contains(Input.Keys.A);
+        boolean jRight = pressed.contains(Input.Keys.D);
 
         if (jefe != null) {
             jefe.setInputLeft(jLeft);
@@ -66,10 +66,9 @@ public class LectorInputs {
         }
 
         if (jefe != null) {
-            if (keycode == Input.Keys.UP)                jefe.requestJump();
+            if (keycode == Input.Keys.W)                jefe.requestJump();
             else if (keycode == Input.Keys.SHIFT_RIGHT)  jefe.requestDash();
             else if (keycode == Input.Keys.CONTROL_RIGHT)jefe.requestBackdash();
-            else if (keycode == Input.Keys.M)            jefe.requestAttack();
             else if (keycode == Input.Keys.H)            jefe.requestToggleBestia();
             else if (keycode == Input.Keys.N)            jefe.requestToggleVertical();
             else if (keycode == Input.Keys.B)            jefe.requestToggleFinal();

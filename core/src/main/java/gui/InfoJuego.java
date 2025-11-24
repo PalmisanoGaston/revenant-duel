@@ -50,12 +50,12 @@ public class InfoJuego implements Screen {
         // Controles
         Label controlesLabel = new Label("CONTROLES", fuenteTextos);
         controlesLabel.setFontScale(1.2f);
-        
-        String textoControlesHeroe = "HÉROE:\n- Movimiento Horizontal: A y D\n- Salto: ESPACIO\n- Dash: SHIFT IZQUIERDO\n- BackDash: CONTROL IZQUIERDO\n- Ataque: J";
+
+        String textoControlesHeroe = "HÉROE:\n- Movimiento Horizontal: A y D\n- Salto: ESPACIO\n- Dash: SHIFT IZQUIERDO\n- BackDash: CONTROL IZQUIERDO\n- Ataque: Q \n- Proyectil: E \n- Proyectil (en el aire): R";
         Label controlesHeroe = new Label(textoControlesHeroe, fuenteTextos);
         controlesHeroe.setAlignment(Align.left);
-        
-        String textoControlesJefe = "JEFE:\n- Movimiento Horizontal: FLECHAS IZQ/DER\n- Salto: FLECHA ARRIBA\n- Dash: SHIFT DERECHO\n- BackDash: CONTROL DERECHO\n- Ataque: M";
+
+        String textoControlesJefe = "JEFE:\n- Movimiento Horizontal: FLECHAS A y D\n- Salto: FLECHA ARRIBA\n- Dash: SHIFT IZQUIERDO\n- BackDash: CONTROL IZQUIERDO\n- Ataque: Q \n- Ataque Vertical: E \n- Ataque Final (Mientras en el modo bestia): R";
         Label controlesJefe = new Label(textoControlesJefe, fuenteTextos);
         controlesJefe.setAlignment(Align.left);
         
