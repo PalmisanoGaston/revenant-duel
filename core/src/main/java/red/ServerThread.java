@@ -93,8 +93,12 @@ public class ServerThread extends Thread {
         	        if(connectedClients == MAX_CLIENTS) {
         	            for(Client client : clients) {
         	                sendMessage("Start", client.getIp(), client.getPort());
-        	                gameController.startGame();
-        	            }
+                            Gdx.app.postRunnable(() -> {
+                                if (gameController != null)
+                                    gameController.startGame();
+                            });
+
+                        }
         	        }
         	    } else {
         	        sendMessage("Full", packet.getAddress(), packet.getPort());
@@ -177,6 +181,11 @@ public class ServerThread extends Thread {
                     clients.remove(index);
                     connectedClients--;
                     disconnectClients();
+                    terminate(); // Terminate thread
+                    Gdx.app.postRunnable(() -> {
+                        if (gameController != null)
+                            gameController.resetAndCreateNewArena();
+                    });
                     break;
 
             }

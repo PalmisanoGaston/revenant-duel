@@ -6,4 +6,5 @@ public interface GameController {
     void heroDied(int heroVida, int intentosRestantes, float multVida, float multDanio, float multVelocidad, float multSalto);
     void heroUpgraded(float multVida, float multDanio, float multVelocidad, float multSalto);
     void resumeGame();
+    void resetAndCreateNewArena();
 }

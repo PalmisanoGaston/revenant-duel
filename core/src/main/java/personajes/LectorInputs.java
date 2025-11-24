@@ -52,15 +52,6 @@ public class LectorInputs {
             } else if (rol == 1 && jefe != null) {
                 handleBossInput(keycode);
             }
-            
-            // Handle ESC key for menu (both roles)
-            if (keycode == Input.Keys.ESCAPE) {
-                if (arena.isMenuAbierto()) {
-                    arena.cerrarMenu();
-                } else {
-                    arena.mostrarMenuConfiguracion();
-                }
-            }
         }
     }
 

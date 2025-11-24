@@ -1,14 +1,16 @@
 package escenas;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import red.ServerThread;
 
 public class Principal extends Game {
 	
     @Override
     public void create() {
-        setScreen(new Menu(this));
+        setScreen(new Arena(this, new Skin(Gdx.files.internal("uiskin.json"))));
     }
 
     @Override public void dispose() {

@@ -9,8 +9,6 @@ import utiles.StageInputProcessor;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -28,10 +26,6 @@ import Interfaces.MuerteEventListener;
 import fondos.FondoBase;
 import fondos.FondoPrueba;
 import gui.InfoPersonaje;
-import gui.MenuArena;
-import gui.MenuHeroe;
-import gui.ScreenPerder;
-import mejoras.MejoraVida;
 import personajes.Jefe;
 import personajes.LectorInputs;
 import personajes.Estadistica;
@@ -75,8 +69,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     
     private InfoPersonaje uiHeroe;
     private InfoPersonaje uiJefe;
-    
-    private MenuArena menuArena;
+
     private boolean menuVisible = false;
     private LectorInputs lectorInputs;
     
@@ -249,31 +242,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         jefe.setVida(vidaRestante);
         return jefe;
     }
-    
-    
-    public void mostrarMenuConfiguracion() {
-        if (menuArena == null) {
-            menuArena = new MenuArena(juego, this.skin, this);
-            this.escena.addActor(menuArena);
 
-            float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2 + 50;
-            float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
-            menuArena.setPosition(centerX, centerY);
-
-            inputManager.setMenuMode();  // ← reactivamos esta línea
-        }
-    }
-
-    public void cerrarMenu() {
-        menuArena.remove();
-        menuArena = null;
-        inputManager.setArenaMode();    // ← también reactivamos esta
-    }
-    
- // Agregá esto en la clase Arena (cerca de los otros métodos públicos)
-    public boolean isMenuAbierto() {
-        return menuArena != null;
-    }
     
     public void storeBossHealth() {
         this.storedBossHealth = this.jefe.getVida();
@@ -329,9 +298,6 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
     @Override
     public void dispose() {
-        if(menuArena != null) {
-            menuArena.remove();
-        }
         this.world.dispose();
         this.debugRenderer.dispose();
         this.batch.dispose();
@@ -391,11 +357,6 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	@Override
 	public void resize(int width, int height) {
 		escena.getViewport().update(width, height, true);
-		if (menuVisible && menuArena != null) {
-			float centerX = viewport.getWorldWidth() / 2 - menuArena.getWidth() / 2+50;
-		    float centerY = viewport.getWorldHeight() / 2 - menuArena.getHeight() / 2;
-		    menuArena.setPosition(centerX, centerY);
-		}
 	}
 
 	@Override
@@ -418,13 +379,13 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 
 	    // 1) Murió el Jefe => gana el héroe
             if (personaje == this.jefe) {
-                this.juego.setScreen(new ScreenPerder(this.juego, false));
                 if (serverThread != null) {
                     serverThread.sendMessageToAll("EndGame:0"); // Hero wins
                     serverThread.disconnectClients();
                     serverThread.terminate(); // Terminate thread
                     serverThread = null;
                 }
+                resetAndCreateNewArena();
                 this.gameFinished = true;
                 return;
             }
@@ -447,20 +408,26 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
 	                heroe.getEstadistica().getMultSalto()
 	            );
                 } else {
-                    this.juego.setScreen(new ScreenPerder(this.juego, true));
                     if (serverThread != null) {
                         serverThread.sendMessageToAll("EndGame:1"); // Boss wins
                         serverThread.disconnectClients();
                         serverThread.terminate(); // Terminate thread
                         serverThread = null;
                     }
+                    resetAndCreateNewArena();
                     this.gameFinished = true;
                 }
                 return;
             }
 	}
-	
-	public Arena resumeGameWithUpgrades(float multVida, float multDanio, float multVelocidad, float multSalto, int intentos) {
+
+    public void resetAndCreateNewArena(){
+        Arena newArena = new Arena(juego, skin);
+        juego.setScreen(newArena);
+    }
+
+
+    public Arena resumeGameWithUpgrades(float multVida, float multDanio, float multVelocidad, float multSalto, int intentos) {
 	    
 	    this.estadisticasHeroe.setMultVida(multVida);
 	    this.estadisticasHeroe.setMultDanio(multDanio);
