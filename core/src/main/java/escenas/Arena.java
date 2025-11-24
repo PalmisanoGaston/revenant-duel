@@ -286,17 +286,6 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
     public void render(float delta) {
 
     	 
-    	//Hay que hacerlo de esta manera o si no explota
-    	 if(!world.isLocked() && !cuerposAEliminar.isEmpty()) {
-    		 for(Body body : cuerposAEliminar) {
-    			 if(body != null) {
-    				 world.destroyBody(body);
-                 }
-             }
-             cuerposAEliminar.clear();
-
-    	           
-    	        } 
     	  
     	 
     	//Hay que hacerlo de esta manera o si explota
