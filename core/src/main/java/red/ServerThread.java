@@ -12,6 +12,8 @@ import escenas.Arena;
 
 public class ServerThread extends Thread {
 
+    private static ServerThread instance;
+
     private DatagramSocket socket;
     private int serverPort = 5555;
     private boolean end = false;
@@ -26,8 +28,7 @@ public class ServerThread extends Thread {
     private int intentosRestantes;
     private Arena serverArena;
 
-
-    public ServerThread(GameController gameController) {
+    private ServerThread(GameController gameController) {
         this.gameController = gameController;
         if (gameController instanceof escenas.Arena) {
             this.serverArena = (escenas.Arena) gameController;
@@ -37,6 +38,17 @@ public class ServerThread extends Thread {
         } catch (SocketException e) {
 //            throw new RuntimeException(e);
         }
+    }
+
+    public static ServerThread getInstance(GameController gameController) {
+        if (instance == null || instance.end) {
+            instance = new ServerThread(gameController);
+        }
+        return instance;
+    }
+
+    public static ServerThread getInstance() {
+        return instance;
     }
 
     @Override
@@ -56,7 +68,6 @@ public class ServerThread extends Thread {
         String message = (new String(packet.getData())).trim();
         String[] parts = message.split(":");
         int index = findClientIndex(packet);
-        System.out.println("Mensaje recibido " + message);
 
         if(parts[0].equals("Connect")){
 
@@ -161,6 +172,13 @@ public class ServerThread extends Thread {
                     sendMessageToAll("ResumeGame:" + heroStats[0] + ":" + heroStats[1] + ":" + 
                                    heroStats[2] + ":" + heroStats[3]);
                     break;
+
+                case "Disconnect":
+                    clients.remove(index);
+                    connectedClients--;
+                    disconnectClients();
+                    break;
+
             }
         }
     }
@@ -213,6 +231,8 @@ public class ServerThread extends Thread {
     }
 
     public void terminate(){
+        sendMessageToAll("Disconnect");
+
         this.end = true;
         socket.close();
         this.interrupt();

@@ -446,4 +446,18 @@ public abstract class PersonajeBase extends Actor {
     public Estadistica getEstadistica() {
         return this.estadisticas;
     }
+
+    public String getCooldownsString() {
+        StringBuilder sb = new StringBuilder();
+        MovimientoBase[] movs = getArrayMovimientos();
+        for (int i = 0; i < movs.length; i++) {
+            if (i > 0) sb.append(',');
+            sb.append(formatFloat(movs[i].getCooldownRestante()));
+        }
+        return sb.toString();
+    }
+
+    private String formatFloat(float value) {
+        return String.format(java.util.Locale.US, "%.2f", value);
+    }
 }

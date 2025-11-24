@@ -111,7 +111,7 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         StageInputProcessor stageProcessor = new StageInputProcessor(escena);
         this.inputManager = new InputManager(this.lectorInputs, this);
 	    this.skin = skin;
-	    this.serverThread = new ServerThread(this);
+	    this.serverThread = ServerThread.getInstance(this);
         construirArena(skin);
         this.serverThread.start();
 
@@ -364,6 +364,13 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
                .append(':').append(personaje.getLado() ? 1 : 0)
                .append(':').append(personaje.getAnimacionActualNombre())
                .append(':').append(formatFloat(personaje.getStateTime()));
+        System.out.println("SERVER STATE = " + builder.toString());
+
+        if (personaje instanceof Jefe) {
+            builder.append(':').append(((Jefe) personaje).isModoBestia() ? 1 : 0);
+        }
+
+        builder.append(':').append(personaje.getCooldownsString());
     }
 
     private String formatFloat(float value) {
