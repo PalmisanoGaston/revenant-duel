@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import escenas.Arena;
 import escenas.Menu;
 import escenas.Principal;
+import red.ClientThread;
 import sonidos.SonidoPersonajeBase;
 
 public class MenuArena extends WidgetGroup {
@@ -44,10 +45,14 @@ public class MenuArena extends WidgetGroup {
         Label titulo = new Label("Opciones", skin);
         titulo.setFontScale(1.5f);
         
-        TextButton botonInicio = new TextButton("Volver al inicio", skin);
+        TextButton botonInicio = new TextButton("Desconectarte", skin);
         botonInicio.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                ClientThread client = ClientThread.getInstance();
+                if (client != null) {
+                    client.terminate();
+                }
                 juego.setScreen(new Menu(juego));
             }
         });

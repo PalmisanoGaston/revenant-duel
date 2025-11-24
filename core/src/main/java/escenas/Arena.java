@@ -258,6 +258,7 @@ public class Arena implements Screen, GameController {
             menuArena.setPosition(centerX, centerY);
 
             inputManager.setMenuMode();
+            Gdx.input.setInputProcessor(escena);
         }
     }
 
@@ -266,6 +267,7 @@ public class Arena implements Screen, GameController {
             menuArena.remove();
             menuArena = null;
             inputManager.setArenaMode();
+            Gdx.input.setInputProcessor(this.inputManager);
         }
     }
 
