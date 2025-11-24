@@ -376,6 +376,9 @@ public abstract class PersonajeBase extends Actor {
         if (this.animacionActual == this.animacionPersonaje.getAnimacionAtaque()) {
             return "attack";
         }
+        if (this.animacionActual == this.animacionPersonaje.getVerticalAttackAnimation()) {
+            return "attack-Vertical";
+        }
         if (this.animacionPersonaje.getAnimacionMuerte() != null
                 && this.animacionActual == this.animacionPersonaje.getAnimacionMuerte()) {
             return "death";
