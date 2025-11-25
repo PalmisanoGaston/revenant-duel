@@ -12,7 +12,7 @@ public class Jefe extends PersonajeBase {
     private final Color colorBestia = new Color(1f, 0.5f, 0.5f, 1f);
 
     public Jefe(MuerteEventListener muerteListener, CambioVidaEventListener vidaListener) {
-        super("Jefe", 150, muerteListener, vidaListener,
+        super("Jefe", 300, muerteListener, vidaListener,
                 new AnimacionesJefe(), new Estadistica());
     }
 

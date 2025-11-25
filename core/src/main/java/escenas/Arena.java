@@ -448,7 +448,7 @@ public class Arena implements Screen, GameController {
         juego.setScreen(new ScreenPerder(juego, winner != 0));
     }
 
-    // ✅ NUEVO: Método para manejar fallo de conexión
+    // Método para manejar fallo de conexión
     public void onConnectionFailed() {
         if (gameEnded) {
             return;
@@ -466,7 +466,7 @@ public class Arena implements Screen, GameController {
         juego.setScreen(new gui.ScreenConnectionError(juego, skin));
     }
 
-    // ✅ NUEVO: Método para cuando el otro jugador se desconecta
+    // Método para cuando el otro jugador se desconecta
     public void onPlayerDisconnected() {
         if (gameEnded) {
             return;

@@ -18,7 +18,7 @@ public class ClientThread extends Thread {
     private boolean end = false;
     private GameController gameController;
 
-    // ✅ NUEVO: Para manejar timeout de conexión
+    // Para manejar timeout de conexión
     private boolean connected = false;
     private boolean connectionAttempted = false;
     private static final int CONNECTION_TIMEOUT = 5000; // 5 segundos
@@ -28,7 +28,7 @@ public class ClientThread extends Thread {
             this.gameController = gameController;
             ipServer = InetAddress.getByName(ipServerStr);
             socket = new DatagramSocket();
-            socket.setSoTimeout(CONNECTION_TIMEOUT); // ✅ NUEVO: Timeout para receive
+            socket.setSoTimeout(CONNECTION_TIMEOUT); // Timeout para receive
             registerShutdownHook();
         } catch (SocketException | UnknownHostException e) {
             e.printStackTrace();
@@ -62,7 +62,7 @@ public class ClientThread extends Thread {
 
     @Override
     public void run() {
-        // ✅ NUEVO: Esperar respuesta inicial de conexión
+        // Esperar respuesta inicial de conexión
         long startTime = System.currentTimeMillis();
 
         do {
@@ -71,13 +71,13 @@ public class ClientThread extends Thread {
                 socket.receive(packet);
                 processMessage(packet);
 
-                // ✅ NUEVO: Si recibimos un mensaje, la conexión fue exitosa
+                // Si recibimos un mensaje, la conexión fue exitosa
                 if (!connected && connectionAttempted) {
                     connected = true;
                 }
 
             } catch (SocketTimeoutException e) {
-                // ✅ NUEVO: Timeout - verificar si aún estamos intentando conectar
+                // Timeout - verificar si aún estamos intentando conectar
                 if (connectionAttempted && !connected) {
                     long elapsed = System.currentTimeMillis() - startTime;
                     if (elapsed > CONNECTION_TIMEOUT) {
@@ -109,7 +109,6 @@ public class ClientThread extends Thread {
         } while(!end);
     }
 
-    // ✅ NUEVO: Notificar al GameController que falló la conexión
     private void notifyConnectionFailed() {
         if (gameController instanceof escenas.Arena) {
             Gdx.app.postRunnable(new Runnable() {
@@ -130,13 +129,13 @@ public class ClientThread extends Thread {
         switch(parts[0]){
             case "AlreadyConnected":
                 System.out.println("Ya estas conectado");
-                connected = true; // ✅ NUEVO
+                connected = true;
                 break;
             case "Connected":
                 int assignedRole = Integer.parseInt(parts[1]);
                 System.out.println("Conectado al servidor como rol: " + assignedRole);
                 this.ipServer = packet.getAddress();
-                connected = true; // ✅ NUEVO
+                connected = true;
 
                 if (gameController instanceof escenas.Arena) {
                     ((escenas.Arena) gameController).setPlayerRole(assignedRole);
@@ -144,7 +143,7 @@ public class ClientThread extends Thread {
                 break;
             case "Full":
                 System.out.println("Servidor lleno");
-                connected = true; // ✅ NUEVO: Técnicamente conectamos, pero está lleno
+                connected = true;
                 this.end = true;
                 // TODO: Podrías agregar un callback específico para "servidor lleno"
                 break;
@@ -228,7 +227,6 @@ public class ClientThread extends Thread {
                 terminate();
                 break;
 
-            // ✅ NUEVO: Manejar desconexión de otro jugador
             case "PlayerDisconnected":
                 System.out.println("Other player disconnected");
                 if (gameController instanceof escenas.Arena) {
@@ -241,11 +239,6 @@ public class ClientThread extends Thread {
                 }
                 break;
         }
-    }
-
-    public void sendHeroDied(int heroVida, int intentosRestantes, float multVida, float multDanio, float multVelocidad, float multSalto) {
-        sendMessage("HeroDied:" + heroVida + ":" + intentosRestantes + ":" +
-                multVida + ":" + multDanio + ":" + multVelocidad + ":" + multSalto);
     }
 
     public void sendHeroUpgraded(float multVida, float multDanio, float multVelocidad, float multSalto, int numIntentos) {
@@ -271,7 +264,7 @@ public class ClientThread extends Thread {
     }
 
     public void connectToServer() {
-        connectionAttempted = true; // ✅ NUEVO: Marcar que intentamos conectar
+        connectionAttempted = true;
         sendMessage("Connect");
     }
 
