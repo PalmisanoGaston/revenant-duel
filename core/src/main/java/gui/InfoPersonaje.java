@@ -1,17 +1,13 @@
 package gui;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 
-import movimientos.MovimientoBase;
+import java.util.List;
 
 public class InfoPersonaje extends WidgetGroup {
     private Label labelInfo;
@@ -19,62 +15,72 @@ public class InfoPersonaje extends WidgetGroup {
     private String nombre;
     private int vidaActual;
     private int vidaMax;
-    private Skin skin;
-    private boolean esHeroe; 
-    
-    public InfoPersonaje(String nombre, int vidaMax, Texture textura, Skin skin, boolean esHeroe, MovimientoBase[] movimientos) {
+    private final List<SkillIcon> skillIcons;
+
+    public InfoPersonaje(String nombre, int vidaMax, Texture textura, Skin skin, boolean esHeroe,
+                         List<SkillIcon> skillIcons) {
         this.nombre = nombre;
         this.vidaMax = vidaMax;
         this.vidaActual = vidaMax;
-        this.skin = skin;
-        this.esHeroe = esHeroe;
-        
+        this.skillIcons = skillIcons;
+
         this.imagenPersonaje = new Image(textura);
-        imagenPersonaje.setSize(48, 48); 
+        imagenPersonaje.setSize(48, 48);
         this.labelInfo = new Label(nombre + ": " + vidaActual + "/" + vidaMax, skin);
-        
+
         Table table = new Table();
         table.defaults().pad(5);
-        
+
         if (esHeroe) {
-            // Para héroe: imagen a la izquierda
             table.add(imagenPersonaje).size(imagenPersonaje.getWidth(), imagenPersonaje.getHeight());
             table.add(labelInfo);
         } else {
-            // Para jefe: imagen a la derecha
             table.add(labelInfo);
             table.add(imagenPersonaje).size(imagenPersonaje.getWidth(), imagenPersonaje.getHeight());
         }
-        
-        
+
         this.setSize(table.getPrefWidth(), table.getPrefHeight());
-        
-        Table tablaMovimientos = new Table();
-        tablaMovimientos.defaults().pad(5);
-        for (MovimientoBase movimiento: movimientos) {
-        	tablaMovimientos.add(movimiento.getIcon()).size(32, 32);
-		}
-        
+
+        Table skillTable = new Table();
+        skillTable.defaults().pad(5);
+        if (skillIcons != null) {
+            for (SkillIcon skillIcon : skillIcons) {
+                skillTable.add(skillIcon.getImage()).size(32, 32);
+            }
+        }
+
         table.row();
-     // que ocupe ambas columnas y se centre
-        table.add(tablaMovimientos)
-             .colspan(2)       // ocupa las 2 columnas
-             .padTop(10f)
-             .expandX()        // toma el ancho disponible
-             .center();        // centra el actor dentro de la celda
-    
+        table.add(skillTable)
+                .colspan(2)
+                .padTop(10f)
+                .expandX()
+                .center();
+
         this.addActor(table);
-        
     }
-    
+
     public void modificarInfo(int vida, int vidaMax) {
+        this.vidaMax = vidaMax;
         this.vidaActual = Math.max(0, Math.min(vida, vidaMax));
         this.labelInfo.setText(nombre + ": " + vidaActual + "/" + vidaMax);
     }
 
-    
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
+    public void actualizarCooldowns(String cooldownsStr) {
+        if (skillIcons == null || skillIcons.isEmpty()) {
+            return;
+        }
+        String[] parts = cooldownsStr != null ? cooldownsStr.split(",") : new String[0];
+        for (int i = 0; i < skillIcons.size(); i++) {
+            boolean enCooldown = false;
+            if (i < parts.length) {
+                try {
+                    float restante = Float.parseFloat(parts[i]);
+                    enCooldown = restante > 0.01f;
+                } catch (NumberFormatException ignored) {
+                    // Ignore invalid values
+                }
+            }
+            skillIcons.get(i).setOnCooldown(enCooldown);
+        }
     }
 }

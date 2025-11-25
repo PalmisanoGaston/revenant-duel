@@ -5,19 +5,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.ChainShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import Interfaces.CambioVidaEventListener;
 import Interfaces.GameController;
@@ -32,16 +28,14 @@ import red.ClientThread;
 import sonidos.ControladorMusica;
 import utiles.InputManager;
 import utiles.RemoteProjectileManager;
-import utiles.ProyectilManager;
 
+import gui.SkillIcon;
 public class Arena implements Screen, GameController {
     private final Game juego;
     private final Skin skin;
     private final ExtendViewport viewport;
     private final Stage escena;
 
-    private World world;
-    private ProyectilManager proyectilManager;
     private RemoteProjectileManager remoteProjectileManager;
     private FondoBase fondo;
     private Heroe heroe;
@@ -61,12 +55,8 @@ public class Arena implements Screen, GameController {
     private boolean gameEnded = false;
     private boolean player2 = false;
 
-    public static final float PIXELS_TO_METERS = 1 / 100f;
     private static final int ANCHO = 800;
     private static final int ALTO = 800;
-    public static final short CATEGORY_PERSONAJE = 0x0001;
-    public static final short CATEGORY_ENTORNO = 0x0002;
-    public static final short CATEGORY_PROYECTIL = 0x0004;
 
     public Arena(Game juego, Skin skin) {
         this(juego, skin, 150, 5, new Estadistica(), false, -1, false);
@@ -103,15 +93,13 @@ public class Arena implements Screen, GameController {
     }
 
     private void setupSceneActors() {
-        this.world = new World(new Vector2(0, 0), true);
-        this.proyectilManager = new ProyectilManager(world);
         this.remoteProjectileManager = new RemoteProjectileManager();
 
         MuerteEventListener muerteListener = personaje -> {};
         CambioVidaEventListener vidaListener = personaje -> {};
 
-        this.heroe = new Heroe(world, muerteListener, vidaListener, proyectilManager, estadisticasHeroe);
-        this.jefe = new Jefe(world, muerteListener, vidaListener);
+        this.heroe = new Heroe(muerteListener, vidaListener, estadisticasHeroe);
+        this.jefe = new Jefe(muerteListener, vidaListener);
         this.heroe.setRemoteControlled(true);
         this.jefe.setRemoteControlled(true);
 
@@ -124,7 +112,6 @@ public class Arena implements Screen, GameController {
         this.escena.addActor(this.jefe);
 
         construirUI();
-        crearLimitesMapa();
     }
 
     private void construirUI() {
@@ -134,50 +121,54 @@ public class Arena implements Screen, GameController {
         escena.addActor(table);
 
         this.uiHeroe = new InfoPersonaje(this.heroe.getNombre(), this.heroe.getVidaMaxima(),
-                new Texture("placeholder.png"), skin, true, this.heroe.getArrayMovimientos());
+                new Texture("placeholder.png"), skin, true, getHeroSkillIcons());
         this.uiJefe = new InfoPersonaje(this.jefe.getNombre(), this.jefe.getVidaMaxima(),
-                new Texture("placeholder.png"), skin, false, this.jefe.getArrayMovimientos());
+                new Texture("placeholder.png"), skin, false, getBossSkillIcons());
 
         table.add(uiHeroe).pad(150).top().left();
         table.add().expandX();
         table.add(uiJefe).pad(150).top().right();
     }
 
-    private void crearLimitesMapa() {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(0, 0);
-        BodyDef bodyDefBordes = new BodyDef();
-        bodyDefBordes.type = BodyDef.BodyType.StaticBody;
+    private List<SkillIcon> getHeroSkillIcons() {
+        Map<String, String> iconPaths = new HashMap<>();
+        iconPaths.put("Dash", "movimientos/dash icon.png");
+        iconPaths.put("Salto", "movimientos/salto.jpg");
+        iconPaths.put("Backdash", "movimientos/backDash icon.png");
+        iconPaths.put("Ataque", "movimientos/basicAttack.png");
+        iconPaths.put("Proyectil", "proyectil.png");
+        iconPaths.put("ProyectilVolador", "movimientos/proyectilVolador.png");
 
-        // Piso
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(ANCHO, 128 * PIXELS_TO_METERS);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.friction = 0.5f;
-        fixtureDef.filter.categoryBits = CATEGORY_ENTORNO;
-        fixtureDef.filter.maskBits = CATEGORY_PERSONAJE;
-        world.createBody(bodyDef).createFixture(fixtureDef);
-        shape.dispose();
+        return crearSkillIconsEnOrdenServidor(iconPaths,
+                "Dash", "Salto", "Backdash", "Ataque", "Proyectil", "ProyectilVolador");
+    }
 
-        // Bordes
-        ChainShape borders = new ChainShape();
-        float margin = 10f;
-        Vector2[] vertices = new Vector2[4];
-        vertices[0] = new Vector2((-margin * PIXELS_TO_METERS) + 0.08f, -margin * PIXELS_TO_METERS);
-        vertices[1] = new Vector2((-margin * PIXELS_TO_METERS) + 0.08f, (ALTO + margin) * PIXELS_TO_METERS);
-        vertices[2] = new Vector2((ANCHO + margin) * 1.88f * PIXELS_TO_METERS, (ALTO + margin) * PIXELS_TO_METERS);
-        vertices[3] = new Vector2((ANCHO + margin) * 1.88f * PIXELS_TO_METERS, -margin * PIXELS_TO_METERS);
-        borders.createLoop(vertices);
+    private List<SkillIcon> getBossSkillIcons() {
+        Map<String, String> iconPaths = new HashMap<>();
+        iconPaths.put("Dash", "movimientos/dash icon.png");
+        iconPaths.put("Salto", "movimientos/salto.jpg");
+        iconPaths.put("Backdash", "movimientos/backDash icon.png");
+        iconPaths.put("Ataque", "movimientos/ataqueJefe.png");
+        iconPaths.put("AtaqueVertical", "movimientos/verticalHitJefe2.png");
+        iconPaths.put("AtaqueFinal", "movimientos/ataqueFinalJefe.png");
 
-        FixtureDef borderFixture = new FixtureDef();
-        borderFixture.shape = borders;
-        borderFixture.friction = 0.5f;
-        borderFixture.filter.categoryBits = CATEGORY_ENTORNO;
-        borderFixture.filter.maskBits = CATEGORY_PERSONAJE | CATEGORY_PROYECTIL;
-        world.createBody(bodyDefBordes).createFixture(borderFixture);
-        borders.dispose();
+        return crearSkillIconsEnOrdenServidor(iconPaths,
+                "Dash", "Salto", "Backdash", "Ataque", "AtaqueVertical", "AtaqueFinal");
+    }
+
+    private List<SkillIcon> crearSkillIconsEnOrdenServidor(Map<String, String> iconPaths, String... insertionOrder) {
+        Map<String, Boolean> serverOrder = new HashMap<>();
+        for (String name : insertionOrder) {
+            serverOrder.put(name, Boolean.TRUE);
+        }
+        List<SkillIcon> icons = new ArrayList<>();
+        for (String name : serverOrder.keySet()) {
+            String path = iconPaths.get(name);
+            if (path != null) {
+                icons.add(new SkillIcon(name, path));
+            }
+        }
+        return icons;
     }
 
     private void initializeNetwork() {
@@ -218,9 +209,6 @@ public class Arena implements Screen, GameController {
         }
         if (remoteProjectileManager != null) {
             remoteProjectileManager.dispose();
-        }
-        if (world != null) {
-            world.dispose();
         }
         escena.dispose();
     }
@@ -439,6 +427,8 @@ public class Arena implements Screen, GameController {
             this.jefe.applyCooldowns(bossCooldowns);
             this.uiHeroe.modificarInfo(heroVida, heroVidaMax);
             this.uiJefe.modificarInfo(bossVida, bossVidaMax);
+            this.uiHeroe.actualizarCooldowns(heroCooldowns);
+            this.uiJefe.actualizarCooldowns(bossCooldowns);
             this.vidaJefe = bossVida;
             this.remoteProjectileManager.updateProjectiles(projectileStates);
         } catch (NumberFormatException ex) {

@@ -1,299 +1,61 @@
-// PersonajeBase.java
 package personajes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import Interfaces.CambioVidaEventListener;
 import Interfaces.MuerteEventListener;
-import escenas.Arena;
-import movimientos.Backdash;
-import movimientos.Dash;
-import movimientos.Morir;
-import movimientos.MovimientoAtaque;
-import movimientos.MovimientoBase;
-import movimientos.Salto;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * Simple render-only character that only applies remote state snapshots.
+ */
 public abstract class PersonajeBase extends Actor {
     protected float stateTime;
-    protected Body body;
     protected boolean lado = true; // true = derecha, false = izquierda
     private String nombre;
     private int vida;
     private int vidaMaxima;
-    protected int fuerzaSalto; // <- se usa para el salto base
-    protected MovimientoBase movimientoActual;
-    protected Map<String, MovimientoBase> movimientos = new HashMap<>();
     protected AnimacionBase animacionPersonaje;
-    private MuerteEventListener muerteEventListener;
-    private CambioVidaEventListener cambioVidaEventListener;
+    private final MuerteEventListener muerteEventListener;
+    private final CambioVidaEventListener cambioVidaEventListener;
     protected Animation<TextureRegion> animacionActual;
-    protected MovimientoAtaque ataque;
-    protected float velocidadHorizontal;
-
-    // ===== Multimplicadores =====
     protected Estadistica estadisticas = new Estadistica();
-    private float mejoraVida = estadisticas.getMultVida();
-    private float mejoraSalto = estadisticas.getMultSalto();
-    private float mejoraDanio = estadisticas.getMultDanio();
-    private float mejoraVelocidad = estadisticas.getMultVelocidad();
-
-    // ====== INPUT FLAGS (seteados por LectorInputs) ======
-    private boolean inLeft;
-    private boolean inRight;
-    private boolean inJump;
-    private boolean inAttack;
-    private boolean inDash;
-    private boolean inBackdash;
-    protected boolean enAtaqueProyectil;
-
     private boolean remoteControlled = false;
 
-    public void setInputLeft(boolean v)    { this.inLeft = v; }
-    public void setInputRight(boolean v)   { this.inRight = v; }
-    public void requestJump()              { this.inJump = true; }
-    public void requestProyectil()  	   {this.enAtaqueProyectil = true;}
-    public void requestAttack()            { this.inAttack = true; }
-    public void requestDash()              { this.inDash = true; }
-    public void requestBackdash()          { this.inBackdash = true; }
+    // Position in screen units (center based)
+    private float posX;
+    private float posY;
 
-    // ====== Chequeo de “suelo” por estabilidad de velocidad Y ======
-    private int  groundedFrames = 0;
-    private boolean grounded     = false;
-    public static final short CATEGORY_PERSONAJE = 0x0001;
-    public static final short CATEGORY_ENTORNO   = 0x0002;
-    public static final short CATEGORY_PROYECTIL = 0x0004; // si más adelante agregás
-
-
-    protected float groundEps() { return 0.01f; }           // tolerancia de |vy|
-    protected int groundStableFrames() { return 3; }      // frames consecutivos para considerar suelo
-    protected final boolean isGrounded() { return grounded; }
-
-    public PersonajeBase(World world, String nombre, int vida,
+    public PersonajeBase(String nombre, int vida,
                          MuerteEventListener muerteListener,
                          CambioVidaEventListener vidaListener,
-                         AnimacionBase animacion, int fuerzaSalto,
-                         float velocidadHorizontal, Estadistica estadisticas) {
+                         AnimacionBase animacion,
+                         Estadistica estadisticas) {
 
-        this.estadisticas = estadisticas; // ← Usar las estadísticas pasadas
-
+        this.estadisticas = estadisticas;
         this.nombre = nombre;
         this.vida = vida * (int) this.estadisticas.getMultVida();
         this.vidaMaxima = vida * (int) this.estadisticas.getMultVida();
         this.muerteEventListener = muerteListener;
         this.cambioVidaEventListener = vidaListener;
         this.animacionPersonaje = animacion;
-        this.fuerzaSalto = fuerzaSalto * (int)this.estadisticas.getMultSalto();
-        this.velocidadHorizontal = velocidadHorizontal;
-
-        // Configuración física común
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(100 * Arena.PIXELS_TO_METERS, 200 * Arena.PIXELS_TO_METERS);
-        bodyDef.fixedRotation = true;
-
-        this.body = world.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(
-                this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime).getRegionWidth()  / 2f * Arena.PIXELS_TO_METERS,
-                this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime).getRegionHeight() / 2f * Arena.PIXELS_TO_METERS
-        );
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0f; // para que no se queden pegados
-        fixtureDef.filter.categoryBits = CATEGORY_PERSONAJE;
-        // El personaje solo choca con el entorno (NO con otros personajes)
-        fixtureDef.filter.maskBits = CATEGORY_ENTORNO | CATEGORY_PROYECTIL;
-        body.createFixture(fixtureDef);
-
-        shape.dispose();
-
-        setSize(
-                this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime).getRegionWidth(),
-                this.animacionPersonaje.getIdleAnimation().getKeyFrame(stateTime).getRegionHeight()
-        );
-
-        body.setUserData(this);
-        this.body.setSleepingAllowed(false);
-
-        // Movimientos base
-        movimientos.put("Dash",     new Dash(body, lado));
-        movimientos.put("Salto",    new Salto(body, this.fuerzaSalto));
-        movimientos.put("Backdash", new Backdash(body, lado));
 
         this.animacionActual = animacionPersonaje.getIdleAnimation();
+        TextureRegion frame = animacionActual.getKeyFrame(stateTime, true);
+        setSize(frame.getRegionWidth(), frame.getRegionHeight());
     }
 
     public int getVidaMaxima() { return vidaMaxima; }
 
-    // ================== ACT UNIFICADO ==================
     @Override
     public void act(float delta) {
         if (remoteControlled) {
             return;
         }
-
         this.stateTime += delta;
-
-        MovimientoBase[] movimientosDisponibles = getArrayMovimientos();
-        for (MovimientoBase movimiento : movimientosDisponibles) {
-            movimiento.actualizarCooldown(delta);  // SIEMPRE
-        }
-
-
-
-        float velX = 0f;
-        // Actualizar estado “en suelo” con filtro de estabilidad
-        float vy = body.getLinearVelocity().y;
-        if (Math.abs(vy) < groundEps()) {
-            groundedFrames++;
-            if (groundedFrames >= groundStableFrames()) grounded = true;
-        } else {
-            groundedFrames = 0;
-            grounded = false;
-        }
-
-        if (this.vida > 0) {
-            if (movimientoActual == null || movimientoActual.estaCompletado()) {
-            	velX =0;
-                
-                // === Movimiento horizontal continuo (izq/der) ===
-                if (inLeft && !inRight) {
-                    velX = -getVelocidadHorizontal();
-                    this.lado = false;
-                    if (this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
-                        this.animacionActual = this.animacionPersonaje.getRunAnimation();
-                    }
-                } else if (inRight && !inLeft) {
-                    velX =  getVelocidadHorizontal();
-                    this.lado = true;
-                    if (this.animacionActual != this.animacionPersonaje.getRunAnimation()) {
-                        this.animacionActual = this.animacionPersonaje.getRunAnimation();
-                    }
-                } else {
-                    if (this.animacionActual != this.animacionPersonaje.getIdleAnimation()) {
-                        this.animacionActual = this.animacionPersonaje.getIdleAnimation();
-                    }
-                }
-
-                // Aplicar velocidad horizontal (conservando Y)
-                body.setLinearVelocity(velX, body.getLinearVelocity().y);
-
-                // === Acciones edge-trigger ===
-
-                // Salto (solo si está apoyado)
-                if (inJump) {
-                    if (isGrounded()) {
-                        Salto salto = (Salto) movimientos.get("Salto");
-                        if (salto.estaListo()) {                     // ✅ nuevo chequeo real de cooldown
-                            prepareSalto(salto);
-                            salto.reiniciar();
-                            this.movimientoActual = salto;
-                            this.animacionActual = this.animacionPersonaje.getJumpAnimation();
-                            onPlaySalto();
-                            salto.activarCooldown();
-                        }
-                    }
-                    inJump = false;
-                }
-
-
-                // Dash (solo si está apoyado)
-                if (inDash) {
-                    if (isGrounded()) {
-                        Dash dash = (Dash) movimientos.get("Dash");
-                        dash.setLadoDerecho(lado);
-                        dash.reiniciar();
-                        if(dash.estaListo()) {
-                            movimientoActual = dash;
-                            onPlayDash();
-                            dash.activarCooldown();
-                        }// hook de sonido
-                    }
-                    inDash = false;
-                }
-
-                // Backdash (solo si está apoyado)
-                if (inBackdash) {
-                    if (isGrounded()) {
-                        Backdash back = (Backdash) movimientos.get("Backdash");
-                        back.setLadoDerecho(lado);
-                        back.reiniciar();
-                        if(back.estaListo()) {
-                            movimientoActual = back;
-                            onPlayDash();
-                            back.activarCooldown();
-                        }
-                        // usa mismo sonido que dash por defecto
-                    }
-                    inBackdash = false;
-                }
-                if(inAttack) {
-                    System.out.println("hola");
-                    realizarAtaqueBasico();
-                    inAttack = false;
-                }
-
-                // Hook para acciones extra del hijo (p.ej. toggle bestia del Jefe)
-                onExtraActions();
-            }
-        }
-
-        // Actualización del movimiento en curso
-        if (movimientoActual != null && !movimientoActual.estaCompletado()) {
-            movimientoActual.actualizar();
-            movimientoActual.aplicarEfecto();
-            velX = 0f;
-        } else {
-            movimientoActual = null;
-        }
-
-        // Mantener posición respecto al body
-        setPosition(
-                (body.getPosition().x / Arena.PIXELS_TO_METERS) - getWidth()  / 2f,
-                (body.getPosition().y / Arena.PIXELS_TO_METERS) - getHeight() / 2f
-        );
-    }
-
-
-    public void realizarAtaqueBasico() {
-        if (movimientoActual == null && isGrounded()) {
-
-        	 MovimientoAtaque ataque = (MovimientoAtaque) movimientos.get("Ataque");
-            if (ataque != null) {
-            	   ataque.setLadoDerecho(lado);
-                if(ataque.estaListo()) {
-                	this.body.setLinearVelocity(0f, this.body.getLinearVelocity().y);
-                    movimientoActual = ataque;
-                    this.stateTime = 0;
-                    ataque.reiniciar();
-                    this.animacionActual = this.animacionPersonaje.getAnimacionAtaque();
-                    ataque.activarCooldown();
-                }
-            }
-        }
-    }
-
-    public MovimientoBase[] getArrayMovimientos() {
-        Collection< MovimientoBase> collecionMovimiento =  this.movimientos.values();
-        MovimientoBase[] movimientosDisponibles = collecionMovimiento.toArray( new MovimientoBase[0]);
-        return movimientosDisponibles;
-    }
-
-
-    public void aplicarMovimiento(MovimientoBase movimiento) {
-
     }
 
     @Override
@@ -309,38 +71,43 @@ public abstract class PersonajeBase extends Actor {
             setSize(frameWidth, frameHeight);
         }
 
-        if (!lado) currentFrame.flip(true, false);
+        if (!lado) {
+            currentFrame.flip(true, false);
+        }
 
         batch.draw(
                 currentFrame,
-                body.getPosition().x / Arena.PIXELS_TO_METERS - frameWidth  / 2f,
-                body.getPosition().y / Arena.PIXELS_TO_METERS - frameHeight / 2f,
+                posX - frameWidth / 2f,
+                posY - frameHeight / 2f,
                 frameWidth, frameHeight
         );
 
-        if (!lado) currentFrame.flip(true, false);
+        if (!lado) {
+            currentFrame.flip(true, false);
+        }
         batch.setColor(Color.WHITE);
     }
 
     public boolean esInvulnerable() {
-        return movimientoActual != null
-                && (movimientoActual.getNombre().equals("Dash") || movimientoActual.getNombre().equals("Backdash"))
-                && movimientoActual.estaEnFramesActivos();
+        return false;
     }
 
-    public void recibirDaño(final int DAÑO) {
-        this.vida -= DAÑO;
-        this.cambioVidaEventListener.onCambioVida(this);
+    public void recibirDaño(final int danio) {
+        this.vida -= danio;
+        if (this.cambioVidaEventListener != null) {
+            this.cambioVidaEventListener.onCambioVida(this);
+        }
         if (this.vida <= 0) {
             this.vida = 0;
-            this.movimientoActual = new Morir(this);
+            if (this.muerteEventListener != null) {
+                this.muerteEventListener.onPersonajeMuerto(this);
+            }
             if (this.animacionPersonaje.getAnimacionMuerte() != null) {
                 this.animacionActual = this.animacionPersonaje.getAnimacionMuerte();
             }
         }
     }
 
-    public Body getBody() { return body; }
     public int  getVida() { return this.vida; }
     public void setVida(int vida) { this.vida = vida; }
     public String getNombre() { return this.nombre; }
@@ -354,12 +121,14 @@ public abstract class PersonajeBase extends Actor {
         this.remoteControlled = remoteControlled;
     }
 
+    @Override
     public float getX() {
-        return this.body.getPosition().x / escenas.Arena.PIXELS_TO_METERS;
+        return this.posX;
     }
 
+    @Override
     public float getY() {
-        return this.body.getPosition().y / escenas.Arena.PIXELS_TO_METERS;
+        return this.posY;
     }
 
     public float getStateTime() {
@@ -386,13 +155,13 @@ public abstract class PersonajeBase extends Actor {
     public void applyRemoteState(float x, float y, boolean facingRight, String animationKey,
                                  float remoteStateTime, int vidaActual, int vidaMaxima) {
         this.remoteControlled = true;
-        this.body.setTransform(x * escenas.Arena.PIXELS_TO_METERS, y * escenas.Arena.PIXELS_TO_METERS, 0f);
-        this.body.setLinearVelocity(0f, 0f);
+        this.posX = x;
+        this.posY = y;
+        setPosition(posX - getWidth() / 2f, posY - getHeight() / 2f);
         this.lado = facingRight;
         this.stateTime = remoteStateTime;
         this.vida = vidaActual;
         this.vidaMaxima = vidaMaxima;
-        this.movimientoActual = null;
         this.animacionActual = resolveAnimation(animationKey);
     }
 
@@ -418,52 +187,11 @@ public abstract class PersonajeBase extends Actor {
         }
     }
 
-    // ================== HOOKS/CONTRATOS PARA SUBCLASES ==================
-
-    /** Velocidad horizontal base: Personaje = 5f, Jefe = (bestia?4:2) */
-    protected float getVelocidadHorizontal() {
-        return this.velocidadHorizontal * this.estadisticas.getMultVelocidad();
-    }
-
-    /** Crear el movimiento de ataque correcto (Personaje: AtaqueBasico, Jefe: AtaqueJefe). */
-    protected abstract MovimientoBase createAtaque();
-
-    /** Permitir al hijo ajustar la fuerza del salto antes de reiniciar (Jefe). */
-    protected void prepareSalto(Salto salto) {
-        // Por defecto, usa fuerzaSalto ya cargada en el constructor
-        salto.setFuerza(this.fuerzaSalto);
-    }
-
-    /** Sonidos (opcional) */
-    protected void onPlayDash()  {}
-    protected void onPlaySalto() {}
-    protected void onPlayGolpe() {}
-
-    /** Animación de ataque (Jefe la usa; Personaje puede ignorar) */
-    protected void onAttackAnimation() {}
-
-    /** Acciones extra por frame (p.ej. toggle de modo bestia del Jefe) */
-    protected void onExtraActions() {}
-
     public Estadistica getEstadistica() {
         return this.estadisticas;
     }
 
     public void applyCooldowns(String cooldownsStr) {
-        if (cooldownsStr == null || cooldownsStr.isEmpty()) {
-            return;
-        }
-
-        String[] cooldownValues = cooldownsStr.split(",");
-        MovimientoBase[] movs = getArrayMovimientos();
-
-        for (int i = 0; i < Math.min(cooldownValues.length, movs.length); i++) {
-            try {
-                float cooldownRestante = Float.parseFloat(cooldownValues[i]);
-                movs[i].setCooldownRestante(cooldownRestante);
-            } catch (NumberFormatException e) {
-                // Ignorar valores inválidos
-            }
-        }
+        // Cooldowns are handled server-side; no-op in render-only client.
     }
 }
