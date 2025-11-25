@@ -30,8 +30,8 @@ public class ServerThread extends Thread {
 
     private ServerThread(GameController gameController) {
         this.gameController = gameController;
-        if (gameController instanceof escenas.Arena) {
-            this.serverArena = (escenas.Arena) gameController;
+        if (gameController instanceof Arena) {
+            this.serverArena = (Arena) gameController;
         }
         try {
             socket = new DatagramSocket(serverPort);
