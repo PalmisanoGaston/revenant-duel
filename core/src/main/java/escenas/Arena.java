@@ -99,6 +99,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         this.jefe = crearJefe();
 	    this.heroe = crearHeroe();
 	    escena.addActor(this.proyectilManager);
+        this.jefe.getBody().setTransform(1000 * PIXELS_TO_METERS, 150 * PIXELS_TO_METERS, 0); // Posicionar al jefe a la derecha
+
 
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
         StageInputProcessor stageProcessor = new StageInputProcessor(escena);
@@ -129,7 +131,8 @@ public class Arena implements Screen, MuerteEventListener , CambioVidaEventListe
         this.jefe = crearJefe(vidaJefe);
         this.heroe = crearHeroe(); // ← This hero should now use the upgraded stats
         escena.addActor(this.proyectilManager);
-     
+        this.jefe.getBody().setTransform(1000 * PIXELS_TO_METERS, 150 * PIXELS_TO_METERS, 0); // Posicionar al jefe a la derecha
+
         construirArena(skin);
         this.lectorInputs = new LectorInputs(this.heroe, this.jefe, this);
         StageInputProcessor stageProcessor = new StageInputProcessor(escena);

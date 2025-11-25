@@ -39,7 +39,7 @@ public class Jefe extends PersonajeBase {
     public void requestToggleFinal() {this.enAtaqueFinal = true;}
 
     public Jefe(World world, MuerteEventListener muerteListener, CambioVidaEventListener vidaListener) {
-        super(world, "Jefe", 150, muerteListener, vidaListener, 
+        super(world, "Jefe", 300, muerteListener, vidaListener,
               new AnimacionesJefe(), 10, 2f, new Estadistica()); // ← Jefe usa estadísticas nuevas
         this.velocidadNormal = 2f * this.estadisticas.getMultVelocidad();
         this.velocidadBestia = 4f * this.estadisticas.getMultVelocidad();
