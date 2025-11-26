@@ -6,6 +6,8 @@ heroe/Jump.png
 heroe/attack.png
 heroe/death.png
 heroe/run.png
+j.mp3
+javier.png
 jefe/bladeAttack.png
 jefe/bladeIdle.png
 jefe/bladeVerticalAttack (2).png

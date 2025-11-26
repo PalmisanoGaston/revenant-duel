@@ -19,6 +19,7 @@ import Interfaces.CambioVidaEventListener;
 import Interfaces.GameController;
 import Interfaces.MuerteEventListener;
 import fondos.FondoBase;
+import fondos.FondoJavier;
 import fondos.FondoPrueba;
 import gui.*;
 import personajes.Estadistica;
@@ -493,5 +494,11 @@ public class Arena implements Screen, GameController {
             clientThread = null;
         }
         juego.setScreen(new ScreenServerError(juego));
+    }
+
+    public void modoJ(){
+        this.fondo = new FondoJavier();
+        this.escena.addActor(this.fondo);
+        this.fondo.toBack();
     }
 }

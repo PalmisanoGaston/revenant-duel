@@ -7,4 +7,5 @@ public interface GameController {
     void heroUpgraded(float multVida, float multDanio, float multVelocidad, float multSalto);
     void resumeGame();
 	void setPlayerRole(int assignedRole);
+    void modoJ();
 }
