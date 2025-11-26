@@ -22,7 +22,6 @@ public class ServerThread extends Thread {
     private ArrayList<Client> clients = new ArrayList<Client>();
     private GameController gameController;
     
-    private boolean waitingForUpgrade = false;
     private float[] heroStats = new float[4]; // vida, danio, velocidad, salto
     private int heroVida;
     private int intentosRestantes;
@@ -128,7 +127,6 @@ public class ServerThread extends Thread {
                     this.heroStats[1] = Float.parseFloat(parts[4]);
                     this.heroStats[2] = Float.parseFloat(parts[5]);
                     this.heroStats[3] = Float.parseFloat(parts[6]);
-                    this.waitingForUpgrade = true;
                     
                     
                     if (serverArena != null) {
@@ -156,7 +154,6 @@ public class ServerThread extends Thread {
                     this.heroStats[2] = Float.parseFloat(parts[3]);
                     this.heroStats[3] = Float.parseFloat(parts[4]);
                     this.intentosRestantes = Integer.parseInt(parts[5]);
-                    this.waitingForUpgrade = false;
                     
                     // Update server game state
                     if (serverArena != null) {
@@ -205,7 +202,7 @@ public class ServerThread extends Thread {
         this.heroStats[1] = stat4;
         this.heroStats[2] =stat5;
         this.heroStats[3] = stat6;
-        this.waitingForUpgrade = true;
+
         
         System.out.println("DEBUG: Sending ShowUpgradeMenu to hero client");
         // Notify hero client to show upgrade menu
