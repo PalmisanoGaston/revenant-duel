@@ -497,6 +497,10 @@ public class Arena implements Screen, GameController {
     }
 
     public void modoJ(){
+        // Reemplaza el fondo actual asegurando que el nuevo quede al fondo del Stage
+        if (this.fondo != null) {
+            this.fondo.remove();
+        }
         this.fondo = new FondoJavier();
         this.escena.addActor(this.fondo);
         this.fondo.toBack();

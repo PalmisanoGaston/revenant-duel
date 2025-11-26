@@ -263,11 +263,8 @@ public class ClientThread extends Thread {
     public void sendInput(int rol, int keycode) {
         if(keycode == Input.Keys.J){
             ControladorMusica.play("j.mp3");
-            Gdx.app.postRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    gameController.modoJ();                }
-            });
+            Gdx.app.postRunnable(() -> gameController.modoJ());
+
         }
         System.out.println("Client: Sending input - Role: " + rol + ", Keycode: " + keycode);
         sendMessage("Input:" + rol + ":" + keycode);
